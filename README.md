@@ -1,4 +1,6 @@
-# Rodová kronika – šablona
+# Paměť rodu
+
+Šablona **Rodové kroniky** pro vlastní genealogický výzkum.
 
 Nástroj pro vlastní genealogický průzkum a rodinnou kroniku. Výsledkem je **jeden HTML soubor**, který se otevře v libovolném prohlížeči i bez internetu: rodokmen (vývod předků s čísly jako v knize i celý rodokmen), osoby, příběhy, mapa míst se stěhováním rodu, časová osa s dějinným kontextem, prameny s fotografiemi a ke každému údaji míra jistoty a pramen, ze kterého pochází. Ze stejných dat vznikne i tištěná kniha pro babičky a dědy a audiokniha.
 

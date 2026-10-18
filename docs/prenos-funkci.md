@@ -1,6 +1,6 @@
 # Přenos funkcí ze soukromé kroniky do šablony
 
-Šablona vznikla ze soukromé rodinné kroniky. Nové funkce se dál vyvíjejí tam (na skutečných datech) a do šablony se přenášejí jen jako kód. Tento postup je pro správce šablony; běžný uživatel ho nepotřebuje.
+Šablona (repozitář `pamet-rodu`) vznikla ze soukromé rodinné kroniky. Nové funkce se dál vyvíjejí tam (na skutečných datech) a do šablony se přenášejí jen jako kód. Tento postup je pro správce šablony; běžný uživatel ho nepotřebuje.
 
 ## Pravidla
 
@@ -13,7 +13,7 @@
 
 ```bash
 node scripts/export-public.mjs --dry-run
-node scripts/export-public.mjs --target ../rodova-kronika-sablona
+node scripts/export-public.mjs --target ../pamet-rodu
 ```
 
 Skript:
