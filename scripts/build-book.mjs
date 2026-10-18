@@ -34,9 +34,14 @@ function generationOf(number) {
   return Math.floor(Math.log2(number)) + 1;
 }
 
-function generationTitle(generation) {
+function generationTitle(generation, couple = false) {
+  if (couple) return ({ 2: 'Manželé', 3: 'Rodiče manželů', 4: 'Prarodiče manželů', 5: 'Praprarodiče manželů' })[generation] || `${generation - 1}. generace předků manželů`;
   return ({ 1: 'Výchozí osoba', 2: 'Rodiče', 3: 'Prarodiče', 4: 'Praprarodiče' })[generation] || `${generation}. generace předků`;
 }
+
+// A couple's book numbers the ancestors of both spouses as if they had one
+// shared child (number 1, not printed): the husband is 2, the wife 3.
+const COUPLE_ID = '__manzele__';
 
 // Ahnentafel (Kekule) numbering, shared with the on-screen pedigree.
 export function ahnentafel(data, egoId) {
@@ -51,15 +56,27 @@ function years(person) {
   return `${birth ? `* ${birth}` : ''}${birth && death ? ' – ' : ''}${death ? `† ${death}` : ''}`;
 }
 
-export function buildBook(source, { egoId, issued = new Date(), history = null } = {}) {
+export function buildBook(source, { egoId, partnerId = null, issued = new Date(), history = null } = {}) {
   const data = source.claims?.some((claim) => 'reasoning' in claim) ? createFamilyEdition(source) : source;
   const ego = RKModel.getPerson(data, egoId || data.meta.defaultPersonId);
   if (!ego) throw new Error(`Osoba ${egoId} neexistuje.`);
+  const partner = partnerId ? RKModel.getPerson(data, partnerId) : null;
+  if (partnerId && !partner) throw new Error(`Osoba ${partnerId} neexistuje.`);
+  const couple = Boolean(partner);
   const people = new Map(data.people.map((person) => [person.id, person]));
   const places = new Map(data.places.map((place) => [place.id, place]));
   const sourcesById = new Map(data.sources.map((entry) => [entry.id, entry]));
-  const { numberOf, idOf } = ahnentafel(data, ego.id);
+  const numbering = couple
+    ? RKModel.getAhnentafel({
+      people: [...data.people, { id: COUPLE_ID, displayName: '' }],
+      relationships: [...data.relationships, { type: 'parent-child', from: ego.id, to: COUPLE_ID }, { type: 'parent-child', from: partner.id, to: COUPLE_ID }],
+    }, COUPLE_ID)
+    : ahnentafel(data, ego.id);
+  const { numberOf, idOf } = numbering;
+  if (couple) { numberOf.delete(COUPLE_ID); idOf.delete(1); }
   const numbers = [...idOf.keys()].sort((a, b) => a - b);
+  const spouses = couple ? [people.get(idOf.get(2)), people.get(idOf.get(3))].filter(Boolean) : [];
+  const title = couple ? `${spouses.map((person) => person.displayName).join(' a ')}` : ego.displayName;
   const sourceNumbers = new Map();
   const cite = (ids = []) => ids.filter((id) => sourcesById.has(id)).map((id) => {
     if (!sourceNumbers.has(id)) sourceNumbers.set(id, sourceNumbers.size + 1);
@@ -67,7 +84,15 @@ export function buildBook(source, { egoId, issued = new Date(), history = null }
   });
   const mentions = new Map();
   const mention = (personId, entryNumber) => mentions.set(personId, new Set([...(mentions.get(personId) || []), entryNumber]));
-  const relationLabel = (person) => person.id === ego.id ? '' : RKPresentation.relationshipLabel(RKModel.getRelationship(data, ego.id, person.id), person.sex);
+  // In a couple's book every ancestor is described from the side of the
+  // spouse they descend from.
+  const relationLabel = (person) => {
+    if (!couple) return person.id === ego.id ? '' : RKPresentation.relationshipLabel(RKModel.getRelationship(data, ego.id, person.id), person.sex);
+    const number = numberOf.get(person.id);
+    if (number === 2 || number === 3) return number === 2 ? 'manžel' : 'manželka';
+    const side = people.get(idOf.get(number >> (Math.floor(Math.log2(number)) - 1)));
+    return `${RKPresentation.relationshipLabel(RKModel.getRelationship(data, side.id, person.id), person.sex)} · z pohledu: ${side.displayName}`;
+  };
   const placeName = (event) => (event?.placeId && places.get(event.placeId)?.name) || event?.placeText || '';
   const nameWithNumber = (person, entryNumber) => {
     mention(person.id, entryNumber);
@@ -129,7 +154,8 @@ export function buildBook(source, { egoId, issued = new Date(), history = null }
 
   // Four-generation charts: the first starts at the person, further charts
   // continue from every fourth-generation ancestor whose parents are known.
-  const chartRoots = [1];
+  const chartRoots = couple ? [2, 3] : [1];
+  const firstCharts = new Set(chartRoots);
   for (let index = 0; index < chartRoots.length; index += 1) {
     const root = chartRoots[index];
     for (let slot = root * 8; slot < root * 8 + 8; slot += 1) {
@@ -168,12 +194,12 @@ export function buildBook(source, { egoId, issued = new Date(), history = null }
     }
     const rootPerson = people.get(idOf.get(root));
     // Small charts (one or two generations) share a page instead of taking a whole sheet.
-    return `<section class="chart-page${depth <= 1 && index > 1 ? ' chart-small' : ''}"><header><h2>Vývodová tabulka ${index}</h2><p>${escapeHtml(rootPerson.displayName)} a ${rootPerson.sex === 'female' ? 'její' : 'jeho'} předci${root === 1 ? '' : ` (pokračování od čísla ${root})`}. Otec je vždy nahoře, matka pod ním.</p></header><div class="chart-grid" style="grid-template-columns:${[0.8, 0.95, 1.05, 1.35].slice(0, depth + 1).map((size) => `${size}fr`).join(' ')};grid-template-rows:repeat(${rows}, 1fr);height:${Math.min(166, 30 + rows * 18)}mm">${boxes.join('')}</div></section>`;
+    return `<section class="chart-page${depth <= 1 && index > 1 && !firstCharts.has(root) ? ' chart-small' : ''}"><header><h2>Vývodová tabulka ${index}</h2><p>${escapeHtml(rootPerson.displayName)} a ${rootPerson.sex === 'female' ? 'její' : 'jeho'} předci${firstCharts.has(root) ? '' : ` (pokračování od čísla ${root})`}. Otec je vždy nahoře, matka pod ním.</p></header><div class="chart-grid" style="grid-template-columns:${[0.8, 0.95, 1.05, 1.35].slice(0, depth + 1).map((size) => `${size}fr`).join(' ')};grid-template-rows:repeat(${rows}, 1fr);height:${Math.min(166, 30 + rows * 18)}mm">${boxes.join('')}</div></section>`;
   }
 
   const generations = new Map();
   for (const number of numbers) generations.set(generationOf(number), [...(generations.get(generationOf(number)) || []), number]);
-  const chapters = [...generations].map(([generation, list]) => `<section class="chapter"><h2>${generationTitle(generation)}</h2>${generation > 1 ? `<p class="chapter-lead">${list.length} ${list.length === 1 ? 'osoba' : list.length < 5 ? 'osoby' : 'osob'} v této generaci. Čísla odpovídají vývodovým tabulkám.</p>` : ''}${list.map(renderEntry).join('')}</section>`).join('');
+  const chapters = [...generations].map(([generation, list]) => `<section class="chapter"><h2>${generationTitle(generation, couple)}</h2>${generation > (couple ? 2 : 1) ? `<p class="chapter-lead">${list.length} ${list.length === 1 ? 'osoba' : list.length < 5 ? 'osoby' : 'osob'} v této generaci. Čísla odpovídají vývodovým tabulkám.</p>` : ''}${list.map(renderEntry).join('')}</section>`).join('');
 
   const placeList = [...placePeople].sort((a, b) => places.get(a[0]).name.localeCompare(places.get(b[0]).name, 'cs'))
     .map(([placeId, set]) => `<li><strong>${escapeHtml(places.get(placeId).name)}</strong>${places.get(placeId).region ? `, ${escapeHtml(places.get(placeId).region)}` : ''} – č. ${[...set].sort((a, b) => a - b).join(', ')}</li>`).join('');
@@ -194,7 +220,7 @@ export function buildBook(source, { egoId, issued = new Date(), history = null }
 <html lang="cs">
 <head>
 <meta charset="utf-8">
-<title>${escapeHtml(data.meta.title || 'Rodová kronika')} – kniha předků: ${escapeHtml(ego.displayName)}</title>
+<title>${escapeHtml(data.meta.title || 'Rodová kronika')} – kniha předků: ${escapeHtml(title)}</title>
 <style>
 @page { size: A4; margin: 20mm 20mm 22mm; @bottom-center { content: counter(page); font: 10pt Georgia, serif; color: #444; } }
 @page cover { @bottom-center { content: none; } }
@@ -265,13 +291,19 @@ h1, h2, h3, h4 { font-weight: 400; line-height: 1.2; break-after: avoid; }
 <body>
 <section class="cover">
   <h1>${escapeHtml(data.meta.title || 'Rodová kronika')}</h1>
-  <p class="subtitle">Předkové osoby<br><strong>${escapeHtml(ego.displayName)}</strong>${years(ego) ? ` (${escapeHtml(years(ego))})` : ''}</p>
-  <p class="meta">${numbers.length - 1} předků v ${generations.size - 1} generacích${oldest ? `, nejstarší zápis z roku ${oldest}` : ''}<br>Vydáno ${issuedText}</p>
+  ${couple
+    ? `<p class="subtitle">Předkové manželů<br>${spouses.map((person) => `<strong>${escapeHtml(person.displayName)}</strong>${years(person) ? ` (${escapeHtml(years(person))})` : ''}`).join('<br>a<br>')}</p>
+  <p class="meta">${numbers.length - spouses.length} předků v ${generations.size - 1} generacích${oldest ? `, nejstarší zápis z roku ${oldest}` : ''}<br>Vydáno ${issuedText}</p>`
+    : `<p class="subtitle">Předkové osoby<br><strong>${escapeHtml(ego.displayName)}</strong>${years(ego) ? ` (${escapeHtml(years(ego))})` : ''}</p>
+  <p class="meta">${numbers.length - 1} předků v ${generations.size - 1} generacích${oldest ? `, nejstarší zápis z roku ${oldest}` : ''}<br>Vydáno ${issuedText}</p>`}
 </section>
 <section class="howto">
   <h2>Jak tuto knihu číst</h2>
-  <p>Kniha popisuje předky osoby <strong>${escapeHtml(ego.displayName)}</strong>. Každý předek má své <strong>číslo</strong>. Výchozí osoba má číslo 1. Otec kterékoli osoby má číslo dvojnásobné, matka o jedno vyšší: otec čísla 1 je 2, matka 3; rodiče čísla 2 jsou 4 a 5 a tak dále. Podle čísla najdete osobu ve vývodových tabulkách i v kapitolách.</p>
-  <p>Vztah pod jménem (například „prababička“) je vždy uveden z pohledu osoby ${escapeHtml(ego.displayName)}.</p>
+  ${couple
+    ? `<p>Kniha popisuje předky manželů <strong>${escapeHtml(spouses[0].displayName)}</strong> a <strong>${escapeHtml(spouses[1]?.displayName || '')}</strong>. Každý předek má své <strong>číslo</strong>. ${escapeHtml(spouses[0].displayName)} má číslo 2, ${escapeHtml(spouses[1]?.displayName || '')} číslo 3. Otec kterékoli osoby má číslo dvojnásobné, matka o jedno vyšší: rodiče čísla 2 jsou 4 a 5, rodiče čísla 3 jsou 6 a 7 a tak dále. Podle čísla najdete osobu ve vývodových tabulkách i v kapitolách.</p>
+  <p>Vztah pod jménem (například „prababička“) je uveden z pohledu toho z manželů, z jehož rodu předek pochází.</p>`
+    : `<p>Kniha popisuje předky osoby <strong>${escapeHtml(ego.displayName)}</strong>. Každý předek má své <strong>číslo</strong>. Výchozí osoba má číslo 1. Otec kterékoli osoby má číslo dvojnásobné, matka o jedno vyšší: otec čísla 1 je 2, matka 3; rodiče čísla 2 jsou 4 a 5 a tak dále. Podle čísla najdete osobu ve vývodových tabulkách i v kapitolách.</p>
+  <p>Vztah pod jménem (například „prababička“) je vždy uveden z pohledu osoby ${escapeHtml(ego.displayName)}.</p>`}
   <p>U toho, co o lidech víme, je napsáno, jak jisté to je:</p>
   <dl>
     <dt>doloženo původním záznamem</dt><dd>potvrzuje to matrika nebo jiný původní dokument,</dd>
@@ -330,10 +362,11 @@ async function main() {
     }
   }
   const egoId = argument('ego', data.meta.defaultPersonId);
-  const output = argument('output', egoId === data.meta.defaultPersonId ? 'dist/rodova-kronika-kniha.html' : `dist/rodova-kronika-kniha-${egoId}.html`);
+  const partnerId = argument('partner', null);
+  const output = argument('output', partnerId ? `dist/rodova-kronika-kniha-${egoId}-a-${partnerId}.html` : egoId === data.meta.defaultPersonId ? 'dist/rodova-kronika-kniha.html' : `dist/rodova-kronika-kniha-${egoId}.html`);
   await fs.mkdir(path.dirname(output), { recursive: true });
   const history = JSON.parse(await fs.readFile('src/data/history.json', 'utf8'));
-  await fs.writeFile(output, buildBook(data, { egoId, history }));
+  await fs.writeFile(output, buildBook(data, { egoId, partnerId, history }));
   console.log(`Kniha: ${output}`);
   if (process.argv.includes('--pdf')) {
     const pdf = output.replace(/\.html$/, '.pdf');
