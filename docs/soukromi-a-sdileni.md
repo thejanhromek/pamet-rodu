@@ -43,6 +43,10 @@ Rodinné vydání automaticky vynechá badatelské úkoly, historii změn, odův
 
 Pro ty, kdo nepoužívají počítač, vytiskni knihu (`node scripts/build-book.mjs --pdf`) nebo vytvoř audioknihu (`node scripts/build-audiobook.mjs`).
 
+## Kronika na webu (GitHub Pages)
+
+`node scripts/publish-pages.mjs --target ../rodokmen-web --commit` připraví do samostatné složky jen zašifrovanou stránku (heslo aspoň 16 znaků), `robots.txt` proti indexování a krátké README; vše prověří proti tvým datům. Na GitHub jde až s `--push`, do **samostatného** veřejného repozitáře, který obsahuje jen tento šifrovaný soubor. Rodinný repozitář s daty nikdy nezveřejňuj. Šifrovanou stránku si může kdokoli stáhnout a zkoušet hesla – proto dlouhé heslo (věta) a při jeho změně raději nový repozitář, protože historie uchovává i starší verze.
+
 ## GEDCOM pro jiné programy a servery
 
 Pro nahrání rodokmenu jinam (MyHeritage, FamilySearch, Geni) exportuj vždy se skrytím žijících osob: `node scripts/gedcom.mjs export --living private`. Žijící osoby pak mají jen „Žijící osoba“ a vazby, bez dat, poznámek a fotek.

@@ -146,8 +146,15 @@ Podrobně v [docs/soukromi-a-sdileni.md](docs/soukromi-a-sdileni.md). Stručně:
   ```
 
   Vznikne `dist/rodova-kronika-zaheslovana.html`. Soubor se šifruje v počítači (AES-GCM), heslo předej rodině zvlášť. Bez hesla nejde otevřít ani obnovit. Lehké vydání zašifruješ `node scripts/protect.mjs --input dist/rodova-kronika-lehka.html --output dist/rodova-kronika-lehka-zaheslovana.html`.
-- **Tištěná kniha**: `node scripts/build-book.mjs --pdf` (PDF vytiskne nainstalovaný Edge nebo Chrome; `--ego id-osoby` = kniha z pohledu jiné osoby).
-- **Audiokniha**: `node scripts/build-audiobook.mjs` (Windows, český hlas; bez hlasu vzniknou jen texty).
+- **Tištěná kniha**: `node scripts/build-book.mjs --pdf` (PDF vytiskne nainstalovaný Edge nebo Chrome; `--ego id-osoby` = kniha z pohledu jiné osoby; `--ego id-manžela --partner id-manželky` = kniha předků manželského páru, např. jako svatební nebo výroční dar).
+- **Audiokniha**: `node scripts/build-audiobook.mjs` (Windows, český hlas; bez hlasu vzniknou jen texty; `--partner` funguje stejně jako u knihy).
+- **Kronika na webu zdarma (GitHub Pages)** – zaheslovaná kronika na vlastní adrese, kterou rodina otevře v telefonu bez stahování:
+
+  ```bash
+  node scripts/publish-pages.mjs --target ../rodokmen-web --commit
+  ```
+
+  Skript sestaví rodinné vydání, zašifruje ho (heslo aspoň **16 znaků** – stránku si může stáhnout kdokoli a hesla zkoušet), ověří, že jde heslem otevřít, a do složky `../rodokmen-web` zapíše jen `index.html` se šifrovanou stránkou, `robots.txt` (bez indexování vyhledávači), `.nojekyll`, krátké README a s `--domain moje-domena.cz` soubor `CNAME`. Všechno zkontroluje proti tvým datům (jména, ID, místa, e-maily); jiný soubor ve složce běh zastaví. Pak jednou založ na GitHubu **samostatný** repozitář (např. `rodokmen-web`), propoj ho (`git -C ../rodokmen-web remote add origin <adresa>`), zapni v jeho nastavení Pages (větev `main`) a příště stačí `--push`. Tvůj rodinný repozitář s daty zůstává soukromý; veřejný je jen zašifrovaný soubor. Starší verze stránky zůstávají v historii toho repozitáře – při změně hesla je bezpečnější repozitář založit znovu.
 - **Archivní vydání** jednou za čas (třeba k Vánocům): `node scripts/release.mjs` vytvoří ve `releases/<verze>/` datovanou sadu na dlouhá léta – kroniku, knihu v PDF, GEDCOM, data, návod `CTI-ME.txt` a kontrolní součty – a lokální git tag `vydani-<verze>`. Od něj počítá „Co je nového“ v dalším rodinném vydání.
 
 ## Rozhovory s pamětníky

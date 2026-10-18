@@ -14,13 +14,15 @@ Nic neposílej ani nenahrávej sám; připrav soubory a řekni uživateli, co s 
 | kronika pro počítač | `node scripts/build.mjs` | `dist/rodova-kronika.html` |
 | pro e-mail a slabší telefony | `node scripts/build.mjs --edition light` | `dist/rodova-kronika-lehka.html` (bez nahrávek) |
 | zaheslovat | `node scripts/protect.mjs [--input … --output …]` | `dist/rodova-kronika-zaheslovana.html` |
-| kniha k tisku | `node scripts/build-book.mjs --pdf [--ego <id>]` | HTML a PDF v `dist/` |
+| kniha k tisku | `node scripts/build-book.mjs --pdf [--ego <id>] [--partner <id>]` | HTML a PDF v `dist/`; s `--partner` kniha předků manželského páru |
+| kronika na webu | `node scripts/publish-pages.mjs --target ../rodokmen-web --commit` | jen šifrovaná stránka v samostatné složce; `--push` až po souhlasu |
 | audiokniha | `node scripts/build-audiobook.mjs` | `dist/audiokniha/` (Windows, český hlas) |
 | dotazník pro příbuzného | `node scripts/questionnaire.mjs --person <id> --pdf` | `dist/dotaznik-<id>.html/.pdf` |
 | archiv na dlouhá léta | `node scripts/release.mjs` | `releases/<verze>/` + lokální tag `vydani-<verze>` |
 
 - Ven jde jen zaheslovaná kopie rodinného nebo lehkého vydání. Heslo uživatel předá jinou cestou (telefon, osobně). **Badatelské vydání se nesdílí nikdy.**
 - Texty pro rodinu (přeformulované poznámky, vynechaná tvrzení) se ladí v `src/data/family-edition.json`; zdrojová data se kvůli rodině nemění.
+- GitHub Pages: heslo aspoň 16 znaků, cílový repozitář samostatný (nikdy rodinný repozitář s daty). Založení repozitáře, zapnutí Pages a `--push` dělej jen s výslovným souhlasem uživatele.
 - `release.mjs` vytvoří git tag jen lokálně; nepushuj ho bez souhlasu. Od posledního tagu se v příštím rodinném vydání počítá „Co je nového“. Před vydáním spusť `node --test`.
 - Pro tisk dotazníku vyber osobu, o které kronika nejvíc neví (rodiče a prarodiče bez dat) a která je naživu a ochotná psát.
 

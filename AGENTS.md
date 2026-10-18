@@ -34,7 +34,8 @@ Projekt je soukromý, offline archiv genealogického výzkumu jedné rodiny. Vý
 - `node scripts/build.mjs --edition research` – badatelské vydání (`dist/rodova-kronika-badatel.html`) s Badatelnou: výzkumná fronta, zdraví dat, přepis matričního zápisu, editor, DNA. Jen pro uživatele, nikdy ho nesdílej.
 - `node scripts/build.mjs --edition light` – lehké vydání bez nahrávek a s menšími obrázky.
 - `node scripts/release.mjs` – archivní vydání do `releases/<verze>/` a lokální tag `vydani-<verze>` (nepushuj ho bez souhlasu); od tagu se počítá „Co je nového“.
-- Další výstupy: `scripts/protect.mjs` (zaheslování), `scripts/build-book.mjs` (kniha), `scripts/build-audiobook.mjs`, `scripts/questionnaire.mjs --person <id>` (tištěný dotazník pro příbuzného), `scripts/gedcom.mjs export --living private`.
+- `node scripts/publish-pages.mjs --target ../rodokmen-web --commit` – zaheslovaná kronika pro GitHub Pages v samostatné složce a repozitáři; `--push` jen se souhlasem uživatele.
+- Další výstupy: `scripts/protect.mjs` (zaheslování), `scripts/build-book.mjs` (kniha, `--partner` pro pár), `scripts/build-audiobook.mjs`, `scripts/questionnaire.mjs --person <id>` (tištěný dotazník pro příbuzného), `scripts/gedcom.mjs export --living private`.
 
 ## Dávky změn
 
