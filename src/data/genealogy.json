@@ -1,0 +1,435 @@
+{
+  "meta": {
+    "title": "Rodová kronika",
+    "version": "1.0.0",
+    "updatedAt": "2026-10-18",
+    "defaultPersonId": "kalinova-tereza-1992",
+    "sample": true,
+    "sampleNote": "Ukázková data: rod Kalinů z Lipové Lhoty je celý vymyšlený. Osoby, obce Lipová Lhota, Kalinov a Horní Habrová, prameny i citace neexistují; souřadnice vymyšlených obcí jsou orientační body v krajině. Data nahraď vlastními příkazem node scripts/init.mjs.",
+    "feedback": {
+      "email": "kronika@example.com"
+    },
+    "mapView": {
+      "initialBounds": { "south": 48.9, "north": 50.3, "west": 13.6, "east": 15.4 }
+    },
+    "evidenceLabels": {
+      "verified": "Ověřeno",
+      "supported": "Podpořeno",
+      "family-record": "Rodinný záznam",
+      "hypothesis": "Hypotéza / rozpor"
+    }
+  },
+  "people": [
+    {
+      "id": "kalinova-tereza-1992",
+      "displayName": "Tereza Kalinová",
+      "surnames": ["Kalinová"],
+      "sex": "female",
+      "lineage": "self",
+      "branch": ["Kalina", "Mráček"],
+      "birth": { "dateText": "1992" },
+      "notes": ["Správkyně ukázkové kroniky. U žijících osob kronika uvádí jen rok narození a nic, co by rodina nechtěla sdílet."],
+      "sourceIds": ["src-rodinne-sdeleni-2026"]
+    },
+    {
+      "id": "kalina-petr-1961",
+      "displayName": "Petr Kalina",
+      "surnames": ["Kalina"],
+      "sex": "male",
+      "lineage": "direct",
+      "branch": ["Kalina"],
+      "birth": { "dateText": "1961" },
+      "sourceIds": ["src-rodinne-sdeleni-2026"]
+    },
+    {
+      "id": "kalinova-jana-1964",
+      "displayName": "Jana Kalinová, roz. Mráčková",
+      "surnames": ["Mráčková", "Kalinová"],
+      "sex": "female",
+      "lineage": "direct",
+      "branch": ["Mráček"],
+      "birth": { "dateText": "1964" },
+      "sourceIds": ["src-rodinne-sdeleni-2026"]
+    },
+    {
+      "id": "kalina-josef-1931",
+      "displayName": "Josef Kalina",
+      "surnames": ["Kalina"],
+      "sex": "male",
+      "lineage": "direct",
+      "branch": ["Kalina"],
+      "birth": { "date": "1931-05-02", "dateText": "2. 5. 1931", "placeId": "lipova-lhota" },
+      "death": { "date": "2004-11-20", "dateText": "20. 11. 2004", "placeId": "tabor" },
+      "occupations": ["soustružník"],
+      "residences": ["Lipová Lhota", "Tábor"],
+      "notes": ["Podle vyprávění manželky Marie jezdil čtyřicet let vlakem do strojírny v Táboře a o víkendech hrál v obecní kapele na křídlovku."],
+      "sourceIds": ["src-rodny-list-josef-1931", "src-rozhovor-marie-2015"]
+    },
+    {
+      "id": "kalinova-marie-1934",
+      "displayName": "Marie Kalinová, roz. Brabcová",
+      "surnames": ["Brabcová", "Kalinová"],
+      "sex": "female",
+      "lineage": "direct",
+      "branch": ["Brabec"],
+      "birth": { "date": "1934-08-17", "dateText": "17. 8. 1934", "placeId": "horni-habrova" },
+      "death": { "date": "2019-02-03", "dateText": "3. 2. 2019", "placeId": "tabor" },
+      "residences": ["Horní Habrová", "Lipová Lhota"],
+      "notes": [
+        "Vzpomínala, že jako malá vozila s otcem obilí do mlýna v Horní Habrové.",
+        "Jméno její matky není známo: rodný list se v rodině nedochoval a Marie o matce nemluvila. Zůstává otevřený výzkumný úkol."
+      ],
+      "sourceIds": ["src-rozhovor-marie-2015"]
+    },
+    {
+      "id": "mracek-karel-1935",
+      "displayName": "Karel Mráček",
+      "surnames": ["Mráček"],
+      "sex": "male",
+      "lineage": "direct",
+      "branch": ["Mráček"],
+      "birth": { "dateText": "1935", "placeId": "pisek" },
+      "death": { "dateText": "1998", "placeId": "pisek" },
+      "occupations": ["železničář"],
+      "sourceIds": ["src-rodinne-sdeleni-2026"]
+    },
+    {
+      "id": "mrackova-anna-1938",
+      "displayName": "Anna Mráčková, roz. Hrubá",
+      "surnames": ["Hrubá", "Mráčková"],
+      "sex": "female",
+      "lineage": "direct",
+      "branch": ["Mráček"],
+      "birth": { "dateText": "1938", "placeId": "pisek" },
+      "death": { "dateText": "2011", "placeId": "pisek" },
+      "sourceIds": ["src-rodinne-sdeleni-2026"]
+    },
+    {
+      "id": "kalina-antonin-1934",
+      "displayName": "Antonín Kalina",
+      "surnames": ["Kalina"],
+      "sex": "male",
+      "lineage": "collateral",
+      "branch": ["Kalina"],
+      "birth": { "date": "1934-01-09", "dateText": "9. 1. 1934", "placeId": "lipova-lhota" },
+      "death": { "dateText": "2010", "placeId": "toronto" },
+      "residences": ["Lipová Lhota", "Toronto"],
+      "notes": ["Mladší bratr Josefa. V roce 1968 odešel do Kanady; s rodinou si pak psal dopisy."],
+      "sourceIds": ["src-dopis-kanada-1969", "src-rozhovor-marie-2015"]
+    },
+    {
+      "id": "kalina-vaclav-1898",
+      "displayName": "Václav Kalina",
+      "surnames": ["Kalina"],
+      "sex": "male",
+      "lineage": "direct",
+      "branch": ["Kalina"],
+      "birth": { "date": "1898-10-28", "dateText": "28. 10. 1898", "placeId": "lipova-lhota" },
+      "death": { "dateText": "1967", "placeId": "lipova-lhota" },
+      "occupations": ["kovář"],
+      "residences": ["Lipová Lhota č. 12"],
+      "notes": ["Kovárnu na návsi převzal po otci Janovi; podle rodinného sešitu v ní pracoval až do roku 1950."],
+      "sourceIds": ["src-matrika-lipova-n-1880-1900", "src-scitani-1921", "src-sesit-ludmila"]
+    },
+    {
+      "id": "kalinova-ludmila-1902",
+      "displayName": "Ludmila Kalinová, roz. Dolejšová",
+      "surnames": ["Dolejšová", "Kalinová"],
+      "sex": "female",
+      "lineage": "direct",
+      "branch": ["Dolejš"],
+      "birth": { "dateText": "1902", "placeId": "kalinov" },
+      "death": { "dateText": "1975", "placeId": "lipova-lhota" },
+      "notes": ["Rodné příjmení Dolejšová uvádí jen její vlastní rodinný sešit; oddací zápis zatím nebyl dohledán."],
+      "sourceIds": ["src-sesit-ludmila", "src-scitani-1921"]
+    },
+    {
+      "id": "brabec-frantisek-1905",
+      "displayName": "František Brabec",
+      "surnames": ["Brabec"],
+      "sex": "male",
+      "lineage": "direct",
+      "branch": ["Brabec"],
+      "birth": { "dateText": "asi 1905" },
+      "death": { "dateText": "1961", "placeId": "horni-habrova" },
+      "occupations": ["sedlák"],
+      "notes": ["Otec Marie. Rok narození je jen odhad podle vyprávění; matriční zápis zatím nebyl hledán."],
+      "sourceIds": ["src-rozhovor-marie-2015"]
+    },
+    {
+      "id": "kalina-jan-1862",
+      "displayName": "Jan Kalina",
+      "surnames": ["Kalina"],
+      "sex": "male",
+      "lineage": "direct",
+      "branch": ["Kalina"],
+      "birth": { "date": "1862-03-14", "dateText": "14. 3. 1862; sčítání 1890 uvádí rok 1863", "placeId": "lipova-lhota" },
+      "death": { "date": "1931-01-30", "dateText": "30. 1. 1931", "placeId": "lipova-lhota" },
+      "occupations": ["kovář"],
+      "residences": ["Lipová Lhota č. 12"],
+      "notes": ["Rok narození je v pramenech rozporný: matrika narozených uvádí 1862, sčítání lidu 1890 rok 1863. Oba údaje zůstávají vedle sebe; matrika je bližší události."],
+      "sourceIds": ["src-matrika-lipova-n-1855-1880", "src-scitani-1890", "src-matrika-lipova-z-1931"]
+    },
+    {
+      "id": "kalinova-rozalie-1868",
+      "displayName": "Rozálie Kalinová, roz. Javůrková",
+      "surnames": ["Javůrková", "Kalinová"],
+      "sex": "female",
+      "lineage": "direct",
+      "branch": ["Javůrek"],
+      "birth": { "dateText": "1868", "placeId": "kalinov" },
+      "death": { "dateText": "1940", "placeId": "lipova-lhota" },
+      "sourceIds": ["src-matrika-lipova-o-1880-1900", "src-nahrobek-lipova"]
+    },
+    {
+      "id": "kalina-matej-1830",
+      "displayName": "Matěj Kalina",
+      "surnames": ["Kalina"],
+      "sex": "male",
+      "lineage": "direct",
+      "branch": ["Kalina"],
+      "birth": { "dateText": "asi 1830", "placeId": "kalinov" },
+      "notes": ["Možný otec Jana. Křestní zápis Jana uvádí otce „Matthias Kalina, faber“; že jde o Matěje narozeného kolem roku 1830 v Kalinově, tvrdí jen cizí online rodokmen. Vazba je hypotéza."],
+      "sourceIds": ["src-strom-online-kalina", "src-matrika-lipova-n-1855-1880"]
+    }
+  ],
+  "relationships": [
+    { "id": "rel-petr-tereza", "type": "parent-child", "from": "kalina-petr-1961", "to": "kalinova-tereza-1992", "evidence": "family-record", "sourceIds": ["src-rodinne-sdeleni-2026"] },
+    { "id": "rel-jana-tereza", "type": "parent-child", "from": "kalinova-jana-1964", "to": "kalinova-tereza-1992", "evidence": "family-record", "sourceIds": ["src-rodinne-sdeleni-2026"] },
+    { "id": "rel-petr-jana-spouse", "type": "spouse", "from": "kalina-petr-1961", "to": "kalinova-jana-1964", "evidence": "family-record", "sourceIds": ["src-rodinne-sdeleni-2026"] },
+    { "id": "rel-josef-petr", "type": "parent-child", "from": "kalina-josef-1931", "to": "kalina-petr-1961", "evidence": "family-record", "sourceIds": ["src-rozhovor-marie-2015"] },
+    { "id": "rel-marie-petr", "type": "parent-child", "from": "kalinova-marie-1934", "to": "kalina-petr-1961", "evidence": "family-record", "sourceIds": ["src-rozhovor-marie-2015"] },
+    { "id": "rel-josef-marie-spouse", "type": "spouse", "from": "kalina-josef-1931", "to": "kalinova-marie-1934", "evidence": "supported", "sourceIds": ["src-foto-statek", "src-rozhovor-marie-2015"] },
+    { "id": "rel-karel-jana", "type": "parent-child", "from": "mracek-karel-1935", "to": "kalinova-jana-1964", "evidence": "family-record", "sourceIds": ["src-rodinne-sdeleni-2026"] },
+    { "id": "rel-anna-jana", "type": "parent-child", "from": "mrackova-anna-1938", "to": "kalinova-jana-1964", "evidence": "family-record", "sourceIds": ["src-rodinne-sdeleni-2026"] },
+    { "id": "rel-karel-anna-spouse", "type": "spouse", "from": "mracek-karel-1935", "to": "mrackova-anna-1938", "sourceIds": ["src-rodinne-sdeleni-2026"] },
+    { "id": "rel-vaclav-josef", "type": "parent-child", "from": "kalina-vaclav-1898", "to": "kalina-josef-1931", "evidence": "verified", "sourceIds": ["src-rodny-list-josef-1931"] },
+    { "id": "rel-ludmila-josef", "type": "parent-child", "from": "kalinova-ludmila-1902", "to": "kalina-josef-1931", "evidence": "verified", "sourceIds": ["src-rodny-list-josef-1931"] },
+    { "id": "rel-vaclav-antonin", "type": "parent-child", "from": "kalina-vaclav-1898", "to": "kalina-antonin-1934", "evidence": "family-record", "sourceIds": ["src-rozhovor-marie-2015"] },
+    { "id": "rel-ludmila-antonin", "type": "parent-child", "from": "kalinova-ludmila-1902", "to": "kalina-antonin-1934", "evidence": "family-record", "sourceIds": ["src-rozhovor-marie-2015"] },
+    { "id": "rel-josef-antonin-sibling", "type": "sibling", "from": "kalina-josef-1931", "to": "kalina-antonin-1934", "sourceIds": ["src-rozhovor-marie-2015"] },
+    { "id": "rel-vaclav-ludmila-spouse", "type": "spouse", "from": "kalina-vaclav-1898", "to": "kalinova-ludmila-1902", "evidence": "supported", "sourceIds": ["src-scitani-1921"] },
+    { "id": "rel-frantisek-marie", "type": "parent-child", "from": "brabec-frantisek-1905", "to": "kalinova-marie-1934", "evidence": "family-record", "sourceIds": ["src-rozhovor-marie-2015"] },
+    { "id": "rel-jan-vaclav", "type": "parent-child", "from": "kalina-jan-1862", "to": "kalina-vaclav-1898", "evidence": "verified", "sourceIds": ["src-matrika-lipova-n-1880-1900"] },
+    { "id": "rel-rozalie-vaclav", "type": "parent-child", "from": "kalinova-rozalie-1868", "to": "kalina-vaclav-1898", "evidence": "verified", "sourceIds": ["src-matrika-lipova-n-1880-1900"] },
+    { "id": "rel-jan-rozalie-spouse", "type": "spouse", "from": "kalina-jan-1862", "to": "kalinova-rozalie-1868", "evidence": "verified", "sourceIds": ["src-matrika-lipova-o-1880-1900"] },
+    { "id": "rel-matej-jan", "type": "parent-child", "from": "kalina-matej-1830", "to": "kalina-jan-1862", "evidence": "hypothesis", "sourceIds": ["src-strom-online-kalina", "src-matrika-lipova-n-1855-1880"] }
+  ],
+  "events": [
+    { "id": "event-jan-birth-1862", "type": "birth", "title": "Narození Jana Kaliny", "date": "1862-03-14", "dateText": "14. 3. 1862", "placeId": "lipova-lhota", "personIds": ["kalina-jan-1862"], "sourceIds": ["src-matrika-lipova-n-1855-1880"], "evidence": "verified" },
+    { "id": "event-jan-rozalie-marriage-1887", "type": "marriage", "title": "Sňatek Jana Kaliny a Rozálie Javůrkové", "date": "1887-02-08", "dateText": "8. 2. 1887", "placeId": "lipova-lhota", "personIds": ["kalina-jan-1862", "kalinova-rozalie-1868"], "sourceIds": ["src-matrika-lipova-o-1880-1900"], "evidence": "verified" },
+    { "id": "event-census-1890", "type": "census", "title": "Domácnost Jana Kaliny při sčítání lidu", "date": "1890", "dateText": "sčítání 1890", "placeId": "lipova-lhota", "personIds": ["kalina-jan-1862", "kalinova-rozalie-1868"], "sourceIds": ["src-scitani-1890"], "evidence": "supported" },
+    { "id": "event-vaclav-birth-1898", "type": "birth", "title": "Narození Václava Kaliny", "date": "1898-10-28", "dateText": "28. 10. 1898", "placeId": "lipova-lhota", "personIds": ["kalina-vaclav-1898"], "sourceIds": ["src-matrika-lipova-n-1880-1900"], "evidence": "verified" },
+    { "id": "event-census-1921", "type": "census", "title": "Domácnost Václava a Ludmily Kalinových", "date": "1921", "dateText": "sčítání 1921", "placeId": "lipova-lhota", "personIds": ["kalina-vaclav-1898", "kalinova-ludmila-1902"], "sourceIds": ["src-scitani-1921"], "evidence": "supported" },
+    { "id": "event-jan-death-1931", "type": "death", "title": "Úmrtí Jana Kaliny", "date": "1931-01-30", "dateText": "30. 1. 1931", "placeId": "lipova-lhota", "personIds": ["kalina-jan-1862"], "sourceIds": ["src-matrika-lipova-z-1931"], "evidence": "verified" },
+    { "id": "event-josef-birth-1931", "type": "birth", "title": "Narození Josefa Kaliny", "date": "1931-05-02", "dateText": "2. 5. 1931", "placeId": "lipova-lhota", "personIds": ["kalina-josef-1931"], "sourceIds": ["src-rodny-list-josef-1931"], "evidence": "verified" },
+    { "id": "event-rozalie-death-1940", "type": "death", "title": "Úmrtí Rozálie Kalinové", "date": "1940", "dateText": "1940", "placeId": "lipova-lhota", "personIds": ["kalinova-rozalie-1868"], "sourceIds": ["src-nahrobek-lipova"], "evidence": "supported" },
+    { "id": "event-josef-marie-marriage-1955", "type": "marriage", "title": "Svatba Josefa Kaliny a Marie Brabcové", "date": "1955", "dateText": "léto 1955", "placeId": "lipova-lhota", "personIds": ["kalina-josef-1931", "kalinova-marie-1934"], "sourceIds": ["src-rozhovor-marie-2015", "src-foto-statek"], "evidence": "family-record" },
+    { "id": "event-josef-strojirna", "type": "employment", "title": "Josef Kalina pracoval ve strojírně v Táboře", "date": "1950", "endDate": "1991", "dateText": "1950–1991", "placeId": "tabor", "personIds": ["kalina-josef-1931"], "sourceIds": ["src-rozhovor-marie-2015"], "evidence": "family-record" },
+    { "id": "event-antonin-emigrace-1968", "type": "migration", "title": "Antonín Kalina odešel do Kanady", "date": "1968", "dateText": "podzim 1968", "fromPlaceId": "lipova-lhota", "placeId": "toronto", "personIds": ["kalina-antonin-1934"], "sourceIds": ["src-dopis-kanada-1969"], "evidence": "family-record" }
+  ],
+  "places": [
+    { "id": "lipova-lhota", "name": "Lipová Lhota", "country": "Česko", "region": "vymyšlená obec (ukázka)", "lat": 49.335, "lon": 14.552, "houseNumbers": ["12"], "coordinatesStatus": "approximate" },
+    { "id": "kalinov", "name": "Kalinov", "country": "Česko", "region": "vymyšlená obec (ukázka)", "lat": 49.282, "lon": 14.705, "coordinatesStatus": "approximate" },
+    { "id": "horni-habrova", "name": "Horní Habrová", "country": "Česko", "region": "vymyšlená obec (ukázka)", "lat": 49.412, "lon": 14.431, "coordinatesStatus": "approximate" },
+    { "id": "tabor", "name": "Tábor", "country": "Česko", "region": "Jihočeský kraj", "lat": 49.4144, "lon": 14.6578, "coordinatesStatus": "approximate-settlement" },
+    { "id": "pisek", "name": "Písek", "country": "Česko", "region": "Jihočeský kraj", "lat": 49.3088, "lon": 14.1475, "coordinatesStatus": "approximate-settlement" },
+    { "id": "toronto", "name": "Toronto", "country": "Kanada", "region": "Ontario", "lat": 43.6532, "lon": -79.3832, "coordinatesStatus": "approximate-settlement" }
+  ],
+  "claims": [
+    { "id": "claim-jan-birth-1862-register", "subjectType": "person", "subjectId": "kalina-jan-1862", "text": "Jan Kalina se narodil 14. 3. 1862 v Lipové Lhotě č. 12.", "evidence": "verified", "reasoning": "Vlastní křestní zápis; dům č. 12, jméno otce a řemeslo odpovídají pozdějšímu sňatku 1887.", "sourceIds": ["src-matrika-lipova-n-1855-1880"] },
+    { "id": "claim-jan-birth-1863-census", "subjectType": "person", "subjectId": "kalina-jan-1862", "text": "Sčítání lidu 1890 uvádí u Jana Kaliny rok narození 1863.", "evidence": "supported", "reasoning": "Sčítací arch zapisoval údaje podle hlavy domácnosti, často zpaměti; rozpor s matrikou se ponechává viditelný, nepřepisuje se.", "sourceIds": ["src-scitani-1890"] },
+    { "id": "claim-jan-rozalie-marriage-1887", "subjectType": "relationship", "subjectId": "rel-jan-rozalie-spouse", "text": "Jan Kalina, kovář z Lipové Lhoty č. 12, se 8. 2. 1887 oženil s Rozálií Javůrkovou z Kalinova.", "evidence": "verified", "reasoning": "Vlastní oddací zápis se jmény rodičů obou snoubenců.", "sourceIds": ["src-matrika-lipova-o-1880-1900"] },
+    { "id": "claim-matej-father-of-jan", "subjectType": "relationship", "subjectId": "rel-matej-jan", "text": "Otcem Jana byl možná Matěj Kalina narozený kolem roku 1830 v Kalinově.", "evidence": "hypothesis", "reasoning": "Křest Jana uvádí jen „Matthias Kalina, faber“ bez věku a původu. Rok a obec Matěje převzal cizí online rodokmen bez citace pramene. Shoda jména nestačí; je třeba najít Matějův sňatek nebo křest.", "sourceIds": ["src-strom-online-kalina", "src-matrika-lipova-n-1855-1880"] },
+    { "id": "claim-vaclav-parents-1898", "subjectType": "relationship", "subjectId": "rel-jan-vaclav", "text": "Václav Kalina, narozený 28. 10. 1898, byl synem Jana Kaliny a Rozálie rozené Javůrkové.", "evidence": "verified", "reasoning": "Křestní zápis Václava jmenuje oba rodiče i babičku z matčiny strany.", "sourceIds": ["src-matrika-lipova-n-1880-1900"] },
+    { "id": "claim-vaclav-kovar", "subjectType": "person", "subjectId": "kalina-vaclav-1898", "text": "Václav Kalina pracoval jako kovář v Lipové Lhotě.", "evidence": "supported", "reasoning": "Sčítání 1921 uvádí povolání kovář; rodinný sešit to potvrzuje, ale jde o nezávislé prameny nižší síly než matrika.", "sourceIds": ["src-scitani-1921", "src-sesit-ludmila"] },
+    { "id": "claim-ludmila-dolejsova", "subjectType": "person", "subjectId": "kalinova-ludmila-1902", "text": "Ludmila Kalinová byla rozená Dolejšová.", "evidence": "family-record", "reasoning": "Uvádí to jen její vlastní rodinný sešit; oddací zápis dosud chybí.", "sourceIds": ["src-sesit-ludmila"] },
+    { "id": "claim-josef-birth-1931", "subjectType": "person", "subjectId": "kalina-josef-1931", "text": "Josef Kalina se narodil 2. 5. 1931 v Lipové Lhotě rodičům Václavovi a Ludmile.", "evidence": "verified", "reasoning": "Úřední rodný list uchovávaný v rodině; opis matričního zápisu.", "sourceIds": ["src-rodny-list-josef-1931"] },
+    { "id": "claim-josef-marie-svatba", "subjectType": "relationship", "subjectId": "rel-josef-marie-spouse", "text": "Josef Kalina a Marie Brabcová měli svatbu v létě 1955 v Lipové Lhotě.", "evidence": "supported", "reasoning": "Marie to vyprávěla a svatební fotografie před statkem má na rubu rok 1955; oddací list zatím nebyl vyžádán.", "sourceIds": ["src-rozhovor-marie-2015", "src-foto-statek"] },
+    { "id": "claim-marie-mlyn", "subjectType": "person", "subjectId": "kalinova-marie-1934", "text": "Marie vzpomínala, že jako malá vozila s otcem Františkem obilí do mlýna v Horní Habrové.", "evidence": "family-record", "reasoning": "Vlastní vzpomínka vypravěčky z nahraného rozhovoru.", "sourceIds": ["src-rozhovor-marie-2015"] },
+    { "id": "claim-marie-matka-neznama", "subjectType": "person", "subjectId": "kalinova-marie-1934", "text": "Jméno matky Marie Kalinové, rozené Brabcové, není známo.", "evidence": "family-record", "reasoning": "Marie v rozhovoru matku nejmenovala a rodný list se nedochoval. Neznámý rodič se do dat nezapisuje jako osoba; zůstává výzkumný úkol.", "sourceIds": ["src-rozhovor-marie-2015"] },
+    { "id": "claim-antonin-kanada", "subjectType": "event", "subjectId": "event-antonin-emigrace-1968", "text": "Antonín Kalina odešel na podzim 1968 do Kanady a usadil se v Torontu.", "evidence": "family-record", "reasoning": "Dopis z ledna 1969 popisuje první zimu v Torontu; přesné datum odjezdu chybí.", "sourceIds": ["src-dopis-kanada-1969", "src-rozhovor-marie-2015"] },
+    { "id": "claim-rozalie-death-1940", "subjectType": "person", "subjectId": "kalinova-rozalie-1868", "text": "Rozálie Kalinová zemřela roku 1940.", "evidence": "supported", "reasoning": "Rok je čitelný na náhrobku; úmrtní zápis zatím nebyl dohledán.", "sourceIds": ["src-nahrobek-lipova"] },
+    { "id": "claim-statek-c12", "subjectType": "place", "subjectId": "lipova-lhota", "text": "Rodina Kalinů žila nejméně od roku 1862 do roku 1967 v domě č. 12 v Lipové Lhotě.", "evidence": "supported", "reasoning": "Číslo domu se shoduje v křtu 1862, křtu 1898 a sčítání 1921; mezi lety 1931 a 1967 ho dokládá jen rodina.", "sourceIds": ["src-matrika-lipova-n-1855-1880", "src-matrika-lipova-n-1880-1900", "src-scitani-1921"] },
+    { "id": "claim-pracovni-poznamka-strom", "subjectType": "person", "subjectId": "kalina-matej-1830", "text": "Pracovní poznámka: online rodokmen uvádí u Matěje ještě druhou manželku; zatím nebylo ověřováno.", "evidence": "hypothesis", "reasoning": "Badatelská stopa, která do rodinného vydání nepatří; vynechává ji soubor src/data/family-edition.json.", "sourceIds": ["src-strom-online-kalina"] }
+  ],
+  "sources": [
+    {
+      "id": "src-matrika-lipova-n-1855-1880",
+      "title": "Matrika narozených Lipová Lhota 1855–1880, fol. 41 (vymyšlený pramen)",
+      "type": "parish-register",
+      "publisher": "Ukázkový oblastní archiv (vymyšlený)",
+      "url": "https://example.org/matriky/lipova-lhota/n-1855-1880?folio=41",
+      "accessedAt": "2026-10-18",
+      "transcriptionLines": [
+        "1862, 14. Martii, Lipová Lhota No 12: Joannes, catholicus, masculum, legitimus.",
+        "Pater: Matthias Kalina, faber. Mater: Anna, filia Wenceslai Hora."
+      ],
+      "reliabilityNote": "Ukázka primárního pramene: doslovný přepis je oddělený od výkladu. Stáří ani původ otce zápis neuvádí."
+    },
+    {
+      "id": "src-matrika-lipova-n-1880-1900",
+      "title": "Matrika narozených Lipová Lhota 1880–1900, fol. 112 (vymyšlený pramen)",
+      "type": "parish-register",
+      "publisher": "Ukázkový oblastní archiv (vymyšlený)",
+      "url": "https://example.org/matriky/lipova-lhota/n-1880-1900?folio=112",
+      "accessedAt": "2026-10-18",
+      "transcriptionLines": [
+        "28. října 1898, Lipová Lhota č. 12: Václav, syn Jana Kaliny, kováře, a Rozálie roz. Javůrkové z Kalinova."
+      ],
+      "reliabilityNote": "Primární zápis; čitelný bez nejistot."
+    },
+    {
+      "id": "src-matrika-lipova-o-1880-1900",
+      "title": "Matrika oddaných Lipová Lhota 1880–1900, fol. 9 (vymyšlený pramen)",
+      "type": "parish-register",
+      "publisher": "Ukázkový oblastní archiv (vymyšlený)",
+      "url": "https://example.org/matriky/lipova-lhota/o-1880-1900?folio=9",
+      "accessedAt": "2026-10-18",
+      "transcriptionLines": [
+        "8. února 1887: Jan Kalina, kovář v Lipové Lhotě č. 12, syn Matěje Kaliny a Anny roz. Horové; Rozálie Javůrková z Kalinova č. 5, 19 let."
+      ],
+      "reliabilityNote": "Primární zápis; věk nevěsty odpovídá narození kolem roku 1868."
+    },
+    {
+      "id": "src-matrika-lipova-z-1931",
+      "title": "Matrika zemřelých Lipová Lhota 1920–1940, fol. 30 (vymyšlený pramen)",
+      "type": "parish-register",
+      "publisher": "Ukázkový oblastní archiv (vymyšlený)",
+      "transcriptionLines": ["30. ledna 1931, Lipová Lhota č. 12: Jan Kalina, kovář na odpočinku, 68 let."],
+      "reliabilityNote": "Věk při úmrtí 68 let odpovídá roku narození 1862 i 1863; rozpor nerozhoduje."
+    },
+    {
+      "id": "src-scitani-1890",
+      "title": "Sčítání lidu 1890, Lipová Lhota č. 12 (vymyšlený pramen)",
+      "type": "census-record",
+      "publisher": "Ukázkový oblastní archiv (vymyšlený)",
+      "transcriptionLines": ["Kalina Jan, hospodář, kovář, nar. 1863, Lipová Lhota.", "Rozálie, manželka, nar. 1868, Kalinov."],
+      "reliabilityNote": "Sčítací arch je sekundární k matrice; roky narození se v něm často zaokrouhlují."
+    },
+    {
+      "id": "src-scitani-1921",
+      "title": "Sčítání lidu 1921, Lipová Lhota č. 12 (vymyšlený pramen)",
+      "type": "census-record",
+      "publisher": "Ukázkový oblastní archiv (vymyšlený)",
+      "transcriptionLines": ["Kalina Václav, kovář, nar. 1898; Ludmila, manželka, nar. 1902 v Kalinově."],
+      "reliabilityNote": "Úřední soupis domácnosti; neobsahuje rodné příjmení manželky."
+    },
+    {
+      "id": "src-rodny-list-josef-1931",
+      "title": "Rodný list Josefa Kaliny (vymyšlený dokument)",
+      "type": "official-document",
+      "origin": "Originál uložený v rodině.",
+      "transcriptionLines": ["Josef Kalina, narozen 2. května 1931 v Lipové Lhotě č. 12. Otec Václav Kalina, kovář; matka Ludmila roz. Dolejšová."],
+      "reliabilityNote": "Úřední opis matričního zápisu."
+    },
+    {
+      "id": "src-rozhovor-marie-2015",
+      "title": "Rozhovor s Marií Kalinovou o rodině (vymyšlená nahrávka, 2015)",
+      "type": "oral-history",
+      "origin": "Nahráno doma v Táboře se souhlasem vypravěčky.",
+      "transcriptionLines": [
+        "[0:04:10] Tatínek mě brával na voze do mlýna v Habrové, to jsem byla malá holka.",
+        "[0:12:30] O mamince ti nic neřeknu, to se u nás neříkalo.",
+        "[0:21:05] Tonda odjel v osmašedesátém na podzim, do Kanady, a pak psal každé Vánoce."
+      ],
+      "reliabilityNote": "Vlastní vzpomínky vypravěčky; data a jména je třeba ověřit v pramenech."
+    },
+    {
+      "id": "src-sesit-ludmila",
+      "title": "Rodinný sešit Ludmily Kalinové (vymyšlený)",
+      "type": "family-notebook",
+      "transcriptionLines": ["Já, Ludmila roz. Dolejšová z Kalinova, provdána za Václava Kalinu, kováře.", "Kovárna na návsi do roku 1950."],
+      "reliabilityNote": "Rodinný záznam psaný zpětně; rodné příjmení zatím bez matričního dokladu."
+    },
+    {
+      "id": "src-strom-online-kalina",
+      "title": "Online rodokmen „Kalinové z Kalinova“ (vymyšlená pracovní stopa)",
+      "type": "foreign-family-tree",
+      "url": "https://example.org/rodokmeny/kalinove-z-kalinova",
+      "treeOwner": "cizí uživatel (vymyšlený)",
+      "transcriptionLines": ["Matěj Kalina, * asi 1830 Kalinov, kovář; syn Jan * 1862."],
+      "reliabilityNote": "Cizí rodokmen je pouze pracovní stopa a vyžaduje ověření v matrice; neuvádí žádný pramen."
+    },
+    {
+      "id": "src-nahrobek-lipova",
+      "title": "Náhrobek rodiny Kalinovy, hřbitov Lipová Lhota (vymyšlený)",
+      "type": "gravestone-photo",
+      "transcriptionLines": ["RODINA KALINOVA", "Jan 1862–1931", "Rozálie 1868–1940"],
+      "reliabilityNote": "Přepis nápisu; náhrobek uvádí jen roky."
+    },
+    {
+      "id": "src-dopis-kanada-1969",
+      "title": "Dopis Antonína Kaliny z Toronta, leden 1969 (vymyšlený)",
+      "type": "family-record",
+      "transcriptionLines": ["Milí moji, první zima v Torontu je tuhá, ale práci jsem už našel."],
+      "reliabilityNote": "Rodinná korespondence; datum odjezdu neuvádí."
+    },
+    {
+      "id": "src-foto-statek",
+      "title": "Statek v Lipové Lhotě č. 12 – ilustrační kresba vytvořená pro ukázku",
+      "type": "family-photo",
+      "mediaId": "media-statek",
+      "transcriptionLines": ["Na rubu (vymyšleno): „Svatba Pepy a Mařky, léto 1955“."],
+      "reliabilityNote": "V ukázce je místo fotografie počítačová kresba; ve skutečné kronice sem patří sken fotografie."
+    },
+    {
+      "id": "src-rodinne-sdeleni-2026",
+      "title": "Rodinné sdělení Terezy Kalinové (vymyšlené)",
+      "type": "family-record",
+      "transcriptionLines": ["Údaje o žijících členech rodiny: jen jména, roky narození a vztahy, se souhlasem dotčených."],
+      "reliabilityNote": "Přímé sdělení; údaje o žijících osobách se nerozšiřují."
+    }
+  ],
+  "media": [
+    {
+      "id": "media-statek",
+      "kind": "family-photo",
+      "title": "Statek v Lipové Lhotě č. 12 (ilustrační kresba)",
+      "file": "statek-lipova-lhota-ilustrace.webp",
+      "sourceId": "src-foto-statek",
+      "personIds": ["kalina-josef-1931", "kalinova-marie-1934"]
+    }
+  ],
+  "researchTasks": [
+    {
+      "id": "task-marie-matka",
+      "title": "Zjistit jméno matky Marie Kalinové, rozené Brabcové",
+      "priority": 1,
+      "status": "open",
+      "expectedPayoff": "Otevře celou mateřskou větev Marie.",
+      "nextAction": "Nejdřív se zeptat sourozenců Petra Kaliny a projít online rodokmeny; potom hledat křest Marie 1934 v digitalizované matrice Horní Habrové. Žádost o matriční výpis až jako poslední krok.",
+      "personIds": ["kalinova-marie-1934", "brabec-frantisek-1905"],
+      "sourceIds": ["src-rozhovor-marie-2015"]
+    },
+    {
+      "id": "task-matej-hypoteza",
+      "title": "Ověřit, zda je otcem Jana Kaliny Matěj narozený kolem roku 1830",
+      "priority": 2,
+      "status": "open",
+      "expectedPayoff": "Potvrdí nebo vyvrátí šestou generaci rodu.",
+      "nextAction": "Najít sňatek Matěje Kaliny s Annou Horovou (asi 1855–1861) v matrice oddaných a porovnat věk, dům a řemeslo.",
+      "personIds": ["kalina-matej-1830", "kalina-jan-1862"],
+      "sourceIds": ["src-strom-online-kalina", "src-matrika-lipova-n-1855-1880"]
+    },
+    {
+      "id": "task-jan-rok-narozeni",
+      "title": "Vyřešit rozpor v roce narození Jana Kaliny",
+      "priority": 3,
+      "status": "closed",
+      "expectedPayoff": "Jednoznačný údaj pro rodokmen.",
+      "nextAction": "Uzavřeno: platí matrika (1862); údaj ze sčítání zůstává jako zaznamenaný rozpor.",
+      "personIds": ["kalina-jan-1862"],
+      "sourceIds": ["src-matrika-lipova-n-1855-1880", "src-scitani-1890"]
+    }
+  ],
+  "changelog": [
+    {
+      "id": "change-2026-10-18-ukazka",
+      "date": "2026-10-18",
+      "title": "Založena ukázková kronika rodu Kalinů",
+      "categories": ["people", "sources", "claims"],
+      "items": ["Vymyšlený rod pro vyzkoušení všech funkcí: pět generací, prameny všech typů, tvrzení ve všech stavech důkazu, rozpor v roce narození, hypotéza o otci a neznámá matka."]
+    }
+  ]
+}

@@ -1,0 +1,281 @@
+{
+  "meta": {
+    "title": "Dějinný kontext pro rodovou kroniku",
+    "version": "1.0.0",
+    "updatedAt": "2026-10-18",
+    "note": "Obecné dějinné události s důrazem na Moravu, Slovácko a Zlínsko. Nejde o údaje o konkrétních osobách; každá položka odkazuje na encyklopedický zdroj."
+  },
+  "events": [
+    {
+      "id": "hist-1805-slavkov",
+      "date": "1805-12-02",
+      "title": "Bitva u Slavkova",
+      "summary": "Napoleonova armáda porazila u Slavkova na jižní Moravě rakouská a ruská vojska. Krajem procházela a zásobovala se vojska obou stran.",
+      "scope": "morava",
+      "category": "war",
+      "sources": [{ "title": "Bitva u Slavkova", "publisher": "Wikipedie", "url": "https://cs.wikipedia.org/wiki/Bitva_u_Slavkova" }]
+    },
+    {
+      "id": "hist-1841-severni-draha",
+      "date": "1841",
+      "title": "Železnice přes Hodonín",
+      "summary": "Severní dráha císaře Ferdinanda, první parostrojní železnice v českých zemích (od roku 1839), vedla z Vídně přes Břeclav a Hodonín dál na Přerov a Olomouc.",
+      "scope": "region",
+      "category": "society",
+      "sources": [{ "title": "Severní dráha císaře Ferdinanda", "publisher": "Wikipedie", "url": "https://cs.wikipedia.org/wiki/Severn%C3%AD_dr%C3%A1ha_c%C3%ADsa%C5%99e_Ferdinanda" }]
+    },
+    {
+      "id": "hist-1848-poddanstvi",
+      "date": "1848-09-07",
+      "title": "Zrušení poddanství a roboty",
+      "summary": "Císařský patent zrušil poddanství. Venkované přestali robotovat na vrchnost a půdu, kterou obdělávali, postupně vykoupili.",
+      "scope": "stat",
+      "category": "society",
+      "sources": [{ "title": "Zrušení poddanství v Rakouském císařství", "publisher": "Wikipedie", "url": "https://cs.wikipedia.org/wiki/Zru%C5%A1en%C3%AD_poddanstv%C3%AD_v_Rakousk%C3%A9m_c%C3%ADsa%C5%99stv%C3%AD" }]
+    },
+    {
+      "id": "hist-1850-masaryk",
+      "date": "1850-03-07",
+      "title": "V Hodoníně se narodil T. G. Masaryk",
+      "summary": "Budoucí první československý prezident se narodil v Hodoníně v rodině kočího.",
+      "scope": "region",
+      "category": "society",
+      "sources": [{ "title": "Tomáš Garrigue Masaryk", "publisher": "Wikipedie", "url": "https://cs.wikipedia.org/wiki/Tom%C3%A1%C5%A1_Garrigue_Masaryk" }]
+    },
+    {
+      "id": "hist-1866-prusko-rakouska-valka",
+      "date": "1866",
+      "title": "Prusko-rakouská válka",
+      "summary": "Po porážce rakouské armády obsadila pruská vojska část Čech a Moravy. S vojáky se krajem šířila cholera.",
+      "scope": "stat",
+      "category": "war",
+      "sources": [{ "title": "Prusko-rakouská válka", "publisher": "Wikipedie", "url": "https://cs.wikipedia.org/wiki/Prusko-rakousk%C3%A1_v%C3%A1lka" }]
+    },
+    {
+      "id": "hist-1869-skolni-dochazka",
+      "date": "1869",
+      "title": "Povinná školní docházka",
+      "summary": "Říšský školský zákon uvedl do praxe povinnou školní docházku. Děti chodily do obecné školy osm let.",
+      "scope": "stat",
+      "category": "society",
+      "sources": [{ "title": "Povinná školní docházka", "publisher": "Wikipedie", "url": "https://cs.wikipedia.org/wiki/Povinn%C3%A1_%C5%A1koln%C3%AD_doch%C3%A1zka" }]
+    },
+    {
+      "id": "hist-1894-bata",
+      "date": "1894",
+      "title": "Ve Zlíně vzniká firma Baťa",
+      "summary": "Sourozenci Anna, Antonín a Tomáš Baťovi založili ve Zlíně obuvnickou firmu. Z malé dílny vyrostly Baťovy závody, které na desítky let určovaly práci a život na Zlínsku.",
+      "scope": "region",
+      "category": "work",
+      "sources": [{ "title": "Baťa", "publisher": "Wikipedie", "url": "https://cs.wikipedia.org/wiki/Ba%C5%A5a" }]
+    },
+    {
+      "id": "hist-1914-prvni-svetova-valka",
+      "date": "1914-07-28",
+      "endDate": "1918-11-11",
+      "title": "První světová válka",
+      "summary": "Muži z moravských vesnic narukovali do rakousko-uherské armády, mnozí padli nebo se vrátili zranění. Doma chyběly ruce k práci a potraviny se přidělovaly.",
+      "scope": "svet",
+      "category": "war",
+      "sources": [{ "title": "První světová válka", "publisher": "Wikipedie", "url": "https://cs.wikipedia.org/wiki/Prvn%C3%AD_sv%C4%9Btov%C3%A1_v%C3%A1lka" }]
+    },
+    {
+      "id": "hist-1918-spanelska-chripka",
+      "date": "1918",
+      "endDate": "1920",
+      "title": "Španělská chřipka",
+      "summary": "Na konci války se světem šířila pandemie chřipky, která si i v českých zemích vyžádala mnoho obětí, často mladých lidí.",
+      "scope": "svet",
+      "category": "health",
+      "sources": [{ "title": "Španělská chřipka", "publisher": "Wikipedie", "url": "https://cs.wikipedia.org/wiki/%C5%A0pan%C4%9Blsk%C3%A1_ch%C5%99ipka" }]
+    },
+    {
+      "id": "hist-1918-vznik-ceskoslovenska",
+      "date": "1918-10-28",
+      "title": "Vznik Československa",
+      "summary": "Rozpadlo se Rakousko-Uhersko a vznikl samostatný Československý stát. Prvním prezidentem se stal rodák z Hodonína T. G. Masaryk.",
+      "scope": "stat",
+      "category": "politics",
+      "sources": [{ "title": "Vznik Československa", "publisher": "Wikipedie", "url": "https://cs.wikipedia.org/wiki/Vznik_%C4%8Ceskoslovenska" }]
+    },
+    {
+      "id": "hist-1929-hospodarska-krize",
+      "date": "1929",
+      "endDate": "1934",
+      "title": "Velká hospodářská krize",
+      "summary": "Po krachu na newyorské burze přišla celosvětová krize. V Československu vrcholila kolem roku 1933 nezaměstnaností a bídou, venkov trpěl nízkými cenami zemědělských plodin.",
+      "scope": "svet",
+      "category": "economy",
+      "sources": [{ "title": "Velká hospodářská krize", "publisher": "Wikipedie", "url": "https://cs.wikipedia.org/wiki/Velk%C3%A1_hospod%C3%A1%C5%99sk%C3%A1_krize" }]
+    },
+    {
+      "id": "hist-1932-smrt-tomase-bati",
+      "date": "1932-07-12",
+      "title": "Smrt Tomáše Bati",
+      "summary": "Zakladatel obuvnického koncernu Tomáš Baťa zahynul při letecké nehodě v Otrokovicích. Vedení firmy převzal jeho nevlastní bratr Jan Antonín Baťa.",
+      "scope": "region",
+      "category": "work",
+      "sources": [{ "title": "Tomáš Baťa", "publisher": "Wikipedie", "url": "https://cs.wikipedia.org/wiki/Tom%C3%A1%C5%A1_Ba%C5%A5a" }, { "title": "Baťa", "publisher": "Wikipedie", "url": "https://cs.wikipedia.org/wiki/Ba%C5%A5a" }]
+    },
+    {
+      "id": "hist-1938-mnichov",
+      "date": "1938-09-30",
+      "title": "Mnichovská dohoda",
+      "summary": "Velmoci bez účasti Československa rozhodly o odstoupení pohraničí Německu. Nová hranice vedla i jižní Moravou.",
+      "scope": "stat",
+      "category": "politics",
+      "sources": [{ "title": "Mnichovská dohoda", "publisher": "Wikipedie", "url": "https://cs.wikipedia.org/wiki/Mnichovsk%C3%A1_dohoda" }]
+    },
+    {
+      "id": "hist-1939-protektorat",
+      "date": "1939-03-15",
+      "endDate": "1945",
+      "title": "Protektorát Čechy a Morava",
+      "summary": "Německá armáda obsadila zbytek českých zemí. Následovala léta okupace, totální nasazení na práci v Říši, přídělové lístky a pronásledování.",
+      "scope": "stat",
+      "category": "war",
+      "sources": [{ "title": "Protektorát Čechy a Morava", "publisher": "Wikipedie", "url": "https://cs.wikipedia.org/wiki/Protektor%C3%A1t_%C4%8Cechy_a_Morava" }]
+    },
+    {
+      "id": "hist-1939-druha-svetova-valka",
+      "date": "1939-09-01",
+      "endDate": "1945-05-08",
+      "title": "Druhá světová válka",
+      "summary": "Nejničivější válka v dějinách. V Evropě skončila 8. května 1945.",
+      "scope": "svet",
+      "category": "war",
+      "sources": [{ "title": "Druhá světová válka", "publisher": "Wikipedie", "url": "https://cs.wikipedia.org/wiki/Druh%C3%A1_sv%C4%9Btov%C3%A1_v%C3%A1lka" }]
+    },
+    {
+      "id": "hist-1944-nalet-na-zlin",
+      "date": "1944-11-20",
+      "title": "Nálet na Zlín",
+      "summary": "Americké bombardéry zasáhly část Zlína, cílem byly hlavně Baťovy závody.",
+      "scope": "region",
+      "category": "war",
+      "sources": [{ "title": "Nálet na Zlín 1944", "publisher": "Wikipedie", "url": "https://cs.wikipedia.org/wiki/N%C3%A1let_na_Zl%C3%ADn_1944" }]
+    },
+    {
+      "id": "hist-1945-osvobozeni-moravy",
+      "date": "1945-04",
+      "endDate": "1945-05",
+      "title": "Fronta a osvobození jižní Moravy",
+      "summary": "Na jaře 1945 přešla jižní a východní Moravou fronta. Rudá armáda postupovala od Bratislavy k Brnu a obce se ocitly přímo v bojích.",
+      "scope": "morava",
+      "category": "war",
+      "sources": [{ "title": "Bratislavsko-brněnská operace", "publisher": "Wikipedie", "url": "https://cs.wikipedia.org/wiki/Bratislavsko-brn%C4%9Bnsk%C3%A1_operace" }]
+    },
+    {
+      "id": "hist-1945-vysidleni-nemcu",
+      "date": "1945",
+      "endDate": "1946",
+      "title": "Vysídlení Němců",
+      "summary": "Po válce byla většina německého obyvatelstva z Československa vysídlena. Do pohraničí včetně jihu Moravy přicházeli noví osídlenci.",
+      "scope": "stat",
+      "category": "society",
+      "sources": [{ "title": "Vysídlení Němců z Československa", "publisher": "Wikipedie", "url": "https://cs.wikipedia.org/wiki/Vys%C3%ADdlen%C3%AD_N%C4%9Bmc%C5%AF_z_%C4%8Ceskoslovenska" }]
+    },
+    {
+      "id": "hist-1948-unor",
+      "date": "1948-02-25",
+      "title": "Komunistický převrat",
+      "summary": "Komunistická strana převzala v únoru 1948 moc. Následovalo znárodnění podniků, politické procesy a čtyřicet let vlády jedné strany.",
+      "scope": "stat",
+      "category": "politics",
+      "sources": [{ "title": "Únor 1948", "publisher": "Wikipedie", "url": "https://cs.wikipedia.org/wiki/%C3%9Anor_1948" }]
+    },
+    {
+      "id": "hist-1949-kolektivizace",
+      "date": "1949",
+      "endDate": "1960",
+      "title": "Kolektivizace venkova",
+      "summary": "Soukromí rolníci byli nuceni vstupovat do jednotných zemědělských družstev (JZD). Kdo se bránil, čelil vysokým dodávkám, perzekuci i vystěhování.",
+      "scope": "stat",
+      "category": "society",
+      "sources": [{ "title": "Kolektivizace v Československu", "publisher": "Wikipedie", "url": "https://cs.wikipedia.org/wiki/Kolektivizace_v_%C4%8Ceskoslovensku" }]
+    },
+    {
+      "id": "hist-1949-gottwaldov",
+      "date": "1949",
+      "endDate": "1989",
+      "title": "Zlín se jmenuje Gottwaldov",
+      "summary": "Město Zlín bylo přejmenováno na Gottwaldov a Baťovy závody znárodněny (později Svit). Původní jméno se městu vrátilo po roce 1989.",
+      "scope": "region",
+      "category": "politics",
+      "sources": [{ "title": "Zlín", "publisher": "Wikipedie", "url": "https://cs.wikipedia.org/wiki/Zl%C3%ADn" }]
+    },
+    {
+      "id": "hist-1953-menova-reforma",
+      "date": "1953-06-01",
+      "title": "Měnová reforma",
+      "summary": "Přes noc se znehodnotily úspory a skončil přídělový systém. Reforma vyvolala protesty v řadě měst.",
+      "scope": "stat",
+      "category": "economy",
+      "sources": [{ "title": "Československá měnová reforma (1953)", "publisher": "Wikipedie", "url": "https://cs.wikipedia.org/wiki/%C4%8Ceskoslovensk%C3%A1_m%C4%9Bnov%C3%A1_reforma_(1953)" }]
+    },
+    {
+      "id": "hist-1968-okupace",
+      "date": "1968-08-21",
+      "title": "Konec pražského jara, okupace",
+      "summary": "Vojska Varšavské smlouvy obsadila Československo a ukončila reformy pražského jara. Následovala normalizace: čistky, cenzura a vyhazovy z práce.",
+      "scope": "stat",
+      "category": "politics",
+      "sources": [{ "title": "Invaze vojsk Varšavské smlouvy do Československa", "publisher": "Wikipedie", "url": "https://cs.wikipedia.org/wiki/Invaze_vojsk_Var%C5%A1avsk%C3%A9_smlouvy_do_%C4%8Ceskoslovenska" }, { "title": "Normalizace", "publisher": "Wikipedie", "url": "https://cs.wikipedia.org/wiki/Normalizace" }]
+    },
+    {
+      "id": "hist-1989-sametova-revoluce",
+      "date": "1989-11-17",
+      "title": "Sametová revoluce",
+      "summary": "Studentská demonstrace v Praze odstartovala pád komunistického režimu. Do konce roku byl prezidentem zvolen Václav Havel.",
+      "scope": "stat",
+      "category": "politics",
+      "sources": [{ "title": "Sametová revoluce", "publisher": "Wikipedie", "url": "https://cs.wikipedia.org/wiki/Sametov%C3%A1_revoluce" }]
+    },
+    {
+      "id": "hist-1993-zanik-ceskoslovenska",
+      "date": "1993-01-01",
+      "title": "Rozdělení Československa",
+      "summary": "Vznikla samostatná Česká republika a Slovensko. Z řeky Moravy u Hodonína a Holíče se stala státní hranice.",
+      "scope": "stat",
+      "category": "politics",
+      "sources": [{ "title": "Zánik Československa", "publisher": "Wikipedie", "url": "https://cs.wikipedia.org/wiki/Z%C3%A1nik_%C4%8Ceskoslovenska" }]
+    },
+    {
+      "id": "hist-1997-povodne",
+      "date": "1997-07",
+      "title": "Povodně na Moravě",
+      "summary": "Mimořádné červencové povodně zasáhly většinu Moravy a Slezska. V Česku zahynulo 50 lidí.",
+      "scope": "morava",
+      "category": "disaster",
+      "sources": [{ "title": "Povodně na Moravě a Odře (1997)", "publisher": "Wikipedie", "url": "https://cs.wikipedia.org/wiki/Povodn%C4%9B_na_Morav%C4%9B_a_Od%C5%99e_(1997)" }]
+    },
+    {
+      "id": "hist-2004-vstup-do-eu",
+      "date": "2004-05-01",
+      "title": "Vstup do Evropské unie",
+      "summary": "Česká republika se stala členem Evropské unie.",
+      "scope": "stat",
+      "category": "politics",
+      "sources": [{ "title": "Vstup České republiky do Evropské unie", "publisher": "Wikipedie", "url": "https://cs.wikipedia.org/wiki/Vstup_%C4%8Cesk%C3%A9_republiky_do_Evropsk%C3%A9_unie" }]
+    },
+    {
+      "id": "hist-2020-covid",
+      "date": "2020-03",
+      "endDate": "2022",
+      "title": "Pandemie covidu-19",
+      "summary": "Nouzový stav, zavřené školy a obchody, roušky a omezení setkávání. Nemoc zasáhla zvláště starší lidi.",
+      "scope": "svet",
+      "category": "health",
+      "sources": [{ "title": "Pandemie covidu-19 v Česku", "publisher": "Wikipedie", "url": "https://cs.wikipedia.org/wiki/Pandemie_covidu-19_v_%C4%8Cesku" }]
+    },
+    {
+      "id": "hist-2021-tornado",
+      "date": "2021-06-24",
+      "title": "Tornádo na Břeclavsku a Hodonínsku",
+      "summary": "Silné tornádo poničilo Moravskou Novou Ves, Mikulčice, Hrušky, Lužice a hodonínské části Bažantnice a Pánov.",
+      "scope": "region",
+      "category": "disaster",
+      "sources": [{ "title": "Tornádo na Břeclavsku a Hodonínsku", "publisher": "Wikipedie", "url": "https://cs.wikipedia.org/wiki/Torn%C3%A1do_na_B%C5%99eclavsku_a_Hodon%C3%ADnsku" }]
+    }
+  ]
+}

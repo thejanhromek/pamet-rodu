@@ -1,0 +1,37 @@
+{
+  "retrievedAt": "2026-10-13",
+  "leaflet": {
+    "version": "1.9.4",
+    "source": "https://leafletjs.com/download.html",
+    "license": "BSD-2-Clause",
+    "jsUpstreamSha256": "db49d009c841f5ca34a888c96511ae936fd9f5533e90d8b2c4d57596f4e5641a",
+    "cssUpstreamSha256": "a7837102824184820dfa198d1ebcd109ff6d0ff9a2672a074b9a1b4d147d04c6",
+    "localChanges": [
+      "sourceMappingURL removed",
+      "CSS images embedded as data URIs"
+    ]
+  },
+  "markercluster": {
+    "version": "1.5.3",
+    "source": "https://github.com/Leaflet/Leaflet.markercluster/tree/v1.5.3",
+    "license": "MIT",
+    "jsUpstreamSha256": "1e4e1d22972a3926f48598e0caf14e3fe7049835d428a344fed4f9e3665b3508",
+    "cssUpstreamSha256": "614dea0a98ff3f4ead74f04918f6b1d1b9ba435c25b5fc23b21a394d1e3e4d87",
+    "localChanges": [
+      "sourceMappingURL removed"
+    ]
+  },
+  "elk": {
+    "version": "0.12.0",
+    "source": "https://registry.npmjs.org/elkjs/-/elkjs-0.12.0.tgz",
+    "repository": "https://github.com/kieler/elkjs",
+    "license": "EPL-2.0",
+    "retrievedAt": "2026-10-14",
+    "packageIntegrity": "sha512-YZcKynxVxYoKIOEpywEPwCFdg+BTbxQRNf3pbwdDCvc8O3kQD8bmIwSxKU1eOTVc4Xo+VG9Te+575mlfvOrhEQ==",
+    "jsUpstreamSha256": "1222e44f953ce7746af23801e723708f8e6f436b8b377a6a5fc7552f34a307b3",
+    "localChanges": [
+      "Trailing whitespace removed from comments only"
+    ],
+    "jsLocalSha256": "6ad8b55e3d85c469e6228212c0512dc49d35217464a70a796162d2a925647ed9"
+  }
+}

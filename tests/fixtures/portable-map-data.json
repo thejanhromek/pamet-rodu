@@ -1,0 +1,18 @@
+{
+  "meta": { "title": "Atlas Dataset", "defaultPersonId": null },
+  "people": [],
+  "relationships": [],
+  "events": [],
+  "places": [
+    { "id": "fixture-west", "name": "West", "lat": -33.9, "lon": 151.2 },
+    { "id": "fixture-east", "name": "East", "lat": 35.7, "lon": -139.7 },
+    { "id": "fixture-same-a", "name": "Twin A", "lat": 0, "lon": 0 },
+    { "id": "fixture-same-b", "name": "Twin B", "lat": 0, "lon": 0 },
+    { "id": "fixture-no-coordinates", "name": "No Coordinates" }
+  ],
+  "claims": [],
+  "sources": [],
+  "media": [],
+  "researchTasks": [],
+  "changelog": []
+}

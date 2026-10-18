@@ -1,0 +1,6 @@
+* text=auto
+*.webp binary
+*.png binary
+*.jpg binary
+*.webm binary
+*.m4a binary

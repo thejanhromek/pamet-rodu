@@ -1,0 +1,15 @@
+{
+  "name": "rodova-kronika-sablona",
+  "private": true,
+  "description": "Offline rodová kronika v jednom HTML souboru – šablona pro vlastní genealogický výzkum.",
+  "license": "MIT",
+  "scripts": {
+    "init": "node scripts/init.mjs",
+    "build": "node scripts/build.mjs",
+    "test": "node --test",
+    "protect": "node scripts/protect.mjs",
+    "book": "node scripts/build-book.mjs",
+    "audiobook": "node scripts/build-audiobook.mjs"
+  },
+  "engines": { "node": ">=20" }
+}

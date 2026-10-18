@@ -1,0 +1,14 @@
+{
+  "$comment": "Volitelné přepisy pro rodinné vydání (scripts/family-edition.mjs). Soubor smíš smazat; bez něj se použijí obecná pravidla. Popis polí je v docs/data-contract.md.",
+  "noteOverrides": {
+    "kalina-matej-1830": ["Možný otec Jana. Že jde o Matěje narozeného kolem roku 1830 v Kalinově, zatím nevíme jistě."]
+  },
+  "claimOverrides": {
+    "claim-jan-birth-1863-census": "Sčítání lidu z roku 1890 uvádí u Jana rok narození 1863, o rok později než matrika."
+  },
+  "omitClaimIds": ["claim-pracovni-poznamka-strom"],
+  "omitSourceIdPatterns": [],
+  "noteReplacements": [],
+  "wordingReplacements": [],
+  "researcherName": { "instrumental": "Terezou Kalinovou", "genitive": "Terezy Kalinové" }
+}

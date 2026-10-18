@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="cs" data-artifact-version="__ARTIFACT_VERSION__">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="Rodinná kronika lidí, míst, vzpomínek a historických pramenů.">
+  <title>Rodová kronika</title>
+  <style>/*__INLINE_CSS__*/</style>
+</head>
+<body>
+  <a class="skip-link" href="#view-root">Přejít na obsah</a>
+  <header class="app-header">
+    <div class="header-inner">
+      <button class="brand" type="button" data-view="overview" aria-label="Rodová kronika – přehled">
+        <span><strong>Rodová kronika</strong><small>Osoby a rodinné vazby</small></span>
+      </button>
+      <div class="global-search">
+        <span class="search-icon" aria-hidden="true"></span>
+        <label for="global-search" class="sr-only">Hledat napříč archivem</label>
+        <input id="global-search" type="search" placeholder="Hledat osobu, obec, povolání…" autocomplete="off">
+        <kbd aria-hidden="true">/</kbd>
+        <div id="global-search-results" class="global-search-results-host"></div>
+      </div>
+      <div class="ego-picker" data-ego-host title="Příbuzenské vztahy se v kronice počítají vzhledem k této osobě"></div>
+    </div>
+    <nav class="app-nav" aria-label="Hlavní navigace">
+      <div class="nav-primary" aria-label="Hlavní oblasti">
+        <button type="button" data-view="overview">Přehled</button>
+        <button type="button" data-view="tree">Rodokmen</button>
+        <button type="button" data-view="people">Osoby</button>
+        <button type="button" data-view="claims">Příběhy</button>
+        <div class="nav-menu-group" data-nav-group="story">
+          <button class="nav-group-trigger" type="button" data-nav-group-trigger="story" aria-haspopup="menu" aria-expanded="false" aria-controls="nav-menu-story">Místa a čas <span class="nav-group-chevron" aria-hidden="true"></span></button>
+          <div class="nav-dropdown" id="nav-menu-story" role="menu" aria-label="Místa a čas" hidden>
+            <button type="button" role="menuitem" data-view="places">Místa</button>
+            <button type="button" role="menuitem" data-view="timeline">Časová osa</button>
+          </div>
+        </div>
+        <div class="nav-menu-group" data-nav-group="evidence">
+          <button class="nav-group-trigger" type="button" data-nav-group-trigger="evidence" aria-haspopup="menu" aria-expanded="false" aria-controls="nav-menu-evidence">Prameny <span class="nav-group-chevron" aria-hidden="true"></span></button>
+          <div class="nav-dropdown" id="nav-menu-evidence" role="menu" aria-label="Prameny" hidden>
+            <button type="button" role="menuitem" data-view="sources">Všechny prameny</button>
+            <button type="button" role="menuitem" data-view="media">Fotografie a nahrávky</button>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main id="view-root" tabindex="-1"></main>
+
+  <footer class="app-footer">
+    <p>Rodová kronika · rodokmen, osoby a místa.</p>
+    <button type="button" data-view="sources">Prohlédnout prameny</button>
+    <button type="button" data-open-feedback>Napsat správci kroniky</button>
+  </footer>
+
+  <div id="entity-bubble" class="entity-bubble" role="dialog" aria-modal="false" aria-labelledby="entity-bubble-title" tabindex="-1" hidden></div>
+
+  <dialog id="detail-dialog" aria-labelledby="detail-dialog-title">
+    <div class="dialog-frame">
+      <div class="dialog-toolbar"><span id="detail-dialog-title">Detail záznamu</span><button type="button" data-close-dialog aria-label="Zavřít detail">×</button></div>
+      <div id="detail-body"></div>
+    </div>
+  </dialog>
+  <div id="live-region" class="sr-only" aria-live="polite"></div>
+  <noscript><p class="noscript">Kronika potřebuje zapnutý JavaScript pro vyhledávání a interaktivní rodokmen.</p></noscript>
+
+  <script>/*__INLINE_DATA__*/</script>
+  <script>/*__INLINE_JS__*/
+  RKApp.init();</script>
+</body>
+</html>
