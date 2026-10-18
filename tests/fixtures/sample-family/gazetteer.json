@@ -1,0 +1,19 @@
+{
+  "meta": { "title": "Ukázkový místopis", "updatedAt": "2026-10-01", "note": "Vymyšlené ukázkové údaje pro testy." },
+  "places": {
+    "litomysl": {
+      "historicalNames": [{ "name": "Leitomischl", "lang": "de" }, { "name": "Luthomysl", "lang": "la", "to": "1500" }],
+      "jurisdictions": [{ "type": "parish", "name": "Litomyšl, kostel Povýšení sv. Kříže" }, { "type": "estate", "name": "panství Litomyšl", "to": "1848" }, { "type": "political-district", "name": "okres Litomyšl", "from": "1850", "to": "1960" }],
+      "parish": { "name": "Litomyšl", "placeId": "litomysl" },
+      "links": [{ "title": "Ukázkový lexikon obcí", "url": "https://example.com/lexikon/litomysl" }],
+      "sources": [{ "title": "Ukázkový lexikon obcí", "publisher": "Example", "url": "https://example.com/lexikon/litomysl" }]
+    },
+    "policka": {
+      "historicalNames": [{ "name": "Politschka", "lang": "de" }],
+      "jurisdictions": [{ "type": "parish", "name": "Polička, kostel sv. Jakuba" }],
+      "parish": { "name": "Polička", "placeId": "policka" },
+      "links": [],
+      "sources": [{ "title": "Ukázkový lexikon obcí", "publisher": "Example", "url": "https://example.com/lexikon/policka" }]
+    }
+  }
+}

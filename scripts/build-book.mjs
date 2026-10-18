@@ -16,6 +16,7 @@ import { createFamilyEdition } from './family-edition.mjs';
 const require = createRequire(import.meta.url);
 const RKModel = require('../src/model.js');
 const RKPresentation = require('../src/presentation.js');
+const RKStory = require('../src/story.js');
 
 const CERTAINTY = {
   verified: 'doloženo původním záznamem',
@@ -50,7 +51,7 @@ function years(person) {
   return `${birth ? `* ${birth}` : ''}${birth && death ? ' – ' : ''}${death ? `† ${death}` : ''}`;
 }
 
-export function buildBook(source, { egoId, issued = new Date() } = {}) {
+export function buildBook(source, { egoId, issued = new Date(), history = null } = {}) {
   const data = source.claims?.some((claim) => 'reasoning' in claim) ? createFamilyEdition(source) : source;
   const ego = RKModel.getPerson(data, egoId || data.meta.defaultPersonId);
   if (!ego) throw new Error(`Osoba ${egoId} neexistuje.`);
@@ -79,6 +80,15 @@ export function buildBook(source, { egoId, issued = new Date() } = {}) {
     if (!placeId || !places.has(placeId)) return;
     placePeople.set(placeId, new Set([...(placePeople.get(placeId) || []), number]));
   };
+
+  // From the life story only what the entry does not already list: the
+  // history the person lived through and their own words from an interview.
+  function bookStory(person) {
+    const paragraphs = RKStory.lifeStory(data, person.id, { history, now: issued })
+      .filter((paragraph) => paragraph.kind === 'history' || (paragraph.kind === 'memories' && !(person.familyNotes || []).length && paragraph.text.includes('V rozhovoru zaznělo')));
+    const text = paragraphs.map((paragraph) => paragraph.text.replace(/ Otevřená otázka:.*$/, '')).filter(Boolean);
+    return text.length ? `<div class="story story-context">${text.map((line) => `<p>${escapeHtml(line)}</p>`).join('')}</div>` : '';
+  }
 
   function renderEntry(number) {
     const person = people.get(idOf.get(number));
@@ -111,6 +121,7 @@ export function buildBook(source, { egoId, issued = new Date() } = {}) {
       ${father || mother ? `<p class="parents"><strong>Rodiče:</strong> ${[father, mother].filter(Boolean).map((parent) => nameWithNumber(parent, number)).join(' a ')}</p>` : ''}
       ${relatives.map(([label, list]) => `<p class="relatives"><strong>${label}:</strong> ${list.map((relative) => nameWithNumber(relative, number)).join(', ')}</p>`).join('')}
       ${(person.familyNotes || []).length ? `<div class="story">${person.familyNotes.map((note) => `<p>${escapeHtml(note)}</p>`).join('')}</div>` : ''}
+      ${bookStory(person)}
       ${claims.length ? `<div class="claims"><h4>Co víme a jak jisté to je</h4><ul>${claims.map((claim) => `<li>${escapeHtml(claim.text)} <span class="certainty">– ${CERTAINTY[claim.evidence] || 'jistota neuvedena'}</span></li>`).join('')}</ul></div>` : ''}
       ${citations.length ? `<p class="citations">Prameny: ${[...new Set(citations)].sort((a, b) => a - b).map((n) => `[${n}]`).join(' ')}</p>` : ''}
     </article>`;
@@ -321,7 +332,8 @@ async function main() {
   const egoId = argument('ego', data.meta.defaultPersonId);
   const output = argument('output', egoId === data.meta.defaultPersonId ? 'dist/rodova-kronika-kniha.html' : `dist/rodova-kronika-kniha-${egoId}.html`);
   await fs.mkdir(path.dirname(output), { recursive: true });
-  await fs.writeFile(output, buildBook(data, { egoId }));
+  const history = JSON.parse(await fs.readFile('src/data/history.json', 'utf8'));
+  await fs.writeFile(output, buildBook(data, { egoId, history }));
   console.log(`Kniha: ${output}`);
   if (process.argv.includes('--pdf')) {
     const pdf = output.replace(/\.html$/, '.pdf');

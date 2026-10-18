@@ -106,11 +106,23 @@
     if (up === 1 && down === 1) return bySex(sex, 'bratr', 'sestra', 'sourozenec');
     if (down === 1 && up === 2) return bySex(sex, 'strýc', 'teta', 'sourozenec rodiče');
     if (down === 1 && up === 3) return bySex(sex, 'prastrýc', 'prateta', 'sourozenec prarodiče');
+    if (down === 1 && up <= 6) return bySex(sex, `${'pra'.repeat(up - 2)}strýc`, `${'pra'.repeat(up - 2)}teta`, `sourozenec ${'pra'.repeat(up - 2)}prarodiče`);
     if (down === 1) return bySex(sex, 'bratr předka', 'sestra předka', 'sourozenec předka');
     if (up === 1 && down === 2) return bySex(sex, 'synovec', 'neteř', 'dítě sourozence');
     if (up === 1 && down === 3) return bySex(sex, 'prasynovec', 'praneteř', 'vnouče sourozence');
     if (up === 2 && down === 2) return bySex(sex, 'bratranec', 'sestřenice', 'bratranec nebo sestřenice');
-    if (up === down && kneeWords[up]) return `${bySex(sex, 'bratranec', 'sestřenice', 'bratranec nebo sestřenice')} z ${kneeWords[up]} kolena`;
+    // Second cousins share great-grandparents: "z druhého kolena".
+    if (up === down && kneeWords[up - 1]) return `${bySex(sex, 'bratranec', 'sestřenice', 'bratranec nebo sestřenice')} z ${kneeWords[up - 1]} kolena`;
+    // Relatives a generation (or more) apart: "syn bratrance", "sestřenice prarodiče".
+    const level = Math.min(up, down);
+    const removed = Math.abs(up - down);
+    const cousinGenitive = level === 2 ? 'bratrance či sestřenice' : kneeWords[level - 1] ? `bratrance či sestřenice z ${kneeWords[level - 1]} kolena` : null;
+    if (cousinGenitive && down > up && removed <= 4) return `${descendantLabel(removed, sex)} ${cousinGenitive}`;
+    if (up > down && level >= 2 && removed <= 3) {
+      const cousin = level === 2 ? bySex(sex, 'bratranec', 'sestřenice', 'bratranec nebo sestřenice') : `${bySex(sex, 'bratranec', 'sestřenice', 'bratranec nebo sestřenice')} z ${kneeWords[level - 1] || `${level - 1}.`} kolena`;
+      return `${cousin} ${['rodiče', 'prarodiče', 'praprarodiče'][removed - 1]}`;
+    }
+    if (up === 1 && down >= 4) return `${descendantLabel(down - 1, sex)} sourozence`;
     return bySex(sex, 'pokrevní příbuzný', 'pokrevní příbuzná', 'pokrevní příbuzný');
   }
 

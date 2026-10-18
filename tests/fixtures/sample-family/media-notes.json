@@ -1,0 +1,13 @@
+{
+  "meta": { "title": "Ukázkové poznámky k médiím", "updatedAt": "2026-10-01", "note": "Vymyšlené oblasti pro testy." },
+  "media": {
+    "media-photo-1955": {
+      "date": "1955-05-07", "dateText": "7. 5. 1955", "dateEvidence": "family-record", "dateReasoning": "Podle rodinných poznámek jde o svatební fotografii.",
+      "regions": [
+        { "id": "r1", "kind": "face", "personId": "josef-kadlec-1930", "x": 0.19, "y": 0.25, "w": 0.24, "h": 0.4 },
+        { "id": "r2", "kind": "face", "personId": "marie-kadlecova-vrbova-1932", "x": 0.56, "y": 0.25, "w": 0.24, "h": 0.4 },
+        { "id": "r3", "kind": "face", "label": "neznámá osoba", "x": 0.85, "y": 0.1, "w": 0.12, "h": 0.25 }
+      ]
+    }
+  }
+}

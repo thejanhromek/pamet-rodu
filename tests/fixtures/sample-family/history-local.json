@@ -1,0 +1,7 @@
+{
+  "meta": { "title": "Ukázkové místní dějiny", "updatedAt": "2026-10-01", "note": "Vymyšlené ukázkové události pro testy." },
+  "events": [
+    { "id": "local-1845-pozar", "date": "1845-07-12", "title": "Požár náměstí", "summary": "Ukázková událost: požár zničil část domů na náměstí.", "scope": "obec", "category": "disaster", "placeIds": ["litomysl"], "sources": [{ "title": "Ukázková kronika města", "publisher": "Example", "url": "https://example.com/kronika/1845" }] },
+    { "id": "local-1950-druzstvo", "date": "1950", "title": "Vznik místního družstva", "summary": "Ukázková událost: v obci vzniklo zemědělské družstvo.", "scope": "obec", "category": "politics", "placeIds": ["policka"], "sources": [{ "title": "Ukázková kronika města", "publisher": "Example", "url": "https://example.com/kronika/1950" }] }
+  ]
+}

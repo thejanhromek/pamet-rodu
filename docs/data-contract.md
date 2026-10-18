@@ -57,6 +57,81 @@ Texty šité na konkrétní rodinu patří do volitelného souboru `src/data/fam
 
 Soubor obsahuje rodinné texty, proto se stejně jako `genealogy.json` nikdy nezveřejňuje. Volitelné `meta.sample: true` označuje vymyšlený ukázkový dataset.
 
+## Schéma
+
+`schema/kronika.schema.json` (JSON Schema 2020-12) popisuje hlavní soubor i doplňkové soubory (`$defs.companions`). Build ho ověřuje malým validátorem `src/schema-lite.js` (`RKSchema`; podporuje type, enum, const, required, properties, additionalProperties, items, minItems, minLength, pattern, minimum, maximum, anyOf a lokální `$ref`) a při chybě skončí s přesnou cestou k údaji, např. `people[12].sex`. Neznámá pole schéma povoluje; hlídá typy, povinná pole, tvar ID (`^[a-z0-9][a-z0-9-]*$`), data (`YYYY`, `YYYY-MM`, `YYYY-MM-DD`) a výčty stavů důkazu.
+
+## Doplňkové soubory
+
+Leží vedle datového souboru pod pevnými jmény; chybějící soubor nic nepřidá. `scripts/lib/load-dataset.mjs` je spojí s daty podle ID a zdrojový soubor nemění.
+
+- `gazetteer.json`: `{ meta, places: { <placeId>: { historicalNames: [{ name, lang, from?, to? }], jurisdictions: [{ type: parish|estate|judicial-district|political-district|region, name, from?, to?, note? }], parish: { name, placeId? }, links: [{ title, url }], sources: [{ title, publisher, url }] } } }`. Build ho připojí jako `place.historical`.
+- `history-local.json`: události ve tvaru `history.json` s povinným neprázdným `placeIds` a `scope` (`obec`, `panstvi`, `okres`). Přidají se k dějinnému kontextu; osobě se přiřadí, jen je-li s některým z míst spojená (narození, úmrtí, vlastní události, bydliště), na časové ose jen u míst vypsaných událostí.
+- `registers.json`: `{ meta, registers: [{ id, archive, signature, parish, placeIds, kinds: [N|O|Z], from, to, index, url?, note? }] }`. Používá ho výzkumná fronta; do rodinného vydání se nevkládá.
+- `media-notes.json`: `{ meta, media: { <mediaId>: { date?, dateText?, dateEvidence?, dateReasoning?, regions: [{ id, kind: face|text, personId?, label?, x, y, w, h }] } } }`. Souřadnice oblastí jsou relativní (0–1) k obrázku; oblast bez `personId` je neznámá osoba. Pole se připojí přímo k médiu.
+
+Testovací ukázka všech čtyř je v `tests/fixtures/sample-family/`.
+
+## Vydání a odvozená pole
+
+`node scripts/build.mjs --edition family|research|light`. Runtime pozná vydání podle `window.RK_EDITION`. Build doplňuje pole, která se nikdy nepíšou ručně: `media.dataUri`, `media.words` (`[[sekundy od začátku úryvku, "slovo"], …]` z `assets/interviews/<id>/transcript.json`), `media.omitted: "light-edition"` u nahrávek lehkého vydání, `data.registers`, `data.dna` a `data.acceptedFindings` (jen badatelské vydání) a `data.editionChanges` (rozdíl proti poslednímu tagu `vydani-*`: `newPeople`, `newPlaces`, `newMedia`, `newlyVerified`, `strengthened`, `newSourceCount`, `sinceVersion`, `sinceDate`). `window.RK_GIVEN_NAMES` nese `src/data/given-names.json`.
+
+## Dávka změn
+
+```json
+{ "format": "rk-changes/1", "createdAt": "…", "author": "…", "title": "…", "note": "…",
+  "ops": [{ "op": "add" | "update" | "remove", "file": "genealogy", "collection": "people", "id": "…", "item": {}, "set": {} }] }
+```
+
+`file` je `genealogy` (výchozí) nebo `media-notes`, `gazetteer`, `registers`, `history-local`. `add` potřebuje `item` (s `id`), `update` potřebuje `set`: pole se nahradí, `null` pole odstraní a vnořené objekty (`birth`, `death`) se slučují o úroveň hlouběji. V `media-notes` a `gazetteer` jsou kolekce objekty podle ID. `src/changes.js` (`RKChanges`) dávku ověří a použije na kopie dat; `scripts/apply-changes.mjs` ji po náhledu, kontrole odkazů, schématu a věrohodnosti zapíše, zvýší patch verze a přidá záznam do `changelog`.
+
+## Zprávy od příbuzných
+
+Zpráva připravená formulářem končí řádkem `[RK-NAVRH v1 {"k":"oprava|doplneni|vzpominka|fotka","s":"person:<id>|place:<id>|media:<id>","d":"YYYY-MM-DD"}]`. `RKComponents.parseFeedbackMessage` z textu vrátí `{ kind, subject, date, text, name, topic }`; `scripts/import-suggestions.mjs` z toho udělá dávku změn s pramenem `family-record` a tvrzením se stavem `family-record` (u média o jeho prameni).
+
+## DNA (volitelné, jen badatelské vydání)
+
+Výsledky autozomálních DNA testů patří do volitelného souboru `research/dna.json`. Používá je jen badatelské vydání; do rodinného vydání, tištěné knihy ani veřejné šablony se nikdy nedostanou. Zpracovává je obecný modul `src/dna.js` (`RKDna`), který žádná rodinná data nezná.
+
+```json
+{
+  "tests": [{ "id": "…", "personId": "…", "company": "…", "testedAt": "YYYY-MM" }],
+  "matches": [{
+    "id": "…", "testId": "…", "alias": "…", "sharedCm": 0,
+    "segments": 0, "longestCm": 0, "sharedMatchIds": ["…"],
+    "knownRelation": { "personId": "…", "commonAncestorIds": ["…"], "relationship": "2c" },
+    "notes": "…"
+  }]
+}
+```
+
+- `tests[]`: `id`, `personId` (osoba z `genealogy.json`, která test podstoupila), `company` (testovací firma) a volitelné `testedAt`.
+- `matches[]`: `id`, `testId` (odkaz do `tests`), `alias`, `sharedCm` (celkem sdílené cM, nezáporné číslo) a volitelně `segments` (počet segmentů), `longestCm` (nejdelší segment, nejvýše `sharedCm`), `sharedMatchIds` (ID jiných shod ze stejného souboru, které firma ukazuje jako společné), `knownRelation` a `notes`.
+- `knownRelation` se vyplňuje jen tehdy, když je vztah doložen: `personId` (shoda je v rodokmenu), `commonAncestorIds` (společní předci z `genealogy.json`) a `relationship` (klíč z `RKDna.RANGES`, např. `1c1r`).
+
+**`alias` je vždy pseudonym, nikdy celé jméno třetí osoby.** Shody jsou žijící lidé, kteří k zveřejnění v kronice nedali souhlas; jejich jména, uživatelská jména ani iniciály s příjmením se do souboru nepíšou. `RKDna.validateDna` varuje, když alias vypadá jako celé jméno (dvě a více slov s velkým počátečním písmenem). Totéž platí pro `notes`.
+
+`RKDna.validateDna(dna, data)` vrací `{ errors, warnings }`: chyby jsou neexistující `testId`, `personId`, sdílené shody a společní předci, duplicitní ID a nečíselné cM; varování jsou podezřelé aliasy a neznámý klíč vztahu.
+
+Odhad vztahu (`RKDna.relationshipCandidates(cm)`) vychází z tabulky Shared cM Project 4.0 (Blaine T. Bettinger, 2020, licence CC BY 4.0, <https://dnapainter.com/tools/sharedcmv4>); vrací všechny vztahy, jejichž rozsah zadanou hodnotu obsahuje, seřazené podle vzdálenosti od průměru. Je to pravděpodobnostní vodítko, nikdy důkaz: tvrzení podložené jen DNA má nejvýše stav `supported`, a to až po shodě s papírovým rodokmenem.
+
+Shlukování (`RKDna.leedsClusters(matches, { minCm: 90, maxCm: 400 })`) používá Leedsovu metodu nad `sharedMatchIds` a vrací `{ clusters: [{ id, matchIds }], unassigned, overlaps }`. `RKDna.assignClustersToBranches(clusters, matches, branchOf)` přiřadí shluku větev podle `knownRelation.commonAncestorIds` jeho shod; shluky s neslučitelnými větvemi vrací zvlášť jako `conflicts`.
+
+## GEDCOM
+
+`RKGedcom.toGedcom(data, { living, now })` vrací `{ text, xrefOf }`: text GEDCOM 7.0 (UTF-8, CRLF, víceřádkové hodnoty přes `CONT`) a mapu ID → xref (`@I1@` osoby, `@F1@` rodiny pod ID vazeb, `@S1@` prameny, `@O1@` média). Xref se odvozují z pořadí v kolekcích. Hlavička nese `GEDC.VERS 7.0` a kvůli starším programům i `CHAR UTF-8`.
+
+- Osoba: `NAME` z `displayName` s příjmením v lomítkách (podle `surnames`, „…, rozená X“ dá druhé jméno), další `surnames` jako `NAME` s `TYPE MAIDEN`/`AKA`, `aliases` jako `AKA`, `SEX` M/F/U, `birth`/`death` jako `BIRT`/`DEAT` (shodná událost téhož typu se do nich sloučí, jiné datum zůstane jako další záznam), události podle `type` (`BIRT`, `CHR`, `DEAT`, `BURI`, `OCCU`, `RESI`, `CENS`, `PROP` …) u první osoby v `personIds`, ostatní jako `ASSO`; `occupations` a `residences`, `notes`, `REFN` s ID kroniky.
+- Rodiny: jedna `FAM` na vazbu `spouse` a na přesnou množinu rodičů dítěte; `MARR` z událostí `marriage`. Spolurodiče bez vazby `spouse` mají rozšíření `_RKCOPARENTS Y` (deklarované v `HEAD.SCHMA`), aby import nevytvořil partnerství. Sourozenci jsou `ASSO` s `ROLE OTHER` a `PHRASE sourozenec`.
+- Data: `YYYY`, `YYYY-MM`, `YYYY-MM-DD` → `1920`, `NOV 1920`, `20 NOV 1920`; „asi/kolem/cca“ → `ABT`, `endDate` nebo rozsah v `dateText` → `BET … AND …`, „před/po“ → `BEF`/`AFT`. Říká-li `dateText` víc než samotné datum, zachová se v `PHRASE`.
+- Místa: `PLAC` „název, region, země“ s `MAP LATI/LONG` (N/S, E/W), pokud jsou souřadnice platné.
+- Prameny: `SOUR` s `TITL`, `PUBL`, `WWW`, `TEXT` z `transcriptionLines` a `NOTE` z `reliabilityNote`. Citace mají `QUAY` podle `evidence` (verified 3, supported 2, family-record 1, hypothesis 0) a `PAGE`, je-li v prameni lokátor.
+- Tvrzení: `NOTE` „Tvrzení (stav): text / Odůvodnění“ s citacemi u osoby, rodiny, události nebo pramene; tvrzení o místech a větvích jako samostatné `SNOTE`.
+- Média: `OBJE` s `FILE` (cesta pod `assets/` jako při buildu) a `FORM` (MIME typ).
+- `living: "private"`: osoba bez úmrtí narozená méně než 100 let před `now` (bez roku narození, pokud je skrytý rodič nebo partner nebo se nedávno narodilo dítě) má jen `NAME Žijící osoba` a vazby `FAMC`/`FAMS`. Vynechají se její události, poznámky, tvrzení a média; prameny citované jen u ní se vynechají a prameny citované i u ní ztratí `TEXT`.
+
+`RKGedcom.parseGedcom(text)` toleruje GEDCOM 5.5.1 i 7 (BOM, CRLF/CR, prázdné řádky, `CONT`/`CONC`, `@@`, skoky úrovní) a vrací `{ version, head, records, byXref, errors }`; uzly mají `level`, `tag`, `xref`, `value` nebo `pointer` a `children`. `gedcomToCandidates(tree, { fileName })` z něj udělá `{ people, relationships, events, places, sources }` ve tvaru tohoto kontraktu: ID `gedcom-<xref>`, vazby a události s `evidence: "hypothesis"`, všechny záznamy s `sourceIds` na pramen „import GEDCOM <soubor>“ a poznámkou, že údaj vyžaduje ověření. `matchCandidates(candidates, data, { nameKey, yearTolerance })` vrací `{ candidateId, personId, score, reasons }` pro shodné křestní jméno a příjmení (bez diakritiky, ženská příjmení na mužský základ) a rok narození v toleranci ±2; `nameKey(value, part)` s `part` „given“/„surname“ lze nahradit např. fonetickým klíčem. Kandidáti se do `genealogy.json` nikdy nezapisují automaticky.
+
 ## Výměna datasetu
 
 1. Ověř strukturu pomocí `RKModel.validateDataset`.

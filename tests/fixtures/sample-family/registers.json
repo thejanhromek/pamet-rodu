@@ -1,0 +1,8 @@
+{
+  "meta": { "title": "Ukázkový katalog matrik", "updatedAt": "2026-10-01", "note": "Vymyšlené signatury pro testy." },
+  "registers": [
+    { "id": "reg-litomysl-n-1860", "archive": "Ukázkový archiv", "signature": "1001", "parish": "Litomyšl", "placeIds": ["litomysl"], "kinds": ["N"], "from": 1860, "to": 1880, "index": false, "url": "https://example.com/matriky/1001" },
+    { "id": "reg-litomysl-o-1840", "archive": "Ukázkový archiv", "signature": "1002", "parish": "Litomyšl", "placeIds": ["litomysl"], "kinds": ["O", "Z"], "from": 1840, "to": 1900, "index": false, "url": "https://example.com/matriky/1002" },
+    { "id": "reg-policka-nf-1900", "archive": "Ukázkový archiv", "signature": "2001", "parish": "Polička", "placeIds": ["policka"], "kinds": ["N", "O", "Z"], "from": 1900, "to": 1940, "index": true, "url": "https://example.com/matriky/2001" }
+  ]
+}

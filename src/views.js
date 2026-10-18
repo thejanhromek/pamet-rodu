@@ -15,6 +15,8 @@
   const evidenceLabels = presentation.evidenceLabels;
   const eventLabels = presentation.eventTypeLabels;
   const sourceLabels = presentation.sourceTypeLabels;
+  // Optional family sections (kinship, life story, interview words, …).
+  const familyViews = () => globalThis.RKFamilyViews || (typeof module === 'object' && module.exports ? require('./family-views.js') : null);
 
   function escapeHtml(value = '') {
     return String(value)
@@ -70,7 +72,7 @@
   // the transcribed words (so it also works without sound).
   function renderAudioClip(media, { compact = false } = {}) {
     const meta = [media.speaker, interviewDate(media) ? `rozhovor ${interviewDate(media)}` : '', `čas ${clockTime(media.start)}–${clockTime(media.end)}`].filter(Boolean).join(' · ');
-    return `<figure class="audio-clip${compact ? ' is-compact' : ''}" data-audio-clip="${escapeHtml(media.id)}"><figcaption><strong>${escapeHtml(media.title)}</strong><span>${escapeHtml(meta)}</span></figcaption>${media.dataUri ? `<audio controls preload="none" src="${media.dataUri}"></audio>` : '<p class="muted">Nahrávka bude vložena při sestavení.</p>'}${media.quote && !compact ? `<details class="audio-clip-transcript"><summary>Přepis úryvku</summary><blockquote>${escapeHtml(media.quote)}</blockquote><p class="muted">Strojový přepis; jména a nářeční slova mohou být zkomolená, rozhoduje nahrávka.</p></details>` : ''}</figure>`;
+    return `<figure class="audio-clip${compact ? ' is-compact' : ''}" data-audio-clip="${escapeHtml(media.id)}"><figcaption><strong>${escapeHtml(media.title)}</strong><span>${escapeHtml(meta)}</span></figcaption>${media.dataUri ? `<audio controls preload="none" src="${media.dataUri}"></audio>` : media.omitted ? '<p class="muted">Nahrávka je jen v plném vydání kroniky; zde je její přepis.</p>' : '<p class="muted">Nahrávka bude vložena při sestavení.</p>'}${media.quote && !compact ? `<details class="audio-clip-transcript"${media.words?.length && media.dataUri ? ' open' : ''}><summary>Přepis úryvku</summary>${media.words?.length && familyViews() ? familyViews().renderClipWords(media) : `<blockquote>${escapeHtml(media.quote)}</blockquote>`}<p class="muted">Strojový přepis; jména a nářeční slova mohou být zkomolená, rozhoduje nahrávka.</p></details>` : ''}</figure>`;
   }
 
   function subjectLabel(value) { return presentation.subjectTypeLabel(value); }
@@ -160,6 +162,8 @@
         </div>
       </div>
       ${stories ? `<section class="overview-stories" aria-labelledby="overview-stories-heading"><header class="overview-section-heading"><h2 id="overview-stories-heading">Ze vzpomínek a pramenů</h2><button type="button" class="text-link" data-view="claims">Všechny příběhy →</button></header><div class="overview-story-grid">${stories}</div></section>` : ''}
+      ${familyViews() ? familyViews().renderWhatsNew(data) : ''}
+      ${familyViews() ? familyViews().renderStats(data) : ''}
       ${photos.length ? `<section class="overview-photos" aria-labelledby="overview-photos-heading"><header class="overview-section-heading"><h2 id="overview-photos-heading">Rodinné sešity a fotografie</h2><button type="button" class="text-link" data-view="media">Všechny →</button></header><div class="overview-photo-strip">${photos.map((item) => `<button type="button" data-media-id="${escapeHtml(item.id)}"><img src="${item.dataUri}" alt="${escapeHtml(item.title)}" loading="lazy"><span>${escapeHtml(item.title)}</span></button>`).join('')}</div></section>` : ''}
       <section class="overview-map-section" aria-labelledby="overview-places-heading">
         <header class="overview-map-heading"><div><h2 id="overview-places-heading">Místa v kronice</h2><p>Vyberte místo a zobrazte související osoby a události. Mapu přiblížíte kliknutím do ní nebo Ctrl + kolečkem.</p></div></header>
@@ -190,7 +194,7 @@
     const places = [...data.places].sort((a, b) => a.name.localeCompare(b.name, 'cs'));
 
     return `<section class="view" aria-labelledby="people-title">
-      <div class="view-header"><div><h1 id="people-title">Osoby</h1><p>Lidé v kronice: ${people.length} z ${data.people.length} záznamů · rodinné větve a životní příběhy</p></div></div>
+      <div class="view-header"><div><h1 id="people-title">Osoby</h1><p>Lidé v kronice: ${people.length} z ${data.people.length} záznamů · rodinné větve a životní příběhy</p></div><button type="button" class="view-header-action" data-open-kinship>Jak jsou příbuzní?</button></div>
       ${components.filterBar({ count: people.length, controls: `<label>Větev<select data-filter="lineage"><option value="">Všechny</option>${Object.entries(lineageLabels).map(([value, label]) => `<option value="${value}"${filters.lineage === value ? ' selected' : ''}>${escapeHtml(label)}</option>`).join('')}</select></label><label>Rod<select data-filter="branch"><option value="">Všechny rody</option>${branches.map((branch) => `<option value="${escapeHtml(branch)}"${filters.branch === branch ? ' selected' : ''}>${escapeHtml(branch)}</option>`).join('')}</select></label><label>Místo<select data-filter="placeId"><option value="">Všechna místa</option>${places.map((place) => `<option value="${escapeHtml(place.id)}"${filters.placeId === place.id ? ' selected' : ''}>${escapeHtml(place.name)}</option>`).join('')}</select></label><label>Období od<input type="number" inputmode="numeric" data-filter="fromYear" value="${escapeHtml(filters.fromYear || '')}" placeholder="rok"></label><label>Období do<input type="number" inputmode="numeric" data-filter="toYear" value="${escapeHtml(filters.toYear || '')}" placeholder="rok"></label><label>Důkazy<select data-filter="evidenceAvailability"><option value="">Všechny</option><option value="available"${filters.evidenceAvailability === 'available' ? ' selected' : ''}>S vazbou na důkazy</option><option value="missing"${filters.evidenceAvailability === 'missing' ? ' selected' : ''}>Bez vazby na důkazy</option></select></label><label>Řazení<select data-filter="sort"><option value="name">Jméno</option><option value="birth"${filters.sort === 'birth' ? ' selected' : ''}>Rok narození</option><option value="branch"${filters.sort === 'branch' ? ' selected' : ''}>Větev</option></select></label>`})}
       ${filterChips(data, filters, { lineage: 'Linie', branch: 'Rod', placeId: 'Místo', fromYear: 'Od roku', toYear: 'Do roku', evidenceAvailability: 'Důkazy', sort: 'Řazení' })}
       ${people.length ? `<div class="result-list person-list" data-result-list>${people.map((person) => `<article class="result-row person-result-row">${renderPersonCard(person, data, state.egoPersonId || data.meta?.defaultPersonId)}</article>`).join('')}</div>` : components.emptyState('Nikdo nenalezen', 'Zkus jiné jméno, obec nebo zruš filtry.')}
@@ -258,25 +262,41 @@
 
     return `<div class="person-detail">
       <header class="detail-hero"><span class="person-initials large" aria-hidden="true">${escapeHtml(person.displayName.split(/\s+/).slice(0, 2).map((part) => part[0]).join(''))}</span><div><span class="lineage-tag lineage-${escapeHtml(person.lineage)}">${escapeHtml(presentation.lineageLabel(person.lineage))}</span><h2>${escapeHtml(person.displayName)}</h2><p>${escapeHtml(formatLife(person))}</p>${relationLine}</div></header>
-      <div class="detail-actions">${options.showTreeFocusAction ? `<button type="button" data-tree-set-focus="${escapeHtml(person.id)}">Nastavit jako střed rodokmenu</button>` : ''}<button type="button" class="print-action" data-print>Vytisknout profil</button></div>
+      <div class="detail-actions">${options.showTreeFocusAction ? `<button type="button" data-tree-set-focus="${escapeHtml(person.id)}">Nastavit jako střed rodokmenu</button>` : ''}<button type="button" data-open-kinship data-kinship-b="${escapeHtml(person.id)}">Porovnat příbuzenství</button><button type="button" class="print-action" data-print>Vytisknout profil</button></div>
       ${components.evidenceSummary(summary)}
       ${facts.length ? `<dl class="fact-list">${facts.map(([label, value]) => `<div><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value)}</dd></div>`).join('')}</dl>` : ''}
+      ${familyViews() ? familyViews().renderStory(data, person.id, options) : ''}
       ${(person.familyNotes || []).length ? `<section class="detail-section"><h3>Vzpomínky a poznámky</h3>${person.familyNotes.map((note) => `<p>${escapeHtml(note)}</p>`).join('')}</section>` : ''}
+      ${familyViews() ? familyViews().renderPersonPhotos(data, person.id) : ''}
       ${audioClipsFor(data, person.id).length ? `<section class="detail-section"><h3>Z rozhovoru – poslechněte si</h3><div class="audio-clip-list">${audioClipsFor(data, person.id).map((clip) => renderAudioClip(clip)).join('')}</div></section>` : ''}
       ${renderRelationGroup('Rodiče', family.parents)}
       ${renderRelationGroup('Partner nebo partnerka', family.partners)}
       ${renderRelationGroup('Druhý rodič společných dětí', family.coParents || [])}
       ${renderRelationGroup('Sourozenci', family.siblings)}
       ${renderRelationGroup('Děti', family.children)}
+      ${familyViews() ? familyViews().renderKinship(data, egoId, person.id) : ''}
+      ${familyViews() ? familyViews().renderQuestions(data, person.id) : ''}
       ${renderLifeContext(data, person, options)}
       ${claims.length ? `<section class="detail-section"><h3>Nálezy</h3><div class="claim-stack">${claims.map((claim) => `<article>${evidenceBadge(claim.evidence)}<p>${escapeHtml(claim.text)}</p></article>`).join('')}</div></section>` : ''}
       ${sources.length ? `<section class="detail-section"><h3>Prameny</h3><ul class="source-links">${sources.map((source) => `<li><button type="button" data-source-id="${escapeHtml(source.id)}">${escapeHtml(source.title)}</button></li>`).join('')}</ul></section>` : ''}
-      ${components.feedbackForm(data, { topic: `${person.displayName}${presentation.birthYear(person) ? ` (* ${presentation.birthYear(person)})` : ''}`, context: [`Osoba: ${person.displayName}`, `ID: ${person.id}`, formatLife(person)] }).replace('<details class="feedback"', options.openFeedback ? '<details class="feedback" open' : '<details class="feedback"')}
+      ${components.feedbackForm(data, { topic: `${person.displayName}${presentation.birthYear(person) ? ` (* ${presentation.birthYear(person)})` : ''}`, context: [`Osoba: ${person.displayName}`, `ID: ${person.id}`, formatLife(person)], subject: `person:${person.id}` }).replace('<details class="feedback"', options.openFeedback ? '<details class="feedback" open' : '<details class="feedback"')}
     </div>`;
+  }
+
+  function renderTimelineModes(mode) {
+    return `<div class="timeline-modes" role="group" aria-label="Zobrazení časové osy"><button type="button" data-timeline-mode="events" aria-pressed="${mode !== 'lives'}">Události</button><button type="button" data-timeline-mode="lives" aria-pressed="${mode === 'lives'}">Životy vedle sebe</button></div>`;
   }
 
   function renderTimeline(data, state = {}) {
     const filters = state.filters || {};
+    if (state.timelineMode === 'lives' && familyViews()) {
+      return `<section class="view" aria-labelledby="timeline-title">
+      <div class="view-header"><div><h1 id="timeline-title">Časová osa</h1><p>Životy předků vedle sebe: kdo koho zažil a kolik komu bylo při velkých událostech. Kliknutím na řádek otevřeš profil.</p></div></div>
+      ${renderTimelineModes('lives')}
+      <div class="filter-bar"><label>Koho zobrazit<select data-filter="lives"><option value="">Přímou linii zvolené osoby</option><option value="all"${filters.lives === 'all' ? ' selected' : ''}>Všechny osoby s rokem narození</option></select></label></div>
+      ${familyViews().renderLifelines(data, state)}
+    </section>`;
+    }
     const eventTypes = [...new Set(data.events.map((event) => event.type))].sort();
     const events = RKModel.filterTimelineEvents(data, filters).sort((a, b) => {
       if (!a.date && !b.date) return a.title.localeCompare(b.title, 'cs');
@@ -292,14 +312,17 @@
     const datedYears = events.map((event) => Number(String(event.date || '').slice(0, 4))).filter(Boolean);
     const fromYear = Number(filters.fromYear) || (datedYears.length ? Math.min(...datedYears) : NaN);
     const toYear = Number(filters.toYear) || (datedYears.length ? Math.max(...datedYears) : NaN);
+    // Local history only for places of the listed events.
+    const listedPlaces = new Set(events.flatMap((event) => [event.placeId, event.fromPlaceId]).filter(Boolean));
     const historyItems = filters.history !== 'hidden' && datedYears.length && RKHistory
-      ? RKHistory.eventsBetween(historyEvents(state), fromYear, toYear) : [];
+      ? RKHistory.eventsBetween(historyEvents(state), fromYear, toYear).filter((event) => !event.placeIds || event.placeIds.some((id) => listedPlaces.has(id))) : [];
     const entries = [...events.map((event) => ({ kind: 'family', key: event.date || '', event })), ...historyItems.map((event) => ({ kind: 'history', key: event.date, event }))]
       .sort((a, b) => (!a.key && !b.key ? 0 : !a.key ? 1 : !b.key ? -1 : a.key.localeCompare(b.key) || (a.kind === 'history' ? -1 : 1)));
 
     return `<section class="view" aria-labelledby="timeline-title">
       <div class="view-header"><div><h1 id="timeline-title">Časová osa</h1><p>${presentation.plural(events.length, 'událost', 'události', 'událostí')}${historyItems.length ? ` a ${presentation.plural(historyItems.length, 'dějinná souvislost', 'dějinné souvislosti', 'dějinných souvislostí')}` : ''}; nejisté datování je uvedeno slovně.</p></div></div>
       ${components.filterBar({ count: events.length, controls: `<label>Text/osoba<input type="search" data-filter="query" value="${escapeHtml(filters.query || '')}" placeholder="Událost nebo osoba"></label><label>Typ události<select data-filter="type"><option value="">Všechny typy</option>${eventTypes.map((type) => `<option value="${escapeHtml(type)}"${filters.type === type ? ' selected' : ''}>${escapeHtml(presentation.eventTypeLabel(type))}</option>`).join('')}</select></label><label>Jistota<select data-filter="evidence"><option value="">Všechny úrovně</option>${Object.entries(evidenceLabels).map(([value, label]) => `<option value="${value}"${filters.evidence === value ? ' selected' : ''}>${escapeHtml(label)}</option>`).join('')}</select></label><label>Větev<select data-filter="branch"><option value="">Všechny větve</option>${branches.map((branch) => `<option value="${escapeHtml(branch)}"${filters.branch === branch ? ' selected' : ''}>${escapeHtml(branch)}</option>`).join('')}</select></label><label>Místo<select data-filter="placeId"><option value="">Všechna místa</option>${placeOptions.map((place) => `<option value="${escapeHtml(place.id)}"${filters.placeId === place.id ? ' selected' : ''}>${escapeHtml(place.name)}</option>`).join('')}</select></label><label>Od<input type="number" data-filter="fromYear" value="${escapeHtml(filters.fromYear || '')}" placeholder="rok"></label><label>Do<input type="number" data-filter="toYear" value="${escapeHtml(filters.toYear || '')}" placeholder="rok"></label><label>Dějinný kontext<select data-filter="history"><option value="">Zobrazit</option><option value="hidden"${filters.history === 'hidden' ? ' selected' : ''}>Skrýt</option></select></label>`})}
+      ${familyViews() ? renderTimelineModes('events') : ''}
       ${filterChips(data, filters, { type: 'Typ události', evidence: 'Jistota', branch: 'Větev', placeId: 'Místo', query: 'Text', fromYear: 'Od roku', toYear: 'Do roku', history: 'Dějinný kontext', 'history:hidden': 'Skrytý' })}
       <ol class="timeline-list">${entries.map(({ kind, event }) => {
         if (kind === 'history') {
@@ -320,7 +343,31 @@
   }
 
   function renderPlacesModes(mode) {
-    return `<div class="places-modes" role="group" aria-label="Co ukázat na mapě">${[['all', 'Všechna místa'], ['migration', 'Stěhování rodu']].map(([value, label]) => `<button type="button" data-places-mode="${value}" aria-pressed="${mode === value}">${label}</button>`).join('')}</div>`;
+    const modes = [['all', 'Všechna místa'], ['migration', 'Stěhování rodu']];
+    if (RKMap?.buildFilm) modes.push(['film', 'Film rodu']);
+    return `<div class="places-modes" role="group" aria-label="Co ukázat na mapě">${modes.map(([value, label]) => `<button type="button" data-places-mode="${value}" aria-pressed="${mode === value}">${label}</button>`).join('')}</div>`;
+  }
+
+  // The family year by year on the map, with a caption and optional narration.
+  function renderFilm(data) {
+    const film = RKMap.buildFilm(data);
+    if (film.from === null) {
+      return `<section class="view" aria-labelledby="places-title"><div class="view-header"><div><h1 id="places-title">Místa</h1><p>Film rodu</p></div></div>${renderPlacesModes('film')}${components.emptyState('Film nemá z čeho vzniknout', 'U osob chybí roky a místa narození se souřadnicemi.', false)}</section>`;
+    }
+    return `<section class="view" aria-labelledby="places-title">
+      <div class="view-header"><div><h1 id="places-title">Místa</h1><p>Film rodu: ${film.from}–${film.to}</p></div></div>
+      ${renderPlacesModes('film')}
+      <div class="film-controls">
+        <button type="button" class="film-play" data-film-play aria-pressed="false">Přehrát</button>
+        <label class="film-range">Rok<input type="range" data-film-year min="${film.from}" max="${film.to}" step="1" value="${film.from}" aria-valuetext="${film.from}"></label>
+        <output class="film-readout" data-film-readout>${film.from}</output>
+        <label>Rychlost<select data-film-speed><option value="2600">pomalu</option><option value="1500" selected>normálně</option><option value="700">rychle</option></select></label>
+        <label class="film-voice" data-film-voice-wrap hidden><input type="checkbox" data-film-voice> Namlouvat</label>
+      </div>
+      <p class="map-note">Tečky jsou místa narození a stěhování; zvýrazněná jsou ta z posledních pěti let. Čára vede z místa narození rodiče do místa narození dítěte, zelená čára je doložené stěhování.</p>
+      <div class="map-panel">${renderMapAttribution(film.places)}<div class="place-map film-map" data-film-map role="region" aria-label="Film rodu na mapě" aria-description="Stejné údaje jsou vypsané v titulku pod mapou." tabindex="0"></div></div>
+      <div class="film-caption" data-film-caption aria-live="polite"></div>
+    </section>`;
   }
 
   function migrationStepText(generation, index, count) {
@@ -371,6 +418,7 @@
 
   function renderPlaces(data, state = {}) {
     if (state.placesMode === 'migration') return renderMigration(data, state);
+    if (state.placesMode === 'film' && RKMap?.buildFilm) return renderFilm(data, state);
     const filters = state.filters || {};
     const filteredPlaces = model.filterPlaces(data, filters);
     const branches = allBranches(data);
@@ -395,7 +443,7 @@
       (claim.subjectType === 'place' && claim.subjectId === placeId)
       || (claim.sourceIds || []).some((sourceId) => placeSourceIds.has(sourceId))
     ));
-    return `<article class="place-detail"><header><h2>${escapeHtml(connections.place.name)}</h2><p>${escapeHtml(connections.place.region || connections.place.country)}</p>${connections.place.houseNumbers?.length ? `<p>Známá čísla domů: <strong>${escapeHtml(connections.place.houseNumbers.join(', '))}</strong></p>` : ''}</header>${connections.people.length ? `<section><h3>Spojené osoby</h3><div class="relation-list">${connections.people.map((person) => `<button type="button" data-person-id="${escapeHtml(person.id)}">${escapeHtml(presentation.personChoiceLabel(person))}</button>`).join('')}</div></section>` : ''}${connections.events.length ? `<section><h3>Události</h3><ol class="place-events">${connections.events.map((event) => `<li><time>${escapeHtml(event.dateText || event.date || 'datum neznámé')}</time><span>${escapeHtml(event.title)}</span></li>`).join('')}</ol></section>` : ''}${migrations.length ? `<section><h3>Doložené migrační vazby</h3><ul class="migration-list">${migrations.map((event) => `<li>${escapeHtml(event.title)} · ${escapeHtml(event.dateText || event.date || 'datum neznámé')}</li>`).join('')}</ul></section>` : ''}${claims.length ? `<section><h3>Nálezy vztahující se k místu</h3><div class="claim-stack">${claims.map((claim) => `<article>${evidenceBadge(claim.evidence)}<p>${escapeHtml(claim.text)}</p></article>`).join('')}</div></section>` : ''}${components.feedbackForm(data, { topic: `místo ${connections.place.name}`, context: [`Místo: ${connections.place.name}`, `ID: ${connections.place.id}`] })}</article>`;
+    return `<article class="place-detail"><header><h2>${escapeHtml(connections.place.name)}</h2><p>${escapeHtml(connections.place.region || connections.place.country)}</p>${connections.place.houseNumbers?.length ? `<p>Známá čísla domů: <strong>${escapeHtml(connections.place.houseNumbers.join(', '))}</strong></p>` : ''}</header>${familyViews() ? familyViews().renderPlaceHistory(data, connections.place) : ''}${connections.people.length ? `<section><h3>Spojené osoby</h3><div class="relation-list">${connections.people.map((person) => `<button type="button" data-person-id="${escapeHtml(person.id)}">${escapeHtml(presentation.personChoiceLabel(person))}</button>`).join('')}</div></section>` : ''}${connections.events.length ? `<section><h3>Události</h3><ol class="place-events">${connections.events.map((event) => `<li><time>${escapeHtml(event.dateText || event.date || 'datum neznámé')}</time><span>${escapeHtml(event.title)}</span></li>`).join('')}</ol></section>` : ''}${migrations.length ? `<section><h3>Doložené migrační vazby</h3><ul class="migration-list">${migrations.map((event) => `<li>${escapeHtml(event.title)} · ${escapeHtml(event.dateText || event.date || 'datum neznámé')}</li>`).join('')}</ul></section>` : ''}${claims.length ? `<section><h3>Nálezy vztahující se k místu</h3><div class="claim-stack">${claims.map((claim) => `<article>${evidenceBadge(claim.evidence)}<p>${escapeHtml(claim.text)}</p></article>`).join('')}</div></section>` : ''}${components.feedbackForm(data, { topic: `místo ${connections.place.name}`, context: [`Místo: ${connections.place.name}`, `ID: ${connections.place.id}`], subject: `place:${connections.place.id}` })}</article>`;
   }
 
   function renderClaims(data, state = {}) {
@@ -449,7 +497,7 @@
     const media = data.media.find((item) => isImage(item) && (item.id === source.mediaId || item.sourceId === source.id));
     const clips = data.media.filter((item) => isAudio(item) && item.sourceId === source.id).sort((a, b) => a.start - b.start);
     const claims = data.claims.filter((claim) => (claim.sourceIds || []).includes(source.id));
-    return `<article class="source-detail"><header><h2>${escapeHtml(source.title)}</h2><p>${escapeHtml(presentation.sourceTypeLabel(source.type))}${source.publisher ? ` · ${escapeHtml(source.publisher)}` : ''}</p></header>${media?.dataUri ? `<figure><img src="${media.dataUri}" alt="${escapeHtml(media.title)}"><figcaption>${escapeHtml(media.title)}</figcaption></figure>` : ''}${sourceReadingNote(source)}${clips.length ? `<section><h3>Nahrávky z rozhovoru</h3><div class="audio-clip-list">${clips.map((clip) => renderAudioClip(clip)).join('')}</div></section>` : ''}${claims.length ? `<section><h3>Co nám tento pramen vypráví</h3><div class="claim-stack">${claims.map((claim) => `<article>${evidenceBadge(claim.evidence)}<p>${escapeHtml(claim.text)}</p></article>`).join('')}</div></section>` : ''}${source.url ? `<a class="source-external" href="${escapeHtml(source.url)}" target="_blank" rel="noopener noreferrer">Otevřít původní pramen ↗</a>` : ''}</article>`;
+    return `<article class="source-detail"><header><h2>${escapeHtml(source.title)}</h2><p>${escapeHtml(presentation.sourceTypeLabel(source.type))}${source.publisher ? ` · ${escapeHtml(source.publisher)}` : ''}</p></header>${media?.dataUri ? (familyViews() ? familyViews().renderMediaFigure(data, media) : `<figure><img src="${media.dataUri}" alt="${escapeHtml(media.title)}"><figcaption>${escapeHtml(media.title)}</figcaption></figure>`) : ''}${media?.dataUri && globalThis.RKResearchViews?.renderRegionEditor ? globalThis.RKResearchViews.renderRegionEditor(data, media) : ''}${media && (media.regions || []).some((region) => !region.personId) ? components.feedbackForm(data, { topic: `Kdo je na fotografii: ${media.title}`, context: [`Médium: ${media.title}`, `ID: ${media.id}`], subject: `media:${media.id}`, kind: 'fotka' }) : ''}${sourceReadingNote(source)}${clips.length ? `<section><h3>Nahrávky z rozhovoru</h3><div class="audio-clip-list">${clips.map((clip) => renderAudioClip(clip)).join('')}</div></section>` : ''}${claims.length ? `<section><h3>Co nám tento pramen vypráví</h3><div class="claim-stack">${claims.map((claim) => `<article>${evidenceBadge(claim.evidence)}<p>${escapeHtml(claim.text)}</p></article>`).join('')}</div></section>` : ''}${source.url ? `<a class="source-external" href="${escapeHtml(source.url)}" target="_blank" rel="noopener noreferrer">Otevřít původní pramen ↗</a>` : ''}</article>`;
   }
 
   function renderSources(data, state = {}) {
@@ -508,7 +556,9 @@
     const media = data.media.find((item) => item.id === mediaId);
     if (!media) return components.emptyState('Médium nenalezeno', 'Záznam byl mezitím odstraněn.', false);
     const people = (media.personIds || []).map((id) => model.getPerson(data, id)).filter(Boolean);
-    return `<article class="media-detail"><header><h2>${escapeHtml(media.title)}</h2><p>Média · ${escapeHtml(presentation.mediaTypeLabel(media.kind))}</p></header>${isAudio(media) ? renderAudioClip(media) : media.dataUri ? `<figure><img src="${media.dataUri}" alt="${escapeHtml(media.title)}"><figcaption>${escapeHtml(media.title)}</figcaption></figure>` : '<p class="source-image-placeholder">Náhled bude vložen při sestavení.</p>'}${media.sourceId ? `<p>Pramen: <button type="button" data-source-id="${escapeHtml(media.sourceId)}">Otevřít pramen</button></p>` : ''}${people.length ? `<section class="detail-section"><h3>Propojené osoby</h3><div class="relation-list">${people.map((person) => `<button type="button" data-person-id="${escapeHtml(person.id)}">${escapeHtml(presentation.personChoiceLabel(person))}</button>`).join('')}</div></section>` : ''}</article>`;
+    const unknownFaces = (media.regions || []).filter((region) => !region.personId).length;
+    const feedback = unknownFaces ? components.feedbackForm(data, { topic: `Kdo je na fotografii: ${media.title}`, context: [`Médium: ${media.title}`, `ID: ${media.id}`], subject: `media:${media.id}`, kind: 'fotka' }) : '';
+    return `<article class="media-detail"><header><h2>${escapeHtml(media.title)}</h2><p>Média · ${escapeHtml(presentation.mediaTypeLabel(media.kind))}</p></header>${isAudio(media) ? renderAudioClip(media) : media.dataUri ? (familyViews() ? familyViews().renderMediaFigure(data, media) : `<figure><img src="${media.dataUri}" alt="${escapeHtml(media.title)}"><figcaption>${escapeHtml(media.title)}</figcaption></figure>`) : '<p class="source-image-placeholder">Náhled bude vložen při sestavení.</p>'}${globalThis.RKResearchViews?.renderRegionEditor && !isAudio(media) && media.dataUri ? globalThis.RKResearchViews.renderRegionEditor(data, media) : ''}${feedback}${media.sourceId ? `<p>Pramen: <button type="button" data-source-id="${escapeHtml(media.sourceId)}">Otevřít pramen</button></p>` : ''}${people.length ? `<section class="detail-section"><h3>Propojené osoby</h3><div class="relation-list">${people.map((person) => `<button type="button" data-person-id="${escapeHtml(person.id)}">${escapeHtml(presentation.personChoiceLabel(person))}</button>`).join('')}</div></section>` : ''}</article>`;
   }
 
   function renderResearchTaskDetail(data, taskId) {

@@ -160,7 +160,8 @@ async function main() {
   const format = argument('format', 'mp3') === 'm4a' ? 'm4a' : 'mp3';
   const rate = Math.max(-10, Math.min(10, Number(argument('rate', '-1')) || 0));
   const only = new Set(String(argument('chapters', '')).split(',').map(Number).filter(Boolean));
-  const allChapters = bookToChapters(buildBook(data, { egoId }));
+  const history = JSON.parse(await fs.readFile('src/data/history.json', 'utf8'));
+  const allChapters = bookToChapters(buildBook(data, { egoId, history }));
   const chapters = allChapters.filter((chapter) => !only.size || only.has(chapter.number));
   await fs.mkdir(outputDir, { recursive: true });
   for (const chapter of chapters) {

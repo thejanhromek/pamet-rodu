@@ -11,6 +11,29 @@ Tento dokument shrnuje opakovatelný postup pro hledání předků. Neobsahuje r
 5. Oddací nebo jinou neindexovanou knihu procházej v předem vymezeném časovém úseku. Poznamenej rozsah skutečně prohlédnutých skenů. Nenalezení osoby v tomto úseku není důkaz, že událost neexistuje nebo že nastala jinde.
 6. Pokud je cílová kniha nedostupná online, zjisti u místně příslušného matričního úřadu nebo archivu, kdo ji aktuálně uchovává a zda lze na dálku získat kopii konkrétního zápisu. Připrav signaturu, stranu a identifikační údaje; aktuální podmínky ověř na oficiálním webu úřadu. Starší blog či katalog mohou pomoci s orientací, neprokazují současné uložení knihy.
 
+## Čtení obrazů MZA ActaPublica
+
+Matriky Moravského zemského archivu se v [ActaPublica](https://www.mza.cz/actapublica/) zobrazují ve vieweru OpenSeadragon nad obrazovým serverem IIPImage (Deep Zoom). Obraz je rozdělen na dlaždice v několika úrovních rozlišení.
+
+1. Otevři detail knihy v běžném prohlížeči; konkrétní snímek má v adrese parametr `?image=<id-snímku>.jp2`. Zapiš si ID detailu, signaturu, číslo a ID snímku.
+2. Když přímý HTTP požadavek z terminálu vrátí `403` nebo selže na SSL, neznamená to, že pramen chybí – viewer v prohlížeči může fungovat. Obraz nehodnoť podle názvu souboru ani adresy.
+3. Rozměry obrazu a velikost dlaždice udává popisný soubor `….jp2.dzi` (pole `Size`, `TileSize`, `Format`). Dlaždice mají adresu `….jp2_files/{level}/{x}_{y}.jpg`; nejvyšší level odpovídá plnému rozlišení. V záznamu uváděj jen levely, které jsi skutečně viděl.
+4. Pro čtení drobného písma použij nástroj `tools/mza-crop.js`. Obsah souboru vlož do otevřené stránky detailu (konzole DevTools nebo javascriptový nástroj prohlížeče). Definuje:
+   - `mzaBase()` – základ Deep Zoom aktuálně otevřeného snímku,
+   - `mzaScan(n)` – základ snímku `n` téže knihy (stačí mít otevřený kterýkoli snímek knihy),
+   - `await mzaShow(base, x0, y0, x1, y1, maxWidth)` – načte jen dlaždice zvoleného výřezu (souřadnice jsou zlomky 0–1 šířky a výšky) v nejvyšším levelu, který se vejde do `maxWidth`, a zobrazí je jako překryv přes stránku, takže jde vyfotit screenshotem,
+   - `mzaHide()` – překryv odstraní.
+5. Osvědčený postup: nejdřív celá dvoustrana `mzaShow(mzaScan(n), 0, 0, 1, 1, 1600)` pro orientaci, potom výřez jednoho zápisu s `maxWidth` 2600–3400. Screenshot výřezu ulož k pramenům s názvem podle knihy, snímku a hledané osoby.
+6. Nástroj nic neretušuje, nestahuje celé knihy a neobchází přístupová omezení; čte tytéž dlaždice jako viewer, jen cíleně. Hodí se hlavně tam, kde viewer v malém nebo skrytém okně dlaždice nenačítá.
+
+Pravidla čtení:
+
+- Postupuj od indexu (sloupec **Snímek**) přes folio k vlastnímu zápisu. Index je navigace, ne přepis rodičů.
+- Přepisuj, až když bezpečně čteš alespoň jméno, datum, dům a rodiče. Nečitelné části označ jako nejisté a nedoplňuj je odhadem.
+- Ohraničenou negativní kontrolu (prohlédnuté snímky, rozsah let) zapiš odděleně; nenalezení v tomto rozsahu není obecná absence v knize.
+- Ke každému čtení ulož ID detailu, signaturu, ID a číslo snímku, rozsah kontroly, přesnou URL, doslovný přepis a nejistoty.
+- Nestahuj ani neskládej celé knihy a respektuj provozní pravidla archivu.
+
 ## Jak hodnotit a spojovat nálezy
 
 - Odděluj původní zápis či doslovný přepis od vlastní interpretace. U tvrzení používej stavy `verified`, `supported`, `family-record` a `hypothesis` podle skutečné síly podkladu.

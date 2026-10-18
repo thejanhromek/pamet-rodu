@@ -1,10 +1,11 @@
 (function registerFullTree(root, factory) {
+  const model = typeof module === 'object' && module.exports ? require('./model.js') : root.RKModel;
   const presentation = typeof module === 'object' && module.exports ? require('./presentation.js') : root.RKPresentation;
   const components = typeof module === 'object' && module.exports ? require('./components.js') : root.RKComponents;
-  const api = factory(presentation, components);
+  const api = factory(presentation, components, model);
   if (typeof module === 'object' && module.exports) module.exports = api;
   root.RKFullTree = api;
-})(globalThis, function createFullTree(RKPresentation, RKComponents) {
+})(globalThis, function createFullTree(RKPresentation, RKComponents, RKModel) {
   'use strict';
 
   const RELATION_TYPES = new Set(['parent-child', 'spouse', 'sibling']);
@@ -390,11 +391,31 @@
     return new Map(ids.map((id) => [id, exact.get(find(id))]));
   }
 
+  // From this scale on, expanders say what they open ("+2 děti"); smaller
+  // overviews keep the compact "+2" so they never cover the cards.
+  const LABELLED_CONTROL_SCALE = 0.6;
+
+  const CONTROL_WORDS = {
+    children: ['dítě', 'děti', 'dětí'],
+    parents: ['rodič', 'rodiče', 'rodičů'],
+    siblings: ['sourozenec', 'sourozenci', 'sourozenců'],
+    spouses: ['partner', 'partneři', 'partnerů'],
+  };
+
+  function controlLabel(control) {
+    const [one, few, many] = CONTROL_WORDS[control.direction] || ['', '', ''];
+    if (control.expanded) return `− ${few}`;
+    const count = Number(control.count) || 0;
+    return `+${count} ${count === 1 ? one : count >= 2 && count <= 4 ? few : many}`;
+  }
+
   function placeBranchControls(layout, controls, scale = 100) {
     const factor = Math.min(200, Math.max(5, Number(scale) || 100)) / 100;
     if (factor < 0.35) return [];
-    const width = Math.max(22, 36 * factor);
-    const height = Math.max(20, 28 * factor);
+    const labelled = factor >= LABELLED_CONTROL_SCALE;
+    const baseWidth = labelled ? 92 : 36;
+    const width = Math.max(22, baseWidth * factor);
+    const height = Math.max(20, (labelled ? 30 : 28) * factor);
     const personNodes = new Map((layout.children || []).filter((node) => node.id.startsWith('person-'))
       .map((node) => [decodeURIComponent(node.id.slice('person-'.length)), node]));
     const cardRects = [...personNodes.values()].map((node) => ({
@@ -428,7 +449,7 @@
       const choice = candidates.find((candidate) => !cardRects.some((rect) => intersects(candidate, rect))
         && !occupied.some((rect) => intersects(candidate, rect))) || candidates[0];
       occupied.push(choice);
-      placed.push({ ...control, ...choice, anchorX, anchorY, anchorPersonId, compact: true });
+      placed.push({ ...control, ...choice, anchorX, anchorY, anchorPersonId, compact: !labelled });
     }
     return placed;
   }
@@ -831,6 +852,45 @@
     return layout;
   }
 
+  // Names of generations relative to the chosen person, numbered like the book.
+  function generationName(generation) {
+    if (generation === 0) return 'Generace zvolené osoby';
+    const ancestors = { '-1': 'Rodiče', '-2': 'Prarodiče', '-3': 'Praprarodiče' };
+    const descendants = { 1: 'Děti', 2: 'Vnoučata', 3: 'Pravnoučata' };
+    if (generation < 0) return ancestors[generation] || `${1 - generation}. generace předků`;
+    return descendants[generation] || `${generation + 1}. generace potomků`;
+  }
+
+  // Shortest chain of recorded parent-child links (or, failing that, also
+  // marriages) between a selected person and the chosen person.
+  function getPathToFocus(graph, selectedId) {
+    const focusId = graph?.focusId;
+    if (!selectedId || !focusId || selectedId === focusId || !graph.peopleById.has(selectedId)) return null;
+    const neighbours = (id, withSpouses) => {
+      const next = [...(graph.parentIdsByChild.get(id) || []), ...(graph.childrenByParent.get(id) || [])];
+      if (withSpouses) for (const edge of graph.relationships) if (edge.type === 'spouse' && (edge.from === id || edge.to === id)) next.push(edge.from === id ? edge.to : edge.from);
+      return next;
+    };
+    for (const withSpouses of [false, true]) {
+      const previous = new Map([[selectedId, null]]);
+      const queue = [selectedId];
+      while (queue.length) {
+        const current = queue.shift();
+        if (current === focusId) {
+          const path = new Set();
+          for (let id = focusId; id; id = previous.get(id)) path.add(id);
+          return path;
+        }
+        for (const next of neighbours(current, withSpouses)) {
+          if (previous.has(next)) continue;
+          previous.set(next, current);
+          queue.push(next);
+        }
+      }
+    }
+    return null;
+  }
+
   function renderLayout(layout, visibleGraph, peopleById = layout.peopleById, options = {}) {
     if (!(visibleGraph.people || []).length) return '<p class="full-tree-empty" role="status">Zatím tu nejsou žádné osoby k zobrazení.</p>';
     const width = Math.max(1, Number(layout.width) || 1);
@@ -845,7 +905,7 @@
       const person = peopleById?.get?.(id) || (visibleGraph.people || []).find((record) => record.id === id) || {};
       const lineage = ['self', 'direct', 'collateral', 'affinal'].includes(person.lineage) ? person.lineage : 'unknown';
       const classes = ['tree-node', `tree-node-${lineage}`, id === focusId ? 'is-focus' : '', id === selectedId ? 'is-tree-selected' : ''].filter(Boolean).join(' ');
-      const card = { marks: options.marksFor?.(id) || [] };
+      const card = { marks: options.marksFor?.(id) || [], number: options.numberFor?.(id) || null };
       const record = { ...person, id, displayName: person.displayName || id };
       return `<foreignObject data-full-tree-person-node="${escapeHtml(id)}" x="${node.x}" y="${node.y}" width="${node.width}" height="${node.height}"><button xmlns="http://www.w3.org/1999/xhtml" class="${classes}" type="button" data-full-tree-person="${escapeHtml(id)}" aria-pressed="${id === selectedId ? 'true' : 'false'}" aria-label="${escapeHtml(RKComponents.cardLabel(record, card))}" title="${escapeHtml(record.displayName)}">${RKComponents.cardBody(record, card)}</button></foreignObject>`;
     }).join('');
@@ -896,7 +956,7 @@
           children.forEach((node) => {
             const childId = decodeURIComponent(node.id.slice('person-'.length));
             const status = options.linkEvidence ? RKPresentation.weakestEvidence(family.parentIds.map((parentId) => options.linkEvidence.get(`${parentId}>${childId}`) || 'unknown')) : 'unknown';
-            drops.push(`<path class="full-tree-edge-casing" d="M ${node.x + node.width / 2} ${branchY} V ${node.y}" aria-hidden="true"></path><path class="full-tree-edge full-tree-edge-child tree-edge edge-evidence-${status}" d="M ${node.x + node.width / 2} ${branchY} V ${node.y}"><title>${escapeHtml(RKPresentation.linkEvidenceLabels[status] || '')}</title></path>`);
+            drops.push(`<path class="full-tree-edge-casing" d="M ${node.x + node.width / 2} ${branchY} V ${node.y}" aria-hidden="true"></path><path class="full-tree-edge full-tree-edge-child tree-edge edge-evidence-${status}" data-parents="${escapeHtml(family.parentIds.join(' '))}" data-children="${escapeHtml(childId)}" d="M ${node.x + node.width / 2} ${branchY} V ${node.y}"><title>${escapeHtml(RKPresentation.linkEvidenceLabels[status] || '')}</title></path>`);
           });
         }
       } else {
@@ -905,7 +965,7 @@
         paths.push(`M ${Math.min(...xs)} ${y} H ${Math.max(...xs)}`);
         children.forEach((node) => paths.push(`M ${node.x + node.width / 2} ${y} V ${node.y}`));
       }
-      return `<path class="full-tree-edge-casing" d="${paths.join(' ')}" aria-hidden="true"></path><path class="full-tree-edge full-tree-edge-parent" data-full-tree-parent-family="${escapeHtml(family.id)}" data-branch-y="${routes.get(family.id) ?? ''}" d="${paths.join(' ')}" aria-hidden="true"></path>${drops.join('')}`;
+      return `<path class="full-tree-edge-casing" d="${paths.join(' ')}" aria-hidden="true"></path><path class="full-tree-edge full-tree-edge-parent" data-full-tree-parent-family="${escapeHtml(family.id)}" data-branch-y="${routes.get(family.id) ?? ''}" data-parents="${escapeHtml(family.parentIds.join(' '))}" data-children="${escapeHtml(family.childIds.join(' '))}" d="${paths.join(' ')}" aria-hidden="true"></path>${drops.join('')}`;
     }).join('');
     const relationshipMarkup = (layout.relationshipEdges || []).map((relationship) => {
       const from = personNodes.get(relationship.from);
@@ -919,7 +979,7 @@
         const y = left.y + left.height / 2;
         const d = adjacent ? `M ${left.x + left.width} ${y} H ${right.x}`
           : `M ${left.x + left.width / 2} ${left.y + left.height} V ${left.y + left.height + 10} H ${right.x + right.width / 2} V ${right.y + right.height}`;
-        return `<path class="full-tree-edge full-tree-edge-spouse" d="${d}" aria-hidden="true"></path>`;
+        return `<path class="full-tree-edge full-tree-edge-spouse" data-parents="${escapeHtml(`${relationship.from} ${relationship.to}`)}" data-children="" d="${d}" aria-hidden="true"></path>`;
       }
       const startX = from.x + from.width / 2;
       const startY = from.y + from.height / 2;
@@ -937,10 +997,35 @@
       const label = control.direction === 'children' ? 'Děti' : control.direction === 'parents' ? 'Předci' : control.direction === 'spouses' ? 'Partneři' : 'Sourozenci';
       const verb = control.expanded ? 'Sbalit' : 'Rozbalit';
       const names = family.personIds.map((id) => layout.peopleById.get(id)?.displayName || id).join(', ');
-      const buttonText = control.expanded ? '−' : `+${control.count}`;
+      const buttonText = control.compact ? (control.expanded ? '−' : `+${control.count}`) : controlLabel(control);
       const description = `${verb}: ${label.toLowerCase()} (${control.count}) · ${names}`;
-      return `<button type="button" class="full-tree-branch-button is-compact" data-full-tree-branch data-full-tree-family="${escapeHtml(family.id)}" data-full-tree-direction="${control.direction}" data-full-tree-anchor-person="${escapeHtml(control.anchorPersonId)}" aria-expanded="${control.expanded ? 'true' : 'false'}" aria-label="${escapeHtml(description)}" title="${escapeHtml(description)}" style="left:${control.x}px;top:${control.y}px;width:${control.width}px;height:${control.height}px;font-size:${Math.max(10, 11 * scale / 100)}px">${escapeHtml(buttonText)}</button>`;
+      return `<button type="button" class="full-tree-branch-button${control.compact ? ' is-compact' : ' is-labelled'}" data-full-tree-branch data-full-tree-family="${escapeHtml(family.id)}" data-full-tree-direction="${control.direction}" data-full-tree-anchor-person="${escapeHtml(control.anchorPersonId)}" aria-expanded="${control.expanded ? 'true' : 'false'}" aria-label="${escapeHtml(description)}" title="${escapeHtml(description)}" style="left:${control.x}px;top:${control.y}px;width:${control.width}px;height:${control.height}px;font-size:${Math.max(10, 12 * scale / 100)}px">${escapeHtml(buttonText)}</button>`;
     }).join('');
+    const factor = scale / 100;
+    // Generation names along the left edge, counted from the chosen person.
+    const ranks = options.generationRanks;
+    const focusRank = ranks?.get?.(focusId);
+    const focusComponentId = visibleGraph.componentByPerson?.get(focusId);
+    const rows = new Map();
+    if (Number.isFinite(focusRank)) {
+      for (const [id, node] of personNodes) {
+        if (visibleGraph.componentByPerson?.get(id) !== focusComponentId || !Number.isFinite(ranks.get(id))) continue;
+        const generation = ranks.get(id) - focusRank;
+        rows.set(generation, Math.min(rows.get(generation) ?? Infinity, node.y));
+      }
+    }
+    const generationRail = rows.size > 1 ? `<div class="full-tree-generations" aria-hidden="true">${[...rows].sort((a, b) => a[0] - b[0])
+      .map(([generation, y]) => `<span class="full-tree-generation${generation === 0 ? ' is-focus-generation' : ''}" style="top:${Math.max(0, y * factor - 22)}px">${escapeHtml(generationName(generation))}</span>`).join('')}</div>` : '';
+    // Direct ancestors whose father or mother is not recorded get a quiet tag
+    // above the card, so the full tree also shows where the records end.
+    const unknownTags = [];
+    for (const { personId, missing } of options.unknownParentsFor?.() || []) {
+      const node = personNodes.get(personId);
+      if (!node || factor < 0.35) continue;
+      const text = missing.length === 2 ? 'rodiče nezjištěni' : missing[0] === 'father' ? 'otec nezjištěn' : 'matka nezjištěna';
+      const tagWidth = 118 * factor;
+      unknownTags.push(`<span class="full-tree-unknown-parents" style="left:${(node.x + node.width) * factor - tagWidth}px;top:${Math.max(0, (node.y - 26) * factor)}px;width:${tagWidth}px;font-size:${Math.max(9, 11 * factor)}px" title="Ve zdrojích zatím nedohledáno">${text}</span>`);
+    }
     const scaledWidth = Math.ceil(width * scale / 100);
     const scaledHeight = Math.ceil(height * scale / 100);
     const branchPositions = placeBranchControls(layout, visibleGraph.controls, scale);
@@ -949,7 +1034,7 @@
     const focusComponent = visibleGraph.componentByPerson?.get(visibleGraph.focusId);
     const otherComponents = [...(layout.componentOffsets || [])].filter(([id]) => id !== focusComponent).map(([, offset]) => offset);
     const componentLabel = otherComponents.length ? `<text class="full-tree-component-label" x="48" y="${Math.min(...otherComponents.map((offset) => offset.y)) + 10}">Další větve</text>` : '';
-    return `<div class="full-tree-stage" style="width:${stageWidth}px;height:${stageHeight}px;min-width:100%"><svg class="family-tree full-family-tree" viewBox="0 0 ${width} ${height}" width="${scaledWidth}" height="${scaledHeight}" role="group" aria-label="Celý rodokmen" data-full-tree-scale="${scale}"><g class="full-tree-edges">${edgeMarkup}${relationshipMarkup}</g><g class="full-tree-nodes">${nodeMarkup}</g>${componentLabel}</svg><div class="full-tree-branch-overlay" style="left:calc(50% - ${scaledWidth / 2}px);top:0;width:${stageWidth}px;height:${stageHeight}px" aria-label="Rozbalení rodin">${branchMarkup}</div></div>`;
+    return `<div class="full-tree-stage" style="width:${stageWidth}px;height:${stageHeight}px;min-width:100%">${generationRail}<svg class="family-tree full-family-tree" viewBox="0 0 ${width} ${height}" width="${scaledWidth}" height="${scaledHeight}" role="group" aria-label="Celý rodokmen" data-full-tree-scale="${scale}"><g class="full-tree-edges">${edgeMarkup}${relationshipMarkup}</g><g class="full-tree-nodes">${nodeMarkup}</g>${componentLabel}</svg><div class="full-tree-branch-overlay" style="left:calc(50% - ${scaledWidth / 2}px);top:0;width:${stageWidth}px;height:${stageHeight}px" aria-label="Rozbalení rodin">${unknownTags.join('')}${branchMarkup}</div></div>`;
   }
 
   // Below this scale an automatically fitted tree would be too small to read.
@@ -977,7 +1062,35 @@
       if (!marksCache.has(id)) marksCache.set(id, RKPresentation.personMarks(data, id));
       return marksCache.get(id);
     };
-    const renderOptions = () => ({ focusId: graph.focusId, selectedId, scale, linkEvidence, marksFor });
+    const { numberOf } = RKModel.getAhnentafel(data, graph.focusId);
+    const numberFor = (id) => numberOf.get(id) || null;
+    // Fathers or mothers missing among the person, parents and grandparents (numbers below 8).
+    const unknownParents = [...numberOf].filter(([, number]) => number < 8).map(([personId]) => {
+      const parents = [...(graph.parentIdsByChild.get(personId) || [])].map((id) => graph.peopleById.get(id));
+      if (parents.some((parent) => !['male', 'female'].includes(parent?.sex))) return null;
+      const missing = [['father', 'male'], ['mother', 'female']].filter(([, sex]) => !parents.some((parent) => parent.sex === sex)).map(([role]) => role);
+      return missing.length ? { personId, missing } : null;
+    }).filter(Boolean);
+    const renderOptions = () => ({ focusId: graph.focusId, selectedId, scale, linkEvidence, marksFor, numberFor, generationRanks, unknownParentsFor: () => unknownParents });
+
+    // Selecting someone keeps the chain to the chosen person bright and fades the rest.
+    function applyHighlight() {
+      const path = getPathToFocus(graph, selectedId);
+      for (const button of viewport.querySelectorAll?.('[data-full-tree-person]') || []) {
+        const id = button.dataset.fullTreePerson;
+        button.classList.toggle('is-tree-highlighted', Boolean(path?.has(id)));
+        button.classList.toggle('is-tree-dimmed', Boolean(path && !path.has(id)));
+      }
+      for (const edge of viewport.querySelectorAll?.('.full-tree-edge[data-parents]') || []) {
+        const parents = (edge.dataset.parents || '').split(' ').filter(Boolean);
+        const children = (edge.dataset.children || '').split(' ').filter(Boolean);
+        const onPath = Boolean(path) && (children.length
+          ? parents.some((id) => path.has(id)) && children.some((id) => path.has(id))
+          : parents.every((id) => path.has(id)));
+        edge.classList.toggle('is-tree-highlighted', onPath);
+        edge.classList.toggle('is-tree-dimmed', Boolean(path) && !onPath);
+      }
+    }
     const ready = render({ initial: true });
 
     function getCurrentSnapshot() {
@@ -1022,6 +1135,7 @@
         layout = nextLayout;
         for (const { id, x, y, width, height } of layout.children || []) positionCache.set(id, { id, x, y, width, height });
         viewport.innerHTML = renderLayout(layout, visible, graph.peopleById, renderOptions());
+        applyHighlight();
         viewport.setAttribute?.('aria-busy', 'false');
         if (anchor) {
           restoreAnchor(anchor);
@@ -1143,6 +1257,7 @@
         button.setAttribute('aria-pressed', String(selected));
         button.classList.toggle('is-tree-selected', selected);
       }
+      applyHighlight();
       options.onSelectPerson?.(selectedId);
     }
 
@@ -1185,7 +1300,16 @@
           button.setAttribute('aria-pressed', String(selected));
           button.classList.toggle('is-tree-selected', selected);
         }
+        applyHighlight();
         return true;
+      },
+      clearSelection() {
+        selectedId = null;
+        for (const button of viewport.querySelectorAll('[data-full-tree-person]')) {
+          button.setAttribute('aria-pressed', 'false');
+          button.classList.remove('is-tree-selected');
+        }
+        applyHighlight();
       },
       destroy() {
         destroyed = true;
@@ -1196,5 +1320,5 @@
     };
   }
 
-  return { buildGraph, getVisibleGraph, getAllExpansionKeys, getParentSides, getSideExpansionKeys, getGenerationRanks, layoutGraph, getRevealScroll, placeBranchControls, branchOverlayHeight, branchOverlayWidth, fitScaleForLayout, renderLayout, mount };
+  return { buildGraph, getVisibleGraph, getAllExpansionKeys, getParentSides, getSideExpansionKeys, getGenerationRanks, generationName, getPathToFocus, controlLabel, layoutGraph, getRevealScroll, placeBranchControls, branchOverlayHeight, branchOverlayWidth, fitScaleForLayout, renderLayout, mount };
 });

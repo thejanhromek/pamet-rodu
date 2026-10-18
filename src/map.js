@@ -384,5 +384,121 @@
     return { reset, destroy() { clusterObserver?.disconnect(); resizeObserver?.disconnect(); map.remove(); } };
   }
 
-  return { getMapPlaces, getMapBounds, getValidInitialBounds, normalizedLongitude, wrapWorldGeometry, mount, buildMigration, generationLabel, mountMigration };
+  // "Film rodu": the family year by year. Births, deaths and recorded moves
+  // with their places; a line joins a parent's birthplace with the child's.
+  // Only people with a recorded year and a place with coordinates appear.
+  function buildFilm(data, { personIds = null } = {}) {
+    const placesById = new Map(getMapPlaces(data?.places).map((place) => [place.id, place]));
+    const people = new Map((data?.people || []).map((person) => [person.id, person]));
+    const included = (id) => !personIds || personIds.has(id);
+    const moments = [];
+    for (const person of people.values()) {
+      if (!included(person.id)) continue;
+      const birthYear = firstYear(person.birth?.date, person.birth?.dateText);
+      const deathYear = firstYear(person.death?.date, person.death?.dateText);
+      if (birthYear && placesById.has(person.birth?.placeId)) moments.push({ kind: 'birth', year: birthYear, personId: person.id, name: person.displayName, placeId: person.birth.placeId });
+      if (deathYear && placesById.has(person.death?.placeId)) moments.push({ kind: 'death', year: deathYear, personId: person.id, name: person.displayName, placeId: person.death.placeId });
+    }
+    for (const event of data?.events || []) {
+      if (event.type !== 'migration' || !placesById.has(event.placeId)) continue;
+      const year = firstYear(event.date, event.dateText);
+      const personId = (event.personIds || [])[0];
+      if (!year || !personId || !included(personId)) continue;
+      moments.push({ kind: 'move', year, personId, name: people.get(personId)?.displayName || '', placeId: event.placeId, fromPlaceId: placesById.has(event.fromPlaceId) ? event.fromPlaceId : null, title: event.title });
+    }
+    const birthOf = new Map(moments.filter((moment) => moment.kind === 'birth').map((moment) => [moment.personId, moment]));
+    const links = [];
+    for (const link of data?.relationships || []) {
+      if (link.type !== 'parent-child') continue;
+      const parent = birthOf.get(link.from);
+      const child = birthOf.get(link.to);
+      if (!parent || !child || parent.placeId === child.placeId) continue;
+      links.push({ year: child.year, fromPlaceId: parent.placeId, toPlaceId: child.placeId, parentId: link.from, childId: link.to });
+    }
+    for (const moment of moments) {
+      if (moment.kind === 'move' && moment.fromPlaceId && moment.fromPlaceId !== moment.placeId) links.push({ year: moment.year, fromPlaceId: moment.fromPlaceId, toPlaceId: moment.placeId, personId: moment.personId, move: true });
+    }
+    moments.sort((a, b) => a.year - b.year || a.kind.localeCompare(b.kind));
+    const years = moments.map((moment) => moment.year);
+    const usedPlaces = new Set(moments.flatMap((moment) => [moment.placeId, moment.fromPlaceId]).filter(Boolean));
+    return {
+      from: years.length ? Math.floor(Math.min(...years) / 5) * 5 : null,
+      to: years.length ? Math.max(...years) : null,
+      moments,
+      links,
+      places: [...usedPlaces].map((id) => placesById.get(id)),
+    };
+  }
+
+  // What happened in (from, to]: for the caption under the map.
+  function filmMoments(film, from, to) {
+    return (film?.moments || []).filter((moment) => moment.year > from && moment.year <= to);
+  }
+
+  function mountFilm(container, film, options = {}) {
+    const L = globalThis.L;
+    if (!container || !L) throw new Error('Map container and local Leaflet runtime are required.');
+    const places = new Map((film?.places || []).map((place) => [place.id, place]));
+    const bounds = getMapBounds(film?.places || []);
+    const map = L.map(container, { zoomControl: false, scrollWheelZoom: false, worldCopyJump: false, zoomSnap: 0.25, minZoom: -1, maxZoom: 18 });
+    map.setView([49.5, 17], 6);
+    if (options.worldGeometry) {
+      L.geoJSON(wrapWorldGeometry(options.worldGeometry, bounds), { interactive: false, style: { color: '#8b9788', weight: 0.7, opacity: 0.8, fillColor: '#e9e6dc', fillOpacity: 0.72 } }).addTo(map);
+    }
+    bindWheelZoom(map, container, options.onViewChange);
+    L.control.zoom({ position: 'topright', zoomInTitle: 'Přiblížit', zoomOutTitle: 'Oddálit' }).addTo(map);
+    const lon = (place) => normalizedLongitude(place.lon, bounds?.west ?? -180);
+    const point = (placeId) => {
+      const place = places.get(placeId);
+      return [place.lat, lon(place)];
+    };
+    const layer = L.layerGroup().addTo(map);
+    let year = film?.from ?? 0;
+    // Births stay on the map as dots; those within the last step are
+    // highlighted, older ones fade. Lines appear when the child is born.
+    function setYear(value, step = 5) {
+      year = Math.max(film.from, Math.min(film.to, Math.round(Number(value) || film.from)));
+      layer.clearLayers();
+      for (const link of film.links) {
+        if (link.year > year) continue;
+        const fresh = link.year > year - step;
+        layer.addLayer(L.polyline([point(link.fromPlaceId), point(link.toPlaceId)], { color: link.move ? '#3f6350' : '#7b3f4b', weight: fresh ? 3.5 : 1.5, opacity: fresh ? 0.9 : 0.3, dashArray: '6 6', interactive: false, className: 'film-line' }));
+      }
+      const counts = new Map();
+      for (const moment of film.moments) {
+        if (moment.year > year || moment.kind === 'death') continue;
+        const entry = counts.get(moment.placeId) || { total: 0, fresh: 0, names: [] };
+        entry.total += 1;
+        if (moment.year > year - step) {
+          entry.fresh += 1;
+          entry.names.push(moment.name);
+        }
+        counts.set(moment.placeId, entry);
+      }
+      for (const [placeId, entry] of counts) {
+        const place = places.get(placeId);
+        const word = entry.total === 1 ? 'záznam' : entry.total < 5 ? 'záznamy' : 'záznamů';
+        const label = entry.fresh ? place.name + ': ' + entry.names.join(', ') : place.name + ': ' + entry.total + ' ' + word;
+        const marker = L.circleMarker(point(placeId), {
+          radius: Math.min(16, 5 + Math.sqrt(entry.total) * 2.5),
+          color: entry.fresh ? '#7b3f4b' : '#566159',
+          weight: entry.fresh ? 3 : 1,
+          fillColor: entry.fresh ? '#c98a96' : '#b9ad9b',
+          fillOpacity: entry.fresh ? 0.85 : 0.45,
+          className: entry.fresh ? 'film-dot is-fresh' : 'film-dot',
+        });
+        marker.bindTooltip(label, { direction: 'top', className: 'place-map-label', permanent: Boolean(entry.fresh) });
+        marker.on('click', () => options.onPlaceSelect?.(placeId, marker.getElement?.()));
+        layer.addLayer(marker);
+      }
+      return year;
+    }
+    if (bounds) map.fitBounds(L.latLngBounds(L.latLng(bounds.south, bounds.west), L.latLng(bounds.north, bounds.east)), { padding: [40, 40], maxZoom: 9 });
+    if (film?.from !== null && film?.from !== undefined) setYear(film.from);
+    const resizeObserver = typeof ResizeObserver === 'function' ? new ResizeObserver(() => map.invalidateSize({ pan: false })) : null;
+    resizeObserver?.observe(container);
+    return { setYear, getYear: () => year, from: film?.from, to: film?.to, destroy() { resizeObserver?.disconnect(); map.remove(); } };
+  }
+
+  return { getMapPlaces, getMapBounds, getValidInitialBounds, normalizedLongitude, wrapWorldGeometry, mount, buildMigration, generationLabel, mountMigration, buildFilm, filmMoments, mountFilm };
 });

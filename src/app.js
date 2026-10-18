@@ -19,7 +19,11 @@
     prameny: 'sources',
     media: 'media',
   };
-  const viewToHash = Object.fromEntries(Object.entries(hashToView).filter(([hash]) => hash !== 'nalezy').map(([hash, view]) => [view, hash]));
+  // Research edition only ("Badatelna"); without RKResearchViews these hashes open the overview.
+  const RESEARCH_HASHES = { badatelna: 'research', 'zdravi-dat': 'health', prepis: 'transcribe', editor: 'editor', dna: 'dna' };
+  const RESEARCH_GROUP = 'badatelna';
+  const viewToHash = Object.fromEntries([...Object.entries(hashToView).filter(([hash]) => hash !== 'nalezy'), ...Object.entries(RESEARCH_HASHES)].map(([hash, view]) => [view, hash]));
+  const researchViews = () => globalThis.RKResearchViews?.render ? globalThis.RKResearchViews : null;
   const NAV_GROUP_VIEWS = { story: new Set(['places', 'timeline']), evidence: new Set(['sources', 'media']) };
   const NAVIGATION_GROUPS = {
     story: {
@@ -277,7 +281,25 @@
   }
 
   function viewFromHash(hash = '') {
-    return hashToView[hash.replace(/^#/, '')] || 'overview';
+    const key = hash.replace(/^#/, '');
+    if (researchViews() && RESEARCH_HASHES[key]) return RESEARCH_HASHES[key];
+    return hashToView[key] || 'overview';
+  }
+
+  // Adds the "Badatelna" menu to the header of the research edition.
+  function installResearchNavigation(navRoot, data) {
+    const views = researchViews();
+    const primary = navRoot?.querySelector('.nav-primary');
+    if (!views || !primary || primary.querySelector(`[data-nav-group="${RESEARCH_GROUP}"]`)) return null;
+    const items = views.navigationItems(data);
+    NAVIGATION_GROUPS[RESEARCH_GROUP] = { label: 'Badatelna', items };
+    NAV_GROUP_VIEWS[RESEARCH_GROUP] = new Set(items.map((item) => item.view));
+    const group = document.createElement('div');
+    group.className = 'nav-menu-group nav-menu-research';
+    group.dataset.navGroup = RESEARCH_GROUP;
+    group.innerHTML = `<button class="nav-group-trigger" type="button" data-nav-group-trigger="${RESEARCH_GROUP}" aria-haspopup="menu" aria-expanded="false" aria-controls="nav-menu-${RESEARCH_GROUP}">Badatelna <span class="nav-group-chevron" aria-hidden="true"></span></button><div class="nav-dropdown" id="nav-menu-${RESEARCH_GROUP}" role="menu" aria-label="Badatelna" hidden>${items.map((item) => `<button type="button" role="menuitem" data-view="${item.view}">${item.label}</button>`).join('')}</div>`;
+    primary.append(group);
+    return group;
   }
 
   function getNavigationModel() {
@@ -341,6 +363,7 @@
       query: '',
       filters: {},
       placesMode: 'all',
+      timelineMode: 'events',
       migrationPersonId: null,
       detail: null,
       focusTarget: 'view-root',
@@ -357,7 +380,8 @@
       return { ...state, filters: { ...state.filters, [action.name]: action.value } };
     }
     if (action.type === 'RESET_FILTERS') return { ...state, filters: {} };
-    if (action.type === 'SET_PLACES_MODE') return { ...state, placesMode: action.mode === 'migration' ? 'migration' : 'all' };
+    if (action.type === 'SET_PLACES_MODE') return { ...state, placesMode: ['migration', 'film'].includes(action.mode) ? action.mode : 'all' };
+    if (action.type === 'SET_TIMELINE_MODE') return { ...state, timelineMode: action.mode === 'lives' ? 'lives' : 'events', filters: {} };
     if (action.type === 'SET_MIGRATION_PERSON') return { ...state, migrationPersonId: action.personId || null };
     if (action.type === 'CLEAR_FILTER') {
       const filters = { ...state.filters };
@@ -367,7 +391,8 @@
     if (action.type === 'FOCUS_PERSON') return { ...state, focusPersonId: action.personId, treeSelectedPersonId: null };
     // Choosing "who I am" also centres the tree on that person.
     if (action.type === 'SET_EGO') return { ...state, egoPersonId: action.personId, focusPersonId: action.personId, treeSelectedPersonId: null };
-    if (action.type === 'SET_TREE_MODE') return { ...state, treeMode: action.mode === 'full' ? 'full' : 'direct', treeSelectedPersonId: null };
+    // The light edition has no full-tree layout engine.
+    if (action.type === 'SET_TREE_MODE') return { ...state, treeMode: action.mode === 'full' && globalThis.RK_EDITION !== 'light' ? 'full' : 'direct', treeSelectedPersonId: null };
     if (action.type === 'SET_TREE_GENERATIONS') {
       if (action.count !== 'all' && !Number.isFinite(Number(action.count))) return state;
       return { ...state, treeGenerations: clampTreeGenerations(action.count, state.treeGenerations), treeSelectedPersonId: null };
@@ -396,13 +421,17 @@
     const dialogBody = document.getElementById('detail-body');
     const liveRegion = document.getElementById('live-region');
     const navRoot = document.querySelector('.app-nav');
+    installResearchNavigation(navRoot, data);
     const navGroups = navRoot ? [...navRoot.querySelectorAll('.nav-menu-group')] : [];
     let navigationState = createNavigationState();
     let state = createInitialState(data, globalThis.location?.hash || '');
     let dialogReturnFocus = null;
     let mapController = null;
     let migrationTimer = null;
+    let filmTimer = null;
+    let film = null;
     let fullTreeController = null;
+    let researchController = null;
     const treeModeSnapshots = { direct: null, full: null };
 
     function syncParentSideActions(side) {
@@ -548,6 +577,8 @@
     function closeBubble({ restoreFocus = true } = {}) {
       if (!bubbleState || !bubble) return;
       const anchor = bubbleState.anchor;
+      // Closing a person's bubble in the full tree also lifts the path highlight.
+      if (bubbleState.inTree && state.treeMode === 'full') fullTreeController?.clearSelection?.();
       bubbleState = null;
       bubble.hidden = true;
       bubble.innerHTML = '';
@@ -620,10 +651,13 @@
     function renderCurrentView(options = {}) {
       closeBubble({ restoreFocus: false });
       stopMigrationPlayback();
+      stopFilm();
       mapController?.destroy();
       mapController = null;
       fullTreeController?.destroy();
       fullTreeController = null;
+      researchController?.destroy();
+      researchController = null;
       const navigationActivity = getNavigationActivity(state.view);
       const renderers = {
         overview: () => RKViews.renderOverview(data, state),
@@ -647,8 +681,25 @@
           ? RKViews.renderMedia(data, state)
           : RKViews.renderPlaceholder('Média', 'Důkazy', 'Vložené fotografie a stránky pramenů.'),
       };
+      const research = researchViews();
+      if (research) for (const view of Object.values(RESEARCH_HASHES)) renderers[view] = () => research.render(view, data, state);
       viewRoot.classList.toggle('is-entering', Boolean(options.animate));
       viewRoot.innerHTML = (renderers[state.view] || renderers.overview)();
+      if (research && Object.values(RESEARCH_HASHES).includes(state.view)) {
+        researchController = research.mount(state.view, viewRoot, {
+          data,
+          state,
+          // Re-render in place and give focus back to the control that changed.
+          rerender: () => {
+            const active = document.activeElement;
+            const marker = active && viewRoot.contains(active) ? [...active.attributes].find((attribute) => attribute.name.startsWith('data-rv-')) : null;
+            renderCurrentView({ focusHeading: false });
+            if (marker) viewRoot.querySelector(`[${marker.name}="${globalThis.CSS?.escape ? CSS.escape(marker.value) : marker.value}"]`)?.focus();
+          },
+          navigate: (view) => dispatch({ type: 'NAVIGATE', view }, `Otevřen pohled ${research.VIEWS[view]?.label || view}`),
+          setFilter: (name, value) => dispatch({ type: 'SET_FILTER', name, value }),
+        });
+      }
       if (state.view === 'tree' && state.treeMode === 'full' && RKFullTree) {
         const fullHost = viewRoot.querySelector('[data-full-tree-viewport]');
         if (fullHost) {
@@ -680,6 +731,17 @@
           onPlaceSelect: (placeId, element) => toggleBubble('place', placeId, element || null),
           onViewChange: () => positionBubble(),
         });
+      }
+      const filmContainer = viewRoot.querySelector('[data-film-map]');
+      if (filmContainer && globalThis.RKMap?.mountFilm) {
+        film = globalThis.RKMap.buildFilm(data);
+        mapController = globalThis.RKMap.mountFilm(filmContainer, film, {
+          worldGeometry: globalThis.RK_WORLD_OUTLINE,
+          onPlaceSelect: (placeId, element) => toggleBubble('place', placeId, element || null),
+          onViewChange: () => positionBubble(),
+        });
+        showFilmYear(film.from);
+        offerFilmVoice();
       }
       const mapContainer = viewRoot.querySelector('[data-map-view]');
       if (mapContainer && globalThis.RKMap) {
@@ -771,6 +833,83 @@
         }
         showMigrationStep(next);
       }, 1800);
+    }
+
+    // Film rodu: five years per step; the caption (and the optional Czech
+    // voice of the browser) tells what happened in them.
+    const FILM_STEP = 5;
+    function czechVoice() {
+      try {
+        return globalThis.speechSynthesis?.getVoices?.().find((voice) => /^cs/i.test(voice.lang)) || null;
+      } catch (_) {
+        return null;
+      }
+    }
+    function offerFilmVoice() {
+      const wrap = viewRoot.querySelector('[data-film-voice-wrap]');
+      if (!wrap || !globalThis.speechSynthesis) return;
+      const update = () => { wrap.hidden = !czechVoice(); };
+      update();
+      globalThis.speechSynthesis.addEventListener?.('voiceschanged', update, { once: true });
+    }
+    function speak(text) {
+      const voice = czechVoice();
+      if (!voice || !viewRoot.querySelector('[data-film-voice]')?.checked) return;
+      try {
+        globalThis.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.voice = voice;
+        utterance.lang = voice.lang;
+        globalThis.speechSynthesis.speak(utterance);
+      } catch (_) { /* narration is optional */ }
+    }
+    function showFilmYear(value, { narrate = false } = {}) {
+      if (!film || !mapController?.setYear) return;
+      const year = mapController.setYear(value, FILM_STEP);
+      const range = viewRoot.querySelector('[data-film-year]');
+      if (range) {
+        range.value = String(year);
+        range.setAttribute('aria-valuetext', String(year));
+      }
+      const readout = viewRoot.querySelector('[data-film-readout]');
+      if (readout) readout.textContent = String(year);
+      const caption = globalThis.RKFamilyViews?.filmCaption(data, film, year, FILM_STEP);
+      const target = viewRoot.querySelector('[data-film-caption]');
+      if (caption && target) target.innerHTML = caption.html;
+      if (narrate && caption) speak(caption.text);
+    }
+    function stopFilm() {
+      if (filmTimer) globalThis.clearTimeout(filmTimer);
+      filmTimer = null;
+      try { globalThis.speechSynthesis?.cancel?.(); } catch (_) { /* optional */ }
+      const play = viewRoot.querySelector('[data-film-play]');
+      if (play) {
+        play.setAttribute('aria-pressed', 'false');
+        play.textContent = 'Přehrát';
+      }
+    }
+    function toggleFilm(button) {
+      if (filmTimer) {
+        stopFilm();
+        return;
+      }
+      if (!film || !mapController?.setYear) return;
+      button.setAttribute('aria-pressed', 'true');
+      button.textContent = 'Zastavit';
+      let year = mapController.getYear() >= film.to ? film.from : mapController.getYear();
+      const tick = () => {
+        showFilmYear(year, { narrate: true });
+        if (year >= film.to) {
+          filmTimer = null;
+          stopFilm();
+          return;
+        }
+        year = Math.min(film.to, year + FILM_STEP);
+        const voiceOn = Boolean(viewRoot.querySelector('[data-film-voice]')?.checked && czechVoice());
+        const delay = Number(viewRoot.querySelector('[data-film-speed]')?.value) || 1500;
+        filmTimer = globalThis.setTimeout(tick, voiceOn ? Math.max(delay, 4500) : delay);
+      };
+      tick();
     }
 
     function restoreTreeFocus(personId) {
@@ -901,6 +1040,7 @@
       if (!person) return;
       const renderer = (source, id) => RKViews.renderPersonDetail(source, id, { showTreeFocusAction: Boolean(options.fromTree), egoPersonId: state.egoPersonId, openFeedback: Boolean(options.openFeedback) });
       openDetail('person', personId, renderer, `Profil: ${person.displayName}`, `Otevřen profil: ${person.displayName}`);
+      globalThis.RKFamilyViews?.drawRegionThumbs?.(dialogBody, data);
     }
 
     function sendFeedback(form, channel) {
@@ -911,6 +1051,8 @@
         text: form.querySelector('[data-feedback-text]')?.value || '',
         name: form.querySelector('[data-feedback-name]')?.value || '',
         edition: document.documentElement.dataset.artifactVersion || '',
+        kind: form.querySelector('[data-feedback-kind]')?.value || '',
+        subject: form.dataset.feedbackSubject || '',
       });
       const links = RKComponents.feedbackLinks(form.dataset.feedbackEmail, message);
       const status = form.querySelector('[data-feedback-status]');
@@ -939,6 +1081,8 @@
       const source = data.sources.find((item) => item.id === sourceId);
       if (!source || !RKViews.renderSourceDetail) return;
       openDetail('source', sourceId, RKViews.renderSourceDetail, `Pramen: ${source.title}`, `Otevřen pramen: ${source.title}`);
+      const editor = dialogBody.querySelector('[data-region-editor]');
+      if (editor) globalThis.RKResearchViews?.mountRegionEditor?.(dialogBody, data, editor.dataset.regionEditor);
     }
 
     function openPlace(placeId) {
@@ -963,6 +1107,22 @@
       const media = data.media.find((item) => item.id === mediaId);
       if (!media || !RKViews.renderMediaDetail) return;
       openDetail('media', mediaId, RKViews.renderMediaDetail, `Médium: ${media.title}`, `Otevřeno médium: ${media.title}`);
+      globalThis.RKResearchViews?.mountRegionEditor?.(dialogBody, data, mediaId);
+    }
+
+    // "Jak jsou příbuzní?": two pickers, the result updates in place.
+    function openKinship(aId, bId) {
+      const views = globalThis.RKFamilyViews;
+      if (!views) return;
+      openDetail('kinship', 'calculator', () => views.renderKinshipCalculator(data, { aId, bId }), 'Jak jsou příbuzní?', 'Otevřeno porovnání příbuzenství');
+    }
+
+    function updateKinship() {
+      const views = globalThis.RKFamilyViews;
+      const calculator = dialogBody.querySelector('[data-kinship-calculator]');
+      if (!views || !calculator) return;
+      const pick = (selector) => RKComponents.resolvePersonPick(data.people, calculator.querySelector(selector)?.value || '', data.relationships) || '';
+      calculator.querySelector('[data-kinship-result]').innerHTML = views.renderKinshipResult(data, pick('[data-kinship-a]'), pick('[data-kinship-b]'));
     }
 
     function openResearchTask(taskId) {
@@ -984,6 +1144,43 @@
         sendFeedback(feedbackSend.closest('[data-feedback]'), feedbackSend.dataset.feedbackSend);
         return;
       }
+      const answer = event.target.closest('[data-question-answer]');
+      if (answer) {
+        const form = answer.closest('.person-detail')?.querySelector('details.feedback');
+        if (form) {
+          form.open = true;
+          const text = form.querySelector('[data-feedback-text]');
+          if (text) text.value = `Otázka: ${answer.dataset.questionAnswer}\nOdpověď: `;
+          text?.focus();
+          text?.setSelectionRange?.(text.value.length, text.value.length);
+        }
+        return;
+      }
+      const unknownRegion = event.target.closest('[data-region-unknown]');
+      if (unknownRegion) {
+        const form = unknownRegion.closest('.media-detail, .source-detail')?.querySelector('details.feedback');
+        if (form) {
+          form.open = true;
+          const text = form.querySelector('[data-feedback-text]');
+          if (text && !text.value) text.value = `Na fotografii je v označeném místě (${unknownRegion.dataset.regionUnknown}): `;
+          text?.focus();
+        }
+        return;
+      }
+      const kinshipOpen = event.target.closest('[data-open-kinship]');
+      if (kinshipOpen) {
+        openKinship(kinshipOpen.dataset.kinshipA || state.egoPersonId, kinshipOpen.dataset.kinshipB || '');
+        return;
+      }
+      const clipWord = event.target.closest('[data-word-time]');
+      if (clipWord) {
+        const audio = clipWord.closest('[data-audio-clip]')?.querySelector('audio');
+        if (audio) {
+          audio.currentTime = Number(clipWord.dataset.wordTime) || 0;
+          audio.play?.()?.catch?.(() => {});
+        }
+        return;
+      }
       const generalFeedback = event.target.closest('[data-open-feedback]');
       if (generalFeedback) {
         openDetail('feedback', 'general', () => `<div class="feedback-page"><h2>Napsat správci kroniky</h2>${RKComponents.feedbackForm(data, { topic: 'obecná zpráva', context: ['Obecná zpráva ke kronice'] }).replace('<details class="feedback"', '<details class="feedback" open')}</div>`, 'Napsat správci kroniky', 'Otevřen formulář pro zprávu správci');
@@ -998,10 +1195,17 @@
         globalThis.print?.();
         return;
       }
+      const timelineMode = event.target.closest('[data-timeline-mode]');
+      if (timelineMode) {
+        const mode = timelineMode.dataset.timelineMode;
+        dispatch({ type: 'SET_TIMELINE_MODE', mode }, mode === 'lives' ? 'Časová osa ukazuje životy vedle sebe' : 'Časová osa ukazuje události');
+        viewRoot.querySelector(`[data-timeline-mode="${mode}"]`)?.focus();
+        return;
+      }
       const placesMode = event.target.closest('[data-places-mode]');
       if (placesMode) {
         const mode = placesMode.dataset.placesMode;
-        dispatch({ type: 'SET_PLACES_MODE', mode }, mode === 'migration' ? 'Mapa ukazuje stěhování rodu po generacích' : 'Mapa ukazuje všechna místa');
+        dispatch({ type: 'SET_PLACES_MODE', mode }, mode === 'migration' ? 'Mapa ukazuje stěhování rodu po generacích' : mode === 'film' ? 'Mapa ukazuje film rodu po letech' : 'Mapa ukazuje všechna místa');
         viewRoot.querySelector(`[data-places-mode="${mode}"]`)?.focus();
         return;
       }
@@ -1009,6 +1213,11 @@
       if (migrationNav && mapController?.setStep) {
         stopMigrationPlayback();
         showMigrationStep(mapController.getStep() + Number(migrationNav.dataset.migrationNav));
+        return;
+      }
+      const filmPlay = event.target.closest('[data-film-play]');
+      if (filmPlay) {
+        toggleFilm(filmPlay);
         return;
       }
       const migrationPlay = event.target.closest('[data-migration-play]');
@@ -1107,7 +1316,29 @@
       }
     });
 
+    // Interview transcripts follow the recording word by word.
+    document.addEventListener('timeupdate', (event) => {
+      const audio = event.target;
+      const words = audio?.closest?.('[data-audio-clip]')?.querySelectorAll('[data-word-time]');
+      if (!words?.length) return;
+      let current = null;
+      for (const word of words) {
+        if (Number(word.dataset.wordTime) <= audio.currentTime) current = word;
+        else break;
+      }
+      for (const word of words) word.classList.toggle('is-current', word === current);
+    }, true);
+
     document.addEventListener('change', (event) => {
+      const regionToggle = event.target.closest?.('[data-region-toggle]');
+      if (regionToggle) {
+        regionToggle.closest('.media-figure')?.classList.toggle('has-regions', regionToggle.checked);
+        return;
+      }
+      if (event.target.closest?.('[data-kinship-a], [data-kinship-b]')) {
+        updateKinship();
+        return;
+      }
       const filter = event.target.closest('[data-filter]');
       if (filter) dispatch({ type: 'SET_FILTER', name: filter.dataset.filter, value: filter.value });
       const treeGenerations = event.target.closest('[data-tree-generations]');
@@ -1137,6 +1368,12 @@
     });
 
     document.addEventListener('input', (event) => {
+      const filmYear = event.target.closest?.('[data-film-year]');
+      if (filmYear) {
+        stopFilm();
+        showFilmYear(filmYear.value);
+        return;
+      }
       const migrationStep = event.target.closest?.('[data-migration-step]');
       if (!migrationStep) return;
       stopMigrationPlayback();

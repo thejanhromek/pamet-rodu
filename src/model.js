@@ -153,6 +153,15 @@
     };
   }
 
+  // Loaded lazily: RKNames registers after this module in the browser.
+  function namesModule() {
+    if (globalThis.RKNames) return globalThis.RKNames;
+    if (typeof module === 'object' && module.exports) {
+      try { return require('./names.js'); } catch (_) { return null; }
+    }
+    return null;
+  }
+
   function normalizeText(value = '') {
     return String(value)
       .normalize('NFD')
@@ -277,13 +286,29 @@
         { label: 'bydliště', value: (person.residences || []).join(' ') },
         { label: 'místo narození', value: indexes.places.get(person.birth?.placeId)?.name || '' },
       ]),
-      places: matches(data.places, (place) => [{ label: 'místo', value: `${place.name} ${place.region || ''} ${place.country || ''}` }]),
+      places: matches(data.places, (place) => [
+        { label: 'místo', value: `${place.name} ${place.region || ''} ${place.country || ''}` },
+        { label: 'historický název', value: (place.historical?.historicalNames || []).map((entry) => entry.name).join(' ') },
+      ]),
       events: matches(data.events, (event) => [{ label: 'událost', value: `${event.title} ${event.dateText || ''} ${event.type || ''} ${indexes.places.get(event.placeId)?.name || ''} ${(event.personIds || []).map((id) => indexes.people.get(id)?.displayName || '').join(' ')}` }]),
       claims: matches(data.claims, (claim) => [{ label: 'tvrzení', value: `${claim.text} ${claim.reasoning || ''}` }]),
       sources: matches(data.sources, (source) => [{ label: 'pramen', value: `${source.title} ${source.origin || ''} ${(source.transcriptionLines || []).join(' ')}` }]),
       media: matches(data.media, (media) => [{ label: 'médium', value: `${media.title} ${media.kind || ''} ${media.file || ''}` }]),
       researchTasks: matches(data.researchTasks, (task) => [{ label: 'úkol', value: `${task.title} ${task.expectedPayoff || ''} ${task.nextAction || ''}` }]),
     };
+    // Register spellings: "Kadletz" or "Joannes" still find Kadlec or Jan.
+    const names = namesModule();
+    if (names && tokens.length && tokens.every((token) => token.length >= 3)) {
+      const found = new Set(groups.people.map((person) => person.id));
+      for (const person of data.people || []) {
+        if (found.has(person.id)) continue;
+        const exact = normalizeText(`${person.displayName} ${(person.aliases || []).join(' ')}`);
+        if (!tokens.every((token) => exact.includes(token) || names.tokenMatchesPerson(token, person))) continue;
+        const fuzzyToken = tokens.find((token) => !exact.includes(token));
+        const variant = names.matchingVariant(fuzzyToken, person);
+        groups.people.push({ ...person, matchReason: `Podobné jméno${variant ? ` (${variant})` : ''}`, fuzzy: true });
+      }
+    }
     const results = Object.entries(groups).flatMap(([type, items]) => items.map((item) => ({ type, item, matchReason: item.matchReason })));
     return { query, groups, results };
   }

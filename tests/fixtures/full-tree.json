@@ -1,4 +1,27 @@
 {
+  "meta": {
+    "title": "Fixture Chronicle",
+    "version": "0.0.0",
+    "updatedAt": "2000-01-01",
+    "defaultPersonId": "focus",
+    "feedback": {
+      "email": "editor@example.com"
+    },
+    "mapView": {
+      "initialBounds": {
+        "south": 48,
+        "north": 52,
+        "west": 12,
+        "east": 20
+      }
+    },
+    "evidenceLabels": {
+      "verified": "Ověřeno",
+      "supported": "Podpořeno",
+      "family-record": "Rodinný záznam",
+      "hypothesis": "Hypotéza / rozpor"
+    }
+  },
   "people": [
     { "id": "focus", "displayName": "Focus" },
     { "id": "father", "displayName": "Father" },
@@ -47,5 +70,33 @@
     { "id": "childless-partnership", "type": "spouse", "from": "childless-partner-a", "to": "childless-partner-b" },
     { "id": "invalid-edge", "type": "parent-child", "from": "ghost", "to": "focus" },
     { "id": "invalid-type", "type": "uncertain", "from": "father", "to": "focus" }
+  ],
+  "events": [
+    { "id": "event-grandfather-birth", "type": "birth", "title": "Birth of Grandfather", "date": "1880-03-01", "dateText": "1. 3. 1880", "placeId": "place-north", "personIds": ["grandfather"], "sourceIds": ["source-register"], "evidence": "verified" },
+    { "id": "event-father-birth", "type": "birth", "title": "Birth of Father", "date": "1910-06-15", "dateText": "15. 6. 1910", "placeId": "place-north", "personIds": ["father"], "sourceIds": ["source-register"], "evidence": "verified" },
+    { "id": "event-parents-marriage", "type": "marriage", "title": "Marriage of Father and Mother", "date": "1938-09-10", "dateText": "10. 9. 1938", "placeId": "place-south", "personIds": ["father", "mother"], "sourceIds": ["source-register"], "evidence": "supported" },
+    { "id": "event-focus-birth", "type": "birth", "title": "Birth of Focus", "date": "1945-01-20", "dateText": "20. 1. 1945", "placeId": "place-east", "personIds": ["focus"], "sourceIds": ["source-family"], "evidence": "family-record" },
+    { "id": "event-grandfather-death", "type": "death", "title": "Death of Grandfather", "date": "1950", "dateText": "kolem 1950", "placeId": "place-south", "personIds": ["grandfather"], "sourceIds": ["source-family"], "evidence": "hypothesis" }
+  ],
+  "places": [
+    { "id": "place-north", "name": "Northtown", "country": "Fixture Land", "region": "North Region", "lat": 50.6, "lon": 14.4 },
+    { "id": "place-south", "name": "Southville", "country": "Fixture Land", "region": "South Region", "lat": 49.1, "lon": 16.6 },
+    { "id": "place-east", "name": "Eastford", "country": "Fixture Land", "region": "East Region", "lat": 49.8, "lon": 18.2 }
+  ],
+  "claims": [
+    { "id": "claim-father-birth", "subjectType": "person", "subjectId": "father", "text": "Father was born in Northtown.", "evidence": "verified", "reasoning": "Synthetic register entry.", "sourceIds": ["source-register"] },
+    { "id": "claim-focus-story", "subjectType": "person", "subjectId": "focus", "text": "Focus grew up in Eastford.", "evidence": "family-record", "reasoning": "Synthetic family memory.", "sourceIds": ["source-family"] },
+    { "id": "claim-grandfather-death", "subjectType": "person", "subjectId": "grandfather", "text": "Grandfather probably died around 1950.", "evidence": "hypothesis", "reasoning": "Synthetic estimate.", "sourceIds": ["source-family"] }
+  ],
+  "sources": [
+    { "id": "source-register", "title": "Synthetic parish register", "type": "register", "publisher": "Fixture Archive", "url": "https://example.invalid/register", "accessedAt": "2000-01-01", "transcriptionLines": ["Line one of a synthetic entry."], "reliabilityNote": "Synthetic primary source." },
+    { "id": "source-family", "title": "Synthetic family notes", "type": "family", "publisher": "Fixture Family", "accessedAt": "2000-01-01", "transcriptionLines": [], "reliabilityNote": "Synthetic family record." }
+  ],
+  "media": [],
+  "researchTasks": [
+    { "id": "task-grandfather-death", "title": "Confirm death of Grandfather", "priority": 1, "status": "open", "expectedPayoff": "Closes a synthetic gap.", "nextAction": "Search a synthetic register.", "personIds": ["grandfather"], "sourceIds": ["source-family"] }
+  ],
+  "changelog": [
+    { "id": "change-0", "date": "2000-01-01", "title": "Synthetic fixture", "categories": ["data"], "items": ["Created for tests."] }
   ]
 }

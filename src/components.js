@@ -39,20 +39,26 @@
   }
   // Family members send corrections and memories by e-mail; the page stays
   // offline and only prepares the message (mailto, Gmail, or copy and paste).
-  function feedbackForm(data, { topic = 'Kronika', context = [] } = {}) {
+  const FEEDBACK_KINDS = [['doplneni', 'Doplnění'], ['oprava', 'Oprava chyby'], ['vzpominka', 'Vzpomínka'], ['fotka', 'Kdo je na fotografii']];
+
+  function feedbackForm(data, { topic = 'Kronika', context = [], subject = '', kind = 'doplneni' } = {}) {
     const email = data?.meta?.feedback?.email;
     if (!email) return '';
-    return `<details class="feedback" data-feedback data-feedback-topic="${escapeHtml(topic)}" data-feedback-context="${escapeHtml(context.filter(Boolean).join('\n'))}" data-feedback-email="${escapeHtml(email)}">
+    return `<details class="feedback" data-feedback data-feedback-topic="${escapeHtml(topic)}" data-feedback-context="${escapeHtml(context.filter(Boolean).join('\n'))}" data-feedback-email="${escapeHtml(email)}"${subject ? ` data-feedback-subject="${escapeHtml(subject)}"` : ''}>
       <summary>Navrhnout opravu nebo doplnit vzpomínku</summary>
       <p>Víte něco, co v kronice chybí, nebo je tu chyba? Napište to sem. Zpráva se připraví do e-mailu pro správce kroniky (<strong>${escapeHtml(email)}</strong>); odešlete ji až vy.</p>
+      <label>Druh zprávy<select data-feedback-kind>${FEEDBACK_KINDS.map(([value, label]) => `<option value="${value}"${value === kind ? ' selected' : ''}>${label}</option>`).join('')}</select></label>
       <label>Vaše zpráva<textarea data-feedback-text rows="5" placeholder="Například: Babička se narodila v sousední obci, ne ve městě. Vím to od své maminky."></textarea></label>
       <label>Vaše jméno<input data-feedback-name type="text" autocomplete="name" placeholder="Aby správce věděl, od koho zpráva je"></label>
       <div class="feedback-actions"><button type="button" class="feedback-primary" data-feedback-send="mailto">Otevřít v e-mailu</button><button type="button" data-feedback-send="gmail">Otevřít v Gmailu</button><button type="button" data-feedback-send="copy">Zkopírovat zprávu</button></div>
       <p class="feedback-status muted" data-feedback-status role="status"></p>
     </details>`;
   }
-  function feedbackMessage({ topic = 'Kronika', context = '', text = '', name = '', edition = '' } = {}) {
+  // The last line is a short machine-readable block that
+  // scripts/import-suggestions.mjs uses to file the message.
+  function feedbackMessage({ topic = 'Kronika', context = '', text = '', name = '', edition = '', kind = '', subject: about = '', date = new Date() } = {}) {
     const subject = `Rodová kronika – ${topic}`;
+    const block = JSON.stringify({ k: kind || 'doplneni', ...(about ? { s: about } : {}), d: date.toISOString().slice(0, 10) });
     const body = [
       text.trim() || '(sem napište opravu nebo vzpomínku)',
       '',
@@ -61,8 +67,30 @@
       '— Údaje pro správce kroniky —',
       context,
       edition ? `Vydání: ${edition}` : '',
+      `[RK-NAVRH v1 ${block}]`,
     ].filter((line, index, lines) => line !== '' || lines[index - 1] !== '').join('\n').trim();
     return { subject, body };
+  }
+
+  // Reads one prepared message back: text, sender and the block.
+  function parseFeedbackMessage(raw = '') {
+    const body = String(raw).replace(/\r\n/g, '\n');
+    const blockMatch = body.match(/\[RK-NAVRH v1 (\{[^\]\n]*\})\]/);
+    if (!blockMatch) return null;
+    let block;
+    try { block = JSON.parse(blockMatch[1]); } catch (_) { return null; }
+    const subjectLine = body.match(/^(?:Předmět|Subject):\s*(.+)$/m)?.[1]?.trim() || '';
+    const start = body.search(/^(?!Komu:|Předmět:|Subject:|To:|From:|Date:)/m);
+    const content = body.slice(Math.max(0, start)).split(/\n\nOd: /)[0].replace(/^\s*\n/, '').trim();
+    const name = body.match(/^Od: (.+)$/m)?.[1]?.trim() || '';
+    return {
+      kind: block.k || 'doplneni',
+      subject: block.s || '',
+      date: block.d || '',
+      text: content === '(sem napište opravu nebo vzpomínku)' ? '' : content,
+      name: name === '(vaše jméno)' ? '' : name,
+      topic: subjectLine.replace(/^Rodová kronika – /, ''),
+    };
   }
   function feedbackLinks(email, message) {
     const query = (pairs) => pairs.map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
@@ -122,5 +150,5 @@
     return [number ? `číslo ${number}` : '', role, person.displayName, RKPresentation.lifeYears(person), marks.map((mark) => mark.label).join(', ')].filter(Boolean).join(' · ');
   }
 
-  return { escapeHtml, cardBody, cardLabel, renderMarks, evidenceSummary, sectionHeader, filterBar, activeFilterChips, emptyState, entityLink, feedbackForm, feedbackMessage, feedbackLinks, personPicker, personPickerLabels, resolvePersonPick };
+  return { escapeHtml, cardBody, cardLabel, renderMarks, evidenceSummary, sectionHeader, filterBar, activeFilterChips, emptyState, entityLink, feedbackForm, feedbackMessage, parseFeedbackMessage, feedbackLinks, personPicker, personPickerLabels, resolvePersonPick, FEEDBACK_KINDS };
 });

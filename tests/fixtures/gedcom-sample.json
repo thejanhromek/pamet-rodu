@@ -1,0 +1,81 @@
+{
+  "meta": { "title": "Vymyšlená kronika pro test GEDCOM", "version": "0.1.0", "updatedAt": "2026-10-18", "defaultPersonId": "p-vnuk", "sample": true },
+  "people": [
+    { "id": "p-praded", "displayName": "Kvido Zelenoplot", "surnames": ["Zelenoplot"], "sex": "male", "lineage": "direct", "branch": ["Zelenoplot"],
+      "birth": { "date": "1871-03-14", "dateText": "14. 3. 1871", "placeId": "pl-horni" },
+      "death": { "date": "1940", "dateText": "1940", "placeText": "Lhota pod Smyšleným vrchem" },
+      "occupations": ["mlynář"], "notes": ["Mlýn stál u brodu."], "sourceIds": ["src-krest"] },
+    { "id": "p-prababicka", "displayName": "Berta Zelenoplotová, rozená Kmínková", "surnames": ["Kmínková", "Zelenoplotová"], "sex": "female", "lineage": "direct", "branch": ["Zelenoplot"],
+      "birth": { "date": "1875", "dateText": "asi 1875" },
+      "death": { "dateText": "před 1938" },
+      "sourceIds": ["src-vypraveni"] },
+    { "id": "p-ded", "displayName": "Ota Zelenoplot", "surnames": ["Zelenoplot"], "sex": "male", "lineage": "direct", "branch": ["Zelenoplot"],
+      "birth": { "date": "1899-02", "dateText": "únor 1899", "placeId": "pl-horni" },
+      "death": { "dateText": "1950–1955" },
+      "residences": ["Dolní Vymyslov"], "sourceIds": ["src-scitani"] },
+    { "id": "p-babicka", "displayName": "Lída Zelenoplotová", "surnames": ["Mákovcová", "Zelenoplotová"], "sex": "female", "lineage": "direct", "branch": ["Zelenoplot"],
+      "birth": { "date": "1902-07-11", "dateText": "11. 7. 1902" },
+      "death": { "date": "1990-12-01", "dateText": "1. 12. 1990", "placeId": "pl-dolni" },
+      "sourceIds": ["src-scitani"] },
+    { "id": "p-pratetka", "displayName": "Ema Zelenoplotová", "surnames": ["Zelenoplotová"], "sex": "female", "lineage": "collateral", "branch": ["Zelenoplot"],
+      "birth": { "dateText": "kolem 1901" },
+      "death": { "date": "1977", "dateText": "1977" },
+      "sourceIds": ["src-vypraveni"] },
+    { "id": "p-druha", "displayName": "Rút Pelyňková", "surnames": ["Pelyňková"], "sex": "female", "lineage": "affinal", "branch": ["Pelyněk"],
+      "birth": { "date": "1905", "dateText": "1905" },
+      "death": { "date": "1980", "dateText": "1980" },
+      "sourceIds": ["src-vypraveni"] },
+    { "id": "p-teta", "displayName": "Hana Zelenoplotová", "surnames": ["Zelenoplotová"], "sex": "female", "lineage": "collateral", "branch": ["Zelenoplot"],
+      "birth": { "date": "1931-05-20", "dateText": "20. 5. 1931" },
+      "sourceIds": ["src-vypraveni"] },
+    { "id": "p-vnuk", "displayName": "Jindřich Zelenoplot", "surnames": ["Zelenoplot"], "sex": "male", "lineage": "self", "branch": ["Zelenoplot"],
+      "birth": { "date": "1950-01-05", "dateText": "5. 1. 1950", "placeId": "pl-dolni" },
+      "notes": ["Žije v bytě nad pekárnou."], "sourceIds": ["src-vypraveni"] },
+    { "id": "p-vnukova-zena", "displayName": "Tereza Zelenoplotová", "surnames": ["Zelenoplotová"], "sex": "female", "lineage": "affinal", "branch": ["Zelenoplot"],
+      "sourceIds": ["src-vypraveni"] }
+  ],
+  "relationships": [
+    { "id": "r-pradedove", "type": "spouse", "from": "p-praded", "to": "p-prababicka", "evidence": "verified", "sourceIds": ["src-krest"] },
+    { "id": "r-dedove", "type": "spouse", "from": "p-ded", "to": "p-babicka", "sourceIds": ["src-scitani"] },
+    { "id": "r-vnukove", "type": "spouse", "from": "p-vnuk", "to": "p-vnukova-zena", "sourceIds": ["src-vypraveni"] },
+    { "id": "r-praded-ded", "type": "parent-child", "from": "p-praded", "to": "p-ded", "evidence": "verified", "sourceIds": ["src-krest"] },
+    { "id": "r-prababicka-ded", "type": "parent-child", "from": "p-prababicka", "to": "p-ded", "evidence": "supported", "sourceIds": ["src-krest"] },
+    { "id": "r-praded-pratetka", "type": "parent-child", "from": "p-praded", "to": "p-pratetka", "evidence": "family-record", "sourceIds": ["src-vypraveni"] },
+    { "id": "r-ded-vnuk", "type": "parent-child", "from": "p-ded", "to": "p-vnuk", "sourceIds": ["src-vypraveni"] },
+    { "id": "r-babicka-vnuk", "type": "parent-child", "from": "p-babicka", "to": "p-vnuk", "sourceIds": ["src-vypraveni"] },
+    { "id": "r-ded-teta", "type": "parent-child", "from": "p-ded", "to": "p-teta", "evidence": "hypothesis", "sourceIds": ["src-vypraveni"] },
+    { "id": "r-druha-teta", "type": "parent-child", "from": "p-druha", "to": "p-teta", "evidence": "hypothesis", "sourceIds": ["src-vypraveni"] },
+    { "id": "r-sourozenci", "type": "sibling", "from": "p-ded", "to": "p-pratetka", "sourceIds": ["src-vypraveni"] }
+  ],
+  "events": [
+    { "id": "e-narozeni-praded", "type": "birth", "title": "Narození Kvida", "date": "1871-03-14", "dateText": "14. 3. 1871", "personIds": ["p-praded"], "placeId": "pl-horni", "sourceIds": ["src-krest"], "evidence": "verified" },
+    { "id": "e-snatek-pradedu", "type": "marriage", "title": "Sňatek Kvida a Berty", "date": "1898-05-02", "dateText": "2. 5. 1898", "personIds": ["p-praded", "p-prababicka"], "placeId": "pl-horni", "sourceIds": ["src-krest"], "evidence": "supported" },
+    { "id": "e-snatek-dedu", "type": "marriage", "title": "Sňatek Oty a Lídy", "date": "1925", "endDate": "1927", "dateText": "mezi 1925 a 1927", "personIds": ["p-ded", "p-babicka"], "sourceIds": ["src-vypraveni"], "evidence": "family-record" },
+    { "id": "e-pohreb-praded", "type": "burial", "title": "Pohřeb Kvida", "dateText": "asi 1940", "personIds": ["p-praded"], "placeId": "pl-horni", "sourceIds": ["src-vypraveni"], "evidence": "hypothesis" },
+    { "id": "e-scitani", "type": "census", "title": "Sčítání lidu", "date": "1921", "dateText": "1921", "personIds": ["p-ded", "p-pratetka"], "placeId": "pl-dolni", "sourceIds": ["src-scitani"], "evidence": "verified" },
+    { "id": "e-vnuk-stehovani", "type": "migration", "title": "Stěhování", "date": "1975", "dateText": "1975", "personIds": ["p-vnuk"], "placeId": "pl-horni", "fromPlaceId": "pl-dolni", "sourceIds": ["src-vypraveni"], "evidence": "family-record" }
+  ],
+  "places": [
+    { "id": "pl-horni", "name": "Horní Fiktivov", "country": "Česko", "region": "Smyšlený kraj", "lat": 49.1234, "lon": 17.5 },
+    { "id": "pl-dolni", "name": "Dolní Vymyslov", "country": "Nikde", "lat": -12.5, "lon": -45.25 }
+  ],
+  "claims": [
+    { "id": "c-mlynar", "subjectType": "person", "subjectId": "p-praded", "text": "Kvido byl mlynář.", "reasoning": "Povolání uvádí křestní zápis syna.", "evidence": "verified", "sourceIds": ["src-krest"] },
+    { "id": "c-manzelstvi", "subjectType": "couple", "subjectId": "r-dedove", "text": "Ota a Lída byli manželé.", "reasoning": "Sčítání je uvádí v jedné domácnosti.", "evidence": "supported", "sourceIds": ["src-scitani"] },
+    { "id": "c-otec-hany", "subjectType": "relationship", "subjectId": "r-ded-teta", "text": "Otcem Hany byl nejspíš Ota.", "reasoning": "Jen rodinné vyprávění.", "evidence": "hypothesis", "sourceIds": ["src-vypraveni"] },
+    { "id": "c-vnuk", "subjectType": "person", "subjectId": "p-vnuk", "text": "Jindřich se vyučil pekařem.", "reasoning": "Vlastní vyprávění.", "evidence": "family-record", "sourceIds": ["src-vypraveni"] },
+    { "id": "c-mlyn", "subjectType": "place", "subjectId": "pl-horni", "text": "V obci stál mlýn.", "reasoning": "Mapa stabilního katastru.", "evidence": "supported", "sourceIds": ["src-krest"] }
+  ],
+  "sources": [
+    { "id": "src-krest", "title": "Matrika narozených, fiktivní farnost", "type": "parish-register", "publisher": "Smyšlený archiv", "url": "https://archiv.example/matrika/1",
+      "transcriptionLines": ["Kvido, syn mlynáře", "@ poznámka na okraji"], "reliabilityNote": "Primární zápis." },
+    { "id": "src-vypraveni", "title": "Rodinné vyprávění", "type": "oral-history", "transcriptionLines": ["Jindřich vypráví o pekárně."], "reliabilityNote": "Vzpomínka." },
+    { "id": "src-scitani", "title": "Sčítání lidu, fiktivní obec", "type": "census", "url": "https://archiv.example/scitani/2", "transcriptionLines": [], "reliabilityNote": "Úřední soupis." }
+  ],
+  "media": [
+    { "id": "m-foto", "kind": "family-photo", "title": "Kvido u mlýna", "file": "foto-mlyn.webp", "sourceId": "src-krest", "personIds": ["p-praded"] },
+    { "id": "m-hlas", "kind": "audio-clip", "title": "Jindřich o pekárně", "file": "interviews/vymysleny/clips/01.webm", "sourceId": "src-vypraveni", "personIds": ["p-vnuk"], "start": 1, "end": 9, "speaker": "Jindřich", "quote": "Voněl chleba." }
+  ],
+  "researchTasks": [],
+  "changelog": []
+}

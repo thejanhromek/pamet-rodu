@@ -90,6 +90,28 @@
     return { years: Math.max(0, years), approximate };
   }
 
+  // Places the person is connected with: birth, death, own records and homes
+  // (a residence counts when it names the place).
+  function personPlaceIds(person, data) {
+    const ids = new Set([person?.birth?.placeId, person?.death?.placeId].filter(Boolean));
+    for (const event of data?.events || []) {
+      if (!(event.personIds || []).includes(person.id)) continue;
+      if (event.placeId) ids.add(event.placeId);
+      if (event.fromPlaceId) ids.add(event.fromPlaceId);
+    }
+    for (const place of data?.places || []) {
+      const name = String(place.name || '').toLocaleLowerCase('cs').split(' ')[0];
+      if (name && (person.residences || []).some((residence) => residence.toLocaleLowerCase('cs').includes(name))) ids.add(place.id);
+    }
+    return ids;
+  }
+
+  // Local events (with placeIds) belong only to people connected with one of
+  // their places; general events belong to everybody.
+  function appliesTo(event, places) {
+    return !event.placeIds || event.placeIds.some((id) => places.has(id));
+  }
+
   // Events the person lived through, oldest first. Each item has the age at
   // the start of the event and `possible` when the data cannot tell whether
   // the person was still alive.
@@ -98,8 +120,10 @@
     if (!span) return { available: false, reason: 'birth-unknown', items: [] };
     const currentYear = options.currentYear || new Date().getFullYear();
     const { birth, death } = span;
+    const places = personPlaceIds(person, options.data);
     const items = [];
     for (const event of events) {
+      if (!appliesTo(event, places)) continue;
       const range = eventSpan(event);
       if (!range) continue;
       // Ended before the birth (compare() is 0 when precision does not allow a decision).
@@ -191,9 +215,10 @@
       if (!eventSpan(event)) errors.push(`${event.id}: neplatné datum`);
       if (!event.title || !event.summary) errors.push(`${event.id}: chybí název nebo popis`);
       if (!(event.sources || []).length || event.sources.some((source) => !/^https:\/\//.test(source.url || '') || !source.title)) errors.push(`${event.id}: chybí zdroj s odkazem`);
+      if (event.placeIds !== undefined && (!Array.isArray(event.placeIds) || !event.placeIds.length || event.placeIds.some((id) => typeof id !== 'string' || !id))) errors.push(`${event.id}: placeIds musí být neprázdný seznam ID míst`);
     }
     return errors;
   }
 
-  return { parsePoint, eventSpan, lifeSpan, lifeContext, ageSentence, possibleNote, formatEventDate, eventsBetween, validateHistory, yearsWord };
+  return { parsePoint, eventSpan, lifeSpan, lifeContext, ageSentence, possibleNote, formatEventDate, eventsBetween, validateHistory, yearsWord, personPlaceIds, appliesTo };
 });
