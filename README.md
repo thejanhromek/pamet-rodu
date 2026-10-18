@@ -6,6 +6,25 @@ Nástroj pro vlastní genealogický průzkum a rodinnou kroniku. Výsledkem je *
 
 ![Ukázková ilustrace statku](assets/optimized/statek-lipova-lhota-ilustrace.webp)
 
+## Nejrychlejší start: pošli odkaz AI asistentovi
+
+Nainstaluj si [Claude Code](https://claude.com/claude-code) (nejpohodlněji desktopovou aplikaci Claude, záložka Code), otevři v ní libovolnou složku, kam chceš kroniku uložit (např. Dokumenty), a napiš:
+
+> Chci si založit rodovou kroniku podle tohoto projektu: *odkaz na tento repozitář*
+
+Asistent tě provede instalací, ukázkou i prvním rozhovorem o rodině. Bez AI asistenta postupuj podle oddílu [První spuštění](#první-spuštění-5-minut).
+
+### Pokyny pro AI asistenta (Claude Code, Codex a další)
+
+Pokud tě uživatel poslal na tento repozitář, aby si založil vlastní kroniku, postupuj takto. Mluv česky, krátce a srozumitelně – uživatel nemusí být programátor. Před každým krokem, který něco instaluje nebo mění mimo složku projektu, se zeptej.
+
+1. **Kam:** zeptej se, kam projekt uložit (výchozí: podsložka `rodova-kronika` v aktuální složce). Naklonuj repozitář (`git clone <odkaz> rodova-kronika`); když git chybí, stáhni ZIP (`<odkaz>/archive/refs/heads/main.zip`) a rozbal ho.
+2. **Odpojení od šablony:** v klonu spusť `git remote rename origin sablona`. Kronika bude obsahovat osobní údaje, takže se nikdy nesmí pushnout do veřejného repozitáře. Pokud uživatel chce zálohu na GitHubu, založ mu nový **soukromý** repozitář (`gh repo create <nazev> --private --source . --remote origin`) až po jeho výslovném souhlasu.
+3. **Node.js:** ověř `node --version` (potřeba 20 nebo novější). Když chybí, vysvětli, jak ho nainstalovat z [nodejs.org](https://nodejs.org/) (verze LTS), nebo s jeho souhlasem nainstaluj (`winget install OpenJS.NodeJS.LTS` ve Windows, `brew install node` na macOS).
+4. **Ukázka:** ve složce projektu spusť `node scripts/build.mjs` a `node --test`, otevři uživateli `dist/rodova-kronika.html` v prohlížeči a ve dvou třech větách mu ukaž rodokmen, osobu s rozporem (Jan Kalina), mapu a míru jistoty. Ukázkový rod je vymyšlený.
+5. **Pravidla projektu:** přečti `AGENTS.md` a dovednosti v `.claude/skills/*/SKILL.md` – platí pro veškerou další práci. Řekni uživateli, že pro další práci je nejlepší otevřít v Claude Code přímo složku projektu (pak se pravidla a dovednosti načtou samy).
+6. **Vlastní kronika:** až bude uživatel chtít, postupuj podle dovednosti `.claude/skills/prvni-spusteni/SKILL.md` a pak `uvodni-rozhovor`: založ kroniku přes `node scripts/init.mjs --vlastni --jmeno "…"`, vyptej se, co o rodině ví, zapiš to a navrhni další kroky výzkumu.
+
 ## Co potřebuješ
 
 - **Node.js 20 nebo novější** (zdarma, [nodejs.org](https://nodejs.org/), na Windows stačí stáhnout instalátor „LTS“ a klikat Další). Nic dalšího se neinstaluje – projekt nemá žádné npm závislosti.
@@ -43,6 +62,7 @@ Nejpohodlnější je pracovat s AI asistentem (Claude Code, Codex apod.): projek
 
 | Dovednost | K čemu |
 |---|---|
+| `prvni-spusteni` | Provede instalací, ukázkou a založením vlastní kroniky. |
 | `uvodni-rozhovor` | Asistent se tě vyptá, co o rodině víš, a založí první osoby, úkoly a seznam podkladů. |
 | `novy-nalez` | Zapíše nález z matriky, dokumentu nebo vyprávění správně do dat (pramen, přepis, tvrzení, stav důkazu). |
 | `zpracuj-rozhovor` | Projde přepis nahraného rozhovoru a navrhne vzpomínky, úryvky a nová tvrzení. |

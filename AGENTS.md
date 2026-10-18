@@ -12,7 +12,8 @@ Projekt je soukromý, offline archiv genealogického výzkumu jedné rodiny. Vý
 - `assets/source/` pracovní kopie fotografií a dokumentů, `assets/optimized/` náhledy WebP pro build, `assets/interviews/<id>/` rozhovory (přepisy, `prompt.txt`, úryvky).
 - `assets/original/`, pokud existuje, je chráněný archiv originálů: nemaž, nepřepisuj, nepřejmenovávej.
 - `dist/` je generovaný výstup; neupravuj ho ručně, spusť build.
-- Dovednosti pro typické úkoly jsou v `.claude/skills/` (úvodní rozhovor, nový nález, zpracování rozhovoru, kontrola soukromí).
+- Dovednosti pro typické úkoly jsou v `.claude/skills/` (první spuštění, úvodní rozhovor, nový nález, zpracování rozhovoru, kontrola soukromí).
+- Je-li `meta.sample === true` v `src/data/genealogy.json`, uživatel teprve začíná: nabídni dovednost `prvni-spusteni`. Pokud `git remote -v` ukazuje veřejnou šablonu jako `origin`, nejdřív ho přejmenuj (`git remote rename origin sablona`), aby se rodinná data nikdy nepushla do veřejného repozitáře.
 
 ## Pravidla pro genealogická data
 
