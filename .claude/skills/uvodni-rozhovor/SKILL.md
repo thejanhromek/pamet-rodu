@@ -41,3 +41,5 @@ Na závěr shrň do 5–8 bodů a zapiš jako badatelské úkoly (priorita 1 = n
 4. Konkrétní matriční svazky (obec, farnost, typ, roky), až budou známá místa.
 
 Žádost u matričního úřadu doporuč až jako poslední krok.
+
+Jakmile jsou známé obce předků, založ v `src/data/registers.json` katalog matrik, které připadají v úvahu (archiv, signatura, farnost, roky, N/O/Z – jen to, co uživatel ověřil v katalogu archivu), a v `src/data/gazetteer.json` farnost a historické názvy obcí. Výzkumná fronta v badatelském vydání (`node scripts/build.mjs --edition research`) pak sama navrhne pořadí hledání. Příbuzným bez počítače připrav tištěný dotazník: `node scripts/questionnaire.mjs --person <id> --pdf`.

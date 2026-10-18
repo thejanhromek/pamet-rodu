@@ -7,9 +7,12 @@ Rodová kronika obsahuje údaje o skutečných lidech, často žijících. Tento
 | Soubor nebo složka | Obsah | Kam smí |
 |---|---|---|
 | `src/data/genealogy.json` | všechny osoby, vztahy, prameny, poznámky, úkoly | jen soukromý repozitář / tvůj počítač |
-| `src/data/family-edition.json` | texty pro rodinu | jen soukromý repozitář |
+| `src/data/family-edition.json` a doplňkové soubory (`gazetteer`, `history-local`, `registers`, `media-notes`) | texty pro rodinu, místopis, katalog matrik, označené tváře | jen soukromý repozitář |
+| `research/` | DNA shody, došlé návrhy, importy GEDCOM, potvrzené výjimky | jen soukromý repozitář; DNA shody vždy pod pseudonymem |
 | `assets/` | fotografie, dokumenty, nahrávky, přepisy | jen soukromý repozitář; plné nahrávky ani tam (`.gitignore`) |
-| `dist/rodova-kronika.html` | celá kronika nešifrovaně | nikam ven |
+| `dist/rodova-kronika.html`, `dist/rodova-kronika-lehka.html` | rodinné / lehké vydání nešifrovaně | nikam ven, jen po zaheslování |
+| `dist/rodova-kronika-badatel.html` | všechna data včetně pracovních poznámek a DNA | nikdy nikomu |
+| `releases/` | archivní vydání včetně dat | soukromá záloha |
 | `dist/rodova-kronika-zaheslovana.html` | šifrovaná kronika | rodině (e-mail, cloud, flash disk) |
 | kniha PDF, audiokniha | rodinné vydání | rodině osobně |
 
@@ -39,6 +42,10 @@ Obecné a veřejné jsou: kód v `src/` a `scripts/`, testy, dokumentace, `src/d
 Rodinné vydání automaticky vynechá badatelské úkoly, historii změn, odůvodnění tvrzení a pracovní poznámky. Míra jistoty a odkazy na prameny zůstávají, aby rodina viděla, co je ověřené a co ne.
 
 Pro ty, kdo nepoužívají počítač, vytiskni knihu (`node scripts/build-book.mjs --pdf`) nebo vytvoř audioknihu (`node scripts/build-audiobook.mjs`).
+
+## GEDCOM pro jiné programy a servery
+
+Pro nahrání rodokmenu jinam (MyHeritage, FamilySearch, Geni) exportuj vždy se skrytím žijících osob: `node scripts/gedcom.mjs export --living private`. Žijící osoby pak mají jen „Žijící osoba“ a vazby, bez dat, poznámek a fotek.
 
 ## Repozitář na GitHubu
 

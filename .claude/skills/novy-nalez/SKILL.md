@@ -11,6 +11,14 @@ Postupuj podle `AGENTS.md` a `docs/genealogicky-vyzkum-postupy.md`. Nikdy nevym�
 
 Urči typ: nová osoba, vztah, událost, místo, pramen, médium, nebo oprava existujícího údaje. Najdi v `src/data/genealogy.json`, zda osoba nebo pramen už neexistuje (hledej i varianty jména a rodná příjmení). Shoda jména a obce **nestačí** ke ztotožnění – porovnej datum, dům, partnera, rodiče, děti, povolání.
 
+## Cesta zápisu
+
+- Jeden nebo dva údaje: uprav přímo `src/data/genealogy.json` podle kroků níže.
+- Matriční zápis s více osobami: nabídni uživateli **Přepis zápisu** v Badatelně (`node scripts/build.mjs --edition research`, menu Badatelna) – vytvoří pramen, události, vazby i tvrzení najednou jako dávku změn. Nebo ji sestav sám ve formátu `rk-changes/1` (`docs/data-contract.md`).
+- Dávku vždy nejdřív `node scripts/apply-changes.mjs davka.json --dry-run`, ukaž uživateli výpis a po souhlasu zapiš bez `--dry-run` (skript sám zvýší verzi a doplní `changelog`).
+- Nová matrika, kterou uživatel prošel nebo zná (archiv, signatura, farnost, obce, roky, druh N/O/Z), patří do katalogu `src/data/registers.json` – výzkumná fronta pak u otevřených otázek ukáže, kde hledat.
+- Historický název obce, farnost nebo panství patří do `src/data/gazetteer.json`.
+
 ## 2. Pramen
 
 Založ nebo doplň `sources[]`:
@@ -40,8 +48,9 @@ Snímek nebo fotku ulož do `assets/source/`, náhled WebP do `assets/optimized/
 
 ## 5. Dokončení
 
-1. Uprav nebo uzavři související `researchTasks` a přidej nový úkol pro další krok, který z nálezu plyne.
-2. Přidej záznam do `changelog` (datum, kategorie, co se změnilo).
-3. Při významné změně zvyš `meta.version` a nastav `meta.updatedAt`.
-4. Spusť `node scripts/build.mjs` a `node --test`; chyby oprav.
-5. Uživateli shrň: co bylo zapsáno, s jakou jistotou a co je další krok.
+1. Spusť badatelské vydání a podívej se do **Zdraví dat**, zda nález nevytvořil nový problém (věk rodičů, možná duplicita); skutečnou výjimku potvrď jen se souhlasem uživatele.
+2. Uprav nebo uzavři související `researchTasks` a přidej nový úkol pro další krok, který z nálezu plyne.
+3. Přidej záznam do `changelog` (datum, kategorie, co se změnilo), pokud jsi nepoužil `apply-changes`.
+4. Při významné změně zvyš `meta.version` a nastav `meta.updatedAt`.
+5. Spusť `node scripts/build.mjs` a `node --test`; chyby oprav.
+6. Uživateli shrň: co bylo zapsáno, s jakou jistotou a co je další krok.

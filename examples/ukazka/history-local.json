@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "title": "Místní dějiny ukázkového rodu",
+    "updatedAt": "2026-10-18",
+    "sample": true,
+    "note": "Vymyšlené údaje ukázkového rodu Kalinů; nahraď je vlastními nebo soubor smaž."
+  },
+  "events": [
+    {
+      "id": "local-1911-elektrina-lipova-lhota",
+      "date": "1911",
+      "title": "Do Lipové Lhoty přišla elektřina",
+      "summary": "Vymyšlená ukázková událost: obec dostala elektrické osvětlení návsi a první přípojky domů.",
+      "scope": "obec",
+      "category": "economy",
+      "placeIds": [
+        "lipova-lhota"
+      ],
+      "sources": [
+        {
+          "title": "Ukázková kronika obce (vymyšlená)",
+          "publisher": "Example",
+          "url": "https://example.org/kronika/lipova-lhota/1911"
+        }
+      ]
+    },
+    {
+      "id": "local-1957-jzd-lipova-lhota",
+      "date": "1957",
+      "title": "V Lipové Lhotě vzniklo JZD",
+      "summary": "Vymyšlená ukázková událost: místní hospodáři vstoupili do jednotného zemědělského družstva.",
+      "scope": "obec",
+      "category": "politics",
+      "placeIds": [
+        "lipova-lhota",
+        "kalinov"
+      ],
+      "sources": [
+        {
+          "title": "Ukázková kronika obce (vymyšlená)",
+          "publisher": "Example",
+          "url": "https://example.org/kronika/lipova-lhota/1957"
+        }
+      ]
+    }
+  ]
+}

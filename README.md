@@ -64,7 +64,8 @@ Nejpohodlnější je pracovat s AI asistentem (Claude Code, Codex apod.): projek
 |---|---|
 | `prvni-spusteni` | Provede instalací, ukázkou a založením vlastní kroniky. |
 | `uvodni-rozhovor` | Asistent se tě vyptá, co o rodině víš, a založí první osoby, úkoly a seznam podkladů. |
-| `novy-nalez` | Zapíše nález z matriky, dokumentu nebo vyprávění správně do dat (pramen, přepis, tvrzení, stav důkazu). |
+| `novy-nalez` | Zapíše nález z matriky, dokumentu nebo vyprávění správně do dat (pramen, přepis, tvrzení, stav důkazu); umí použít dávku změn. |
+| `vydani-a-sdileni` | Sestaví vydání pro rodinu, zašifruje je, připraví dotazník, archivní vydání a zpracuje došlé návrhy. |
 | `zpracuj-rozhovor` | Projde přepis nahraného rozhovoru a navrhne vzpomínky, úryvky a nová tvrzení. |
 | `kontrola-soukromi` | Před sdílením zkontroluje, že se ven nedostanou údaje žijících lidí nebo pracovní poznámky. |
 
@@ -85,6 +86,52 @@ Rozpory se nemažou, zapisují se vedle sebe. Jak hodnotit prameny, popisuje [do
 
 [docs/pruvodce-vyzkumem.md](docs/pruvodce-vyzkumem.md) provede prvními týdny: co sesbírat doma, jak vést rozhovor s pamětníky ([dotazník](docs/dotaznik-pro-pametniky.md) a [souhlas s nahráváním](docs/souhlas-s-nahravanim.md)), jak číst digitalizované matriky a jak bezpečně používat MyHeritage a FamilySearch jako pracovní stopy.
 
+## Tři vydání kroniky
+
+Ze stejných dat se sestaví tři podoby:
+
+| Příkaz | Soubor | Pro koho |
+|---|---|---|
+| `node scripts/build.mjs` | `dist/rodova-kronika.html` | **Rodinné vydání** – pro příbuzné: bez badatelských úkolů, historie změn a pracovních poznámek; míra jistoty a prameny zůstávají. |
+| `node scripts/build.mjs --edition research` | `dist/rodova-kronika-badatel.html` | **Badatelské vydání** – jen pro tebe: všechna data a navíc **Badatelna** (níže). Nikdy ho nesdílej. |
+| `node scripts/build.mjs --edition light` | `dist/rodova-kronika-lehka.html` | **Lehké vydání** – rodinné vydání bez nahrávek a s menšími obrázky, pro e-mail a slabší telefony. |
+
+Rodinné vydání ukazuje i „Co je nového“ od posledního archivního vydání (viz níže). Texty pro rodinu doladíš v `src/data/family-edition.json`.
+
+## Badatelna
+
+V badatelském vydání je v menu **Badatelna** s pracovními nástroji. Nic z nich se neukládá přímo do dat: změny se sbírají do **dávky změn**, kterou si stáhneš a vložíš příkazem (viz níže).
+
+- **Výzkumná fronta** – seřazený seznam otevřených otázek (chybějící rodič, sňatek, úmrtí, slabá vazba) s odhadem přínosu a s matrikami z tvého katalogu (`src/data/registers.json`), ve kterých má smysl hledat. Pod ní tvé ruční badatelské úkoly.
+- **Zdraví dat** – kontrola věrohodnosti: věk rodičů při narození dítěte, narození po smrti rodiče, sňatek v dětském věku, možné duplicity, „ověřeno“ bez primárního pramene, vazby bez důkazu, údaje jen z pracovních stop, nepoužité prameny, místa bez souřadnic. Nález, který je ve skutečnosti v pořádku, potvrdíš jako výjimku (`research/accepted-findings.json`).
+- **Přepis zápisu** – formulář pro matriční zápis (narození, sňatek, úmrtí): opíšeš řádek podle předlohy, propojíš osoby s kronikou (nebo založíš nové) a vznikne pramen, události, vazby a tvrzení najednou.
+- **Editor** – úprava osob, vztahů, událostí, tvrzení, pramenů a míst přímo v aplikaci. U fotografie v detailu pramene označíš tváře a řádky se jménem („Kdo to je?“).
+- **DNA** – volitelně, pokud máš výsledky DNA testů v `research/dna.json`: odhad příbuzenství podle sdílených cM a shluky shod podle větví. Shody jsou žijící lidé – zapisuj je jen pod přezdívkou.
+
+## Dávky změn
+
+Úpravy z Badatelny, návrhy od příbuzných i import GEDCOM vznikají jako soubor `*.json` ve formátu „dávka změn“. Do dat se dostanou až po tvé kontrole:
+
+```bash
+node scripts/apply-changes.mjs zmeny.json --dry-run
+node scripts/apply-changes.mjs zmeny.json
+```
+
+Skript vypíše každou změnu, zkontroluje odkazy, schéma i věrohodnost (nová závažná chyba zápis zastaví), teprve potom soubory zapíše, zvýší verzi a přidá záznam do historie změn.
+
+## Spolupráce s rodinou
+
+- **Návrhy oprav a vzpomínek**: vyplň `meta.feedback.email` a kronika u osob, míst a fotek nabídne formulář, který připraví e-mail. Došlé e-maily ulož jako text a převeď na dávku změn: `node scripts/import-suggestions.mjs zprava1.txt zprava2.eml` (původní znění se uloží do `research/suggestions/`). Pak `apply-changes`.
+- **Dotazník na papír** pro příbuzného bez počítače – co o něm, jeho rodičích a prarodičích kronika neví, s místem na odpovědi: `node scripts/questionnaire.mjs --person <id> --pdf`.
+- **GEDCOM 7** pro výměnu s jinými programy a servery (MyHeritage, FamilySearch, Gramps):
+
+  ```bash
+  node scripts/gedcom.mjs export --living private
+  node scripts/gedcom.mjs import cizi-rodokmen.ged
+  ```
+
+  Export skryje údaje žijících osob. Import nic nezapisuje: vytvoří kandidáty se shodami proti tvým osobám a dávku změn (vše se stavem „hypotéza“ a poznámkou, že údaj vyžaduje ověření).
+
 ## Sdílení s rodinou
 
 Podrobně v [docs/soukromi-a-sdileni.md](docs/soukromi-a-sdileni.md). Stručně:
@@ -96,12 +143,10 @@ Podrobně v [docs/soukromi-a-sdileni.md](docs/soukromi-a-sdileni.md). Stručně:
   node scripts/protect.mjs
   ```
 
-  Vznikne `dist/rodova-kronika-zaheslovana.html`. Soubor se šifruje v počítači (AES-GCM), heslo předej rodině zvlášť. Bez hesla nejde otevřít ani obnovit.
+  Vznikne `dist/rodova-kronika-zaheslovana.html`. Soubor se šifruje v počítači (AES-GCM), heslo předej rodině zvlášť. Bez hesla nejde otevřít ani obnovit. Lehké vydání zašifruješ `node scripts/protect.mjs --input dist/rodova-kronika-lehka.html --output dist/rodova-kronika-lehka-zaheslovana.html`.
 - **Tištěná kniha**: `node scripts/build-book.mjs --pdf` (PDF vytiskne nainstalovaný Edge nebo Chrome; `--ego id-osoby` = kniha z pohledu jiné osoby).
 - **Audiokniha**: `node scripts/build-audiobook.mjs` (Windows, český hlas; bez hlasu vzniknou jen texty).
-- **Návrhy oprav od rodiny**: vyplň `meta.feedback.email` a kronika nabídne tlačítko, které připraví e-mail.
-
-Rodinné vydání automaticky vynechá badatelské úkoly, historii změn a pracovní poznámky. Texty pro rodinu můžeš doladit v `src/data/family-edition.json`.
+- **Archivní vydání** jednou za čas (třeba k Vánocům): `node scripts/release.mjs` vytvoří ve `releases/<verze>/` datovanou sadu na dlouhá léta – kroniku, knihu v PDF, GEDCOM, data, návod `CTI-ME.txt` a kontrolní součty – a lokální git tag `vydani-<verze>`. Od něj počítá „Co je nového“ v dalším rodinném vydání.
 
 ## Rozhovory s pamětníky
 
@@ -135,16 +180,28 @@ Nové funkce se do šablony přenášejí z autorovy soukromé kroniky skriptem,
 
 ```text
 src/                 aplikace (JavaScript, styly, šablona HTML) a vendored knihovny
-src/data/            tvoje data: genealogy.json, family-edition.json, history.json (obecné dějiny)
-examples/ukazka/     vymyšlený ukázkový rod (používají ho testy)
+src/data/            tvoje data: genealogy.json (hlavní soubor) a doplňkové soubory níže
+examples/ukazka/     vymyšlený ukázkový rod se všemi soubory (používají ho testy)
+schema/              JSON Schema dat; build podle něj kontroluje chyby
 assets/              fotografie (source = pracovní kopie, optimized = náhledy WebP) a rozhovory
-scripts/             build, kniha, audiokniha, zaheslování, rozhovory, init
-tests/               automatické testy (node --test)
+research/            jen soukromé: DNA, došlé návrhy, importy, výřezy matrik (nepovinné)
+scripts/             build, vydání, kniha, audiokniha, zaheslování, dávky změn, GEDCOM, rozhovory, init
+tools/               nástroj pro výřezy z digitalizovaných matrik MZA (mza-crop.js)
+tests/               automatické testy (node --test) a vizuální testy (node scripts/visual-test.mjs)
 docs/                datový kontrakt, průvodce výzkumem, dotazník, soukromí
 .claude/skills/      dovednosti pro AI asistenta
 ```
 
-`src/data/history.json` obsahuje obecné dějinné události s důrazem na Moravu; můžeš ho rozšířit o svůj kraj nebo při buildu použít jiný soubor (`--history cesta.json`).
+Doplňkové soubory dat v `src/data/` (všechny nepovinné, podrobně v [docs/data-contract.md](docs/data-contract.md)):
+
+| Soubor | Co obsahuje |
+|---|---|
+| `family-edition.json` | texty a vynechávky pro rodinné vydání |
+| `gazetteer.json` | historický místopis: dřívější a německé názvy obcí, farnost, panství, okres |
+| `history-local.json` | dějiny tvých obcí; ukážou se u lidí, kteří tam žili |
+| `registers.json` | katalog matrik (archiv, signatura, farnost, roky) pro výzkumnou frontu |
+| `media-notes.json` | datace fotografií a označené tváře a nápisy |
+| `history.json` | obecné dějiny s důrazem na Moravu; můžeš ho rozšířit nebo použít jiný (`--history`) |
 
 ## Licence
 

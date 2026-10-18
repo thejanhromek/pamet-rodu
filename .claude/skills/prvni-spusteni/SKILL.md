@@ -24,15 +24,17 @@ Pokud je projekt klon veřejné šablony (`git remote -v` ukazuje GitHub šablon
 
 - `node scripts/build.mjs` a `node --test`; při chybě ji vysvětli a oprav.
 - Otevři `dist/rodova-kronika.html` v prohlížeči (Windows `start`, macOS `open`, Linux `xdg-open`).
-- Krátká prohlídka: Přehled, Rodokmen (čísla předků, styl čar = jistota vazby, prázdná karta „Neznámá matka“), osoba Jan Kalina (rozpor v roce narození), Místa (mapa a „Stěhování rodu“), Prameny (doslovný přepis vs. výklad). Zdůrazni, že rod Kalinů je vymyšlený.
+- Krátká prohlídka: Přehled, Rodokmen (čísla předků, styl čar = jistota vazby, prázdná karta „Neznámá matka“), osoba Jan Kalina (rozpor v roce narození), Místa (mapa a „Stěhování rodu“), Prameny (doslovný přepis vs. výklad, fotografie s označenými tvářemi). Zdůrazni, že rod Kalinů je vymyšlený.
+- Pak sestav badatelské vydání `node scripts/build.mjs --edition research`, otevři `dist/rodova-kronika-badatel.html` a ukaž **Badatelnu**: výzkumnou frontu (co hledat a ve které matrice), zdraví dat, přepis zápisu a editor. Vysvětli, že úpravy z Badatelny se stahují jako **dávka změn** a do dat je zapíše `node scripts/apply-changes.mjs`, a že badatelské vydání se nikdy nesdílí.
+- Zmiň tři vydání: rodinné (pro příbuzné), badatelské (jen pro uživatele), lehké (bez nahrávek, pro e-mail a telefony).
 
 ## 4. Vlastní kronika
 
 - Zeptej se na jméno a příjmení, (volitelně) pohlaví, rok narození, název kroniky a e-mail pro návrhy oprav od rodiny.
-- `node scripts/init.mjs --vlastni --jmeno "Jméno Příjmení" [--pohlavi muz|zena] [--narozeni RRRR] [--nazev "…"] [--email …]`. Ukázka zůstane v `examples/ukazka/`.
+- `node scripts/init.mjs --vlastni --jmeno "Jméno Příjmení" [--pohlavi muz|zena] [--narozeni RRRR] [--nazev "…"] [--email …]`. Ukázka i její doplňkové soubory (místopis, místní dějiny, katalog matrik, poznámky k fotkám) zůstanou v `examples/ukazka/` jako vzor; z `src/data/` se odstraní.
 - `node scripts/build.mjs` a otevři kroniku znovu.
 - Pokračuj dovedností `uvodni-rozhovor`.
 
 ## 5. Na závěr
 
-Shrň uživateli, co má hotové, kde jsou data (`src/data/genealogy.json`), jak kroniku znovu sestavit (`node scripts/build.mjs`) a co dělat dál (první rozhovor s pamětníkem, `docs/pruvodce-vyzkumem.md`). Připomeň: rodině posílat jen zaheslovanou verzi (`node scripts/protect.mjs`), repozitář jen soukromý.
+Shrň uživateli, co má hotové, kde jsou data (`src/data/genealogy.json`), jak kroniku znovu sestavit (`node scripts/build.mjs`, pro práci `--edition research`) a co dělat dál (první rozhovor s pamětníkem, `docs/pruvodce-vyzkumem.md`). Připomeň: rodině posílat jen zaheslovanou verzi (`node scripts/protect.mjs`), repozitář jen soukromý.

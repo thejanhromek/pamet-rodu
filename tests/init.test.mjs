@@ -30,7 +30,11 @@ test('init writes own data, refuses to overwrite it and can restore the sample',
     await initProject({ root, mode: 'ukazka' });
     const sample = JSON.parse(await fs.readFile(path.join(root, 'src/data/genealogy.json'), 'utf8'));
     assert.equal(sample.meta.sample, true);
+    await fs.access(path.join(root, 'src/data/registers.json'));
+    await fs.writeFile(path.join(root, 'src/data/history-local.json'), JSON.stringify({ meta: { title: 'vlastní' }, events: [] }));
     await initProject({ root, mode: 'vlastni', name: 'Karel Dvořák' });
+    await assert.rejects(fs.access(path.join(root, 'src/data/registers.json')), 'sample companions are removed');
+    await fs.access(path.join(root, 'src/data/history-local.json'));
     const own = JSON.parse(await fs.readFile(path.join(root, 'src/data/genealogy.json'), 'utf8'));
     assert.equal(own.people[0].displayName, 'Karel Dvořák');
     await assert.rejects(initProject({ root, mode: 'ukazka' }), /--force/);

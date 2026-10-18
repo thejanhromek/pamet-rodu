@@ -7,7 +7,7 @@
 - Šablona je **samostatný repozitář s čistou historií**. Nikdy nevzniká klonem ani forkem rodinného repozitáře – jeho historie obsahuje osobní data.
 - Přenáší se jen soubory z explicitního seznamu (allowlist) v rodinném skriptu `scripts/export-public.mjs`: aplikační kód, styly, šablona HTML, vendored knihovny, obecné skripty, `history.json`, obecná dokumentace a testy, které nečtou rodinná data.
 - Nikdy se nepřenáší `src/data/genealogy.json`, `src/data/family-edition.json`, `assets/`, `research/`, `dist/` ani `imports/` – skript je odmítne, i kdyby byly na seznamu.
-- Šablona si vlastní: ukázková data (`src/data/genealogy.json`, `examples/`), ukázkové médium, README a další dokumentaci, dovednosti v `.claude/skills/`, testy nad ukázkou (`tests/sample-*.test.*`, `tests/init.test.mjs`) a `scripts/init.mjs`. Export je nepřepisuje.
+- Šablona si vlastní: ukázková data (`src/data/genealogy.json`, `family-edition.json` a doplňkové soubory `gazetteer`, `history-local`, `registers`, `media-notes` v `src/data/` i `examples/ukazka/`), ukázkové médium, README, AGENTS.md a další dokumentaci kromě `docs/data-contract.md` a `docs/genealogicky-vyzkum-postupy.md`, dovednosti v `.claude/skills/`, testy nad ukázkou (`tests/sample-*.test.*`, `tests/init.test.mjs`) a `scripts/init.mjs`. Export je nepřepisuje – po přenosu nových funkcí je proto potřeba ručně doplnit README, AGENTS.md, dovednosti a případně ukázku.
 
 ## Postup (v rodinném repozitáři)
 

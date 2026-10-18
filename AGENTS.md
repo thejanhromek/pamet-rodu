@@ -8,11 +8,13 @@ Projekt je soukromý, offline archiv genealogického výzkumu jedné rodiny. Vý
 
 - `src/data/genealogy.json` je autoritativní datový soubor. Zachovávej stabilní ID a všechny vazby mezi osobami, vztahy, událostmi, místy, tvrzeními a prameny. Pole popisuje `docs/data-contract.md`.
 - `src/data/family-edition.json` jsou volitelné texty pro rodinné vydání. `src/data/history.json` jsou obecné dějiny bez osob.
-- `examples/ukazka/` je vymyšlený ukázkový rod; používají ho testy, neměň ho kvůli vlastním datům.
+- Doplňkové soubory vedle dat (všechny nepovinné, připojují se podle ID při buildu): `gazetteer.json` (historický místopis), `history-local.json` (dějiny obcí s `placeIds`), `registers.json` (katalog matrik pro výzkumnou frontu), `media-notes.json` (datace fotek, označené tváře a nápisy). Schéma je v `schema/kronika.schema.json`.
+- `research/` je soukromá pracovní složka: `dna.json` (DNA shody – vždy jen pseudonymy, nikdy celá jména žijících lidí), `accepted-findings.json` (potvrzené výjimky kontroly věrohodnosti), `suggestions/` (došlé návrhy od příbuzných), `imports/` (kandidáti z GEDCOM). Nic z ní nepatří do rodinného vydání ani do veřejného repozitáře.
+- `examples/ukazka/` je vymyšlený ukázkový rod se všemi doplňkovými soubory; používají ho testy, neměň ho kvůli vlastním datům.
 - `assets/source/` pracovní kopie fotografií a dokumentů, `assets/optimized/` náhledy WebP pro build, `assets/interviews/<id>/` rozhovory (přepisy, `prompt.txt`, úryvky).
 - `assets/original/`, pokud existuje, je chráněný archiv originálů: nemaž, nepřepisuj, nepřejmenovávej.
 - `dist/` je generovaný výstup; neupravuj ho ručně, spusť build.
-- Dovednosti pro typické úkoly jsou v `.claude/skills/` (první spuštění, úvodní rozhovor, nový nález, zpracování rozhovoru, kontrola soukromí).
+- Dovednosti pro typické úkoly jsou v `.claude/skills/` (první spuštění, úvodní rozhovor, nový nález, zpracování rozhovoru, vydání a sdílení, kontrola soukromí).
 - Je-li `meta.sample === true` v `src/data/genealogy.json`, uživatel teprve začíná: nabídni dovednost `prvni-spusteni`. Pokud `git remote -v` ukazuje veřejnou šablonu jako `origin`, nejdřív ho přejmenuj (`git remote rename origin sablona`), aby se rodinná data nikdy nepushla do veřejného repozitáře.
 
 ## Pravidla pro genealogická data
@@ -25,6 +27,24 @@ Projekt je soukromý, offline archiv genealogického výzkumu jedné rodiny. Vý
 - Neznámého rodiče nezakládej jako osobu; zapiš badatelský úkol.
 - Soukromé údaje žijících osob nerozšiřuj nad to, co uživatel výslovně poskytl a s čím dotčení souhlasí.
 - MyHeritage, FamilySearch, cizí rodokmeny a sčítací indexy jsou pracovní stopy: uváděj konkrétní URL a poznámku, že údaj vyžaduje ověření. Postup je v `docs/genealogicky-vyzkum-postupy.md` a `docs/pruvodce-vyzkumem.md`.
+
+## Vydání
+
+- `node scripts/build.mjs` – rodinné vydání (`dist/rodova-kronika.html`) pro příbuzné.
+- `node scripts/build.mjs --edition research` – badatelské vydání (`dist/rodova-kronika-badatel.html`) s Badatelnou: výzkumná fronta, zdraví dat, přepis matričního zápisu, editor, DNA. Jen pro uživatele, nikdy ho nesdílej.
+- `node scripts/build.mjs --edition light` – lehké vydání bez nahrávek a s menšími obrázky.
+- `node scripts/release.mjs` – archivní vydání do `releases/<verze>/` a lokální tag `vydani-<verze>` (nepushuj ho bez souhlasu); od tagu se počítá „Co je nového“.
+- Další výstupy: `scripts/protect.mjs` (zaheslování), `scripts/build-book.mjs` (kniha), `scripts/build-audiobook.mjs`, `scripts/questionnaire.mjs --person <id>` (tištěný dotazník pro příbuzného), `scripts/gedcom.mjs export --living private`.
+
+## Dávky změn
+
+Větší nebo hromadné úpravy (přepis matričního zápisu, import GEDCOM, návrhy od příbuzných, změny z editoru) zapisuj jako dávku změn ve formátu `rk-changes/1` (popis v `docs/data-contract.md`), ne přímou editací JSON:
+
+1. Připrav dávku: uživatel ji stáhne z Badatelny, `scripts/import-suggestions.mjs` ji vytvoří z došlých e-mailů, `scripts/gedcom.mjs import` z cizího rodokmenu, nebo ji sestavíš sám.
+2. `node scripts/apply-changes.mjs davka.json --dry-run` – ukaž uživateli, co se změní.
+3. Po jeho souhlasu `node scripts/apply-changes.mjs davka.json` – zkontroluje odkazy, schéma a věrohodnost, zvýší patch verzi a přidá záznam do `changelog`.
+
+Drobnou opravu jednoho údaje můžeš udělat i přímo v `genealogy.json`; pravidla níže platí stejně.
 
 ## Postup pro nový nález
 
@@ -45,10 +65,13 @@ node scripts/build.mjs
 node --test
 ```
 
+Při změnách vzhledu spusť i vizuální testy `node scripts/visual-test.mjs` (potřebují Edge nebo Chrome; `--update` přepíše vzorové snímky po vědomé změně).
+
 Aplikace musí fungovat přímo z `file://`, bez serveru, účtu, CDN nebo internetu. Nepřidávej externí knihovny načítané ze sítě.
 
 ## Soukromí a sdílení
 
 - Nikdy nenahrávej data, fotografie, přepisy ani `dist/` na veřejná místa a necommituj je do veřejného repozitáře.
-- Pro sdílení s rodinou použij `node scripts/protect.mjs` (zaheslovaná kopie); heslo se předává zvlášť.
+- Pro sdílení s rodinou použij rodinné nebo lehké vydání a `node scripts/protect.mjs` (zaheslovaná kopie); heslo se předává zvlášť. Badatelské vydání a `research/` se nesdílí nikdy.
+- GEDCOM pro cizí servery exportuj vždy s `--living private`.
 - Než uživatel něco sdílí, nabídni dovednost `kontrola-soukromi`.

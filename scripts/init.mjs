@@ -5,8 +5,10 @@
 //                         [--nazev "Rodová kronika Novákových"] [--email jana@example.com] [--force]
 //   node scripts/init.mjs --ukazka [--force]   (vrátí vymyšlený ukázkový rod)
 //
-// Vlastní kronika začíná jedinou osobou – tebou. Ukázka zůstává v examples/ukazka/
-// a dál ji používají testy. Existující vlastní data se bez --force nepřepíšou.
+// Vlastní kronika začíná jedinou osobou – tebou; doplňkové soubory ukázky
+// (místopis, místní dějiny, matriky, poznámky k médiím) se odstraní. Ukázka
+// zůstává v examples/ukazka/ a dál ji používají testy. Existující vlastní data
+// se bez --force nepřepíšou.
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import readline from 'node:readline/promises';
@@ -62,9 +64,13 @@ async function isOwnData(file) {
   try { return JSON.parse(await fs.readFile(file, 'utf8')).meta?.sample !== true; } catch (_) { return false; }
 }
 
+// Optional companion files of the dataset (see docs/data-contract.md).
+export const COMPANIONS = ['gazetteer.json', 'history-local.json', 'registers.json', 'media-notes.json'];
+
 export async function initProject({ root = projectRoot, mode, force = false, ...answers }) {
   const dataFile = path.join(root, 'src/data/genealogy.json');
   const editionFile = path.join(root, 'src/data/family-edition.json');
+  const companion = (name) => path.join(root, 'src/data', name);
   if (!force && await isOwnData(dataFile)) {
     throw new Error('src/data/genealogy.json už obsahuje vlastní data. Přepíšeš je jen s volbou --force (předtím si je zazálohuj).');
   }
@@ -73,7 +79,14 @@ export async function initProject({ root = projectRoot, mode, force = false, ...
   if (mode === 'ukazka') {
     await fs.copyFile(path.join(projectRoot, 'examples/ukazka/genealogy.json'), dataFile);
     await fs.copyFile(path.join(projectRoot, 'examples/ukazka/family-edition.json'), editionFile);
+    for (const name of COMPANIONS) await fs.copyFile(path.join(projectRoot, 'examples/ukazka', name), companion(name));
     return { mode, dataFile };
+  }
+  // Companion files of the sample describe the invented family; own data start without them.
+  for (const name of COMPANIONS) {
+    try {
+      if (JSON.parse(await fs.readFile(companion(name), 'utf8')).meta?.sample === true) await fs.rm(companion(name));
+    } catch (_) { /* No such file. */ }
   }
   const data = createEmptyDataset(answers);
   await fs.writeFile(dataFile, `${JSON.stringify(data, null, 2)}\n`);

@@ -20,7 +20,11 @@ Zeptej se, co přesně (zaheslovaný HTML, kniha PDF, audiokniha, repozitář, v
 
 ## 3. Kontrola výstupu
 
+- Sdílí se jen rodinné nebo lehké vydání (`dist/rodova-kronika.html`, `dist/rodova-kronika-lehka.html`), nikdy badatelské (`dist/rodova-kronika-badatel.html`) – to obsahuje všechna data, DNA a pracovní nástroje.
 - Rodinné vydání vynechává `researchTasks`, `changelog` a `reasoning` – ověř v sestaveném HTML (`window.RK_DATA`).
+- `research/` (DNA, došlé návrhy, importy, potvrzené výjimky) nikam ven. V `research/dna.json` smějí být jen pseudonymy shod.
+- GEDCOM pro cizí server: jen `node scripts/gedcom.mjs export --living private`; zkontroluj, že žijící osoby mají jen „Žijící osoba“.
+- Archivní vydání v `releases/` obsahuje i data – patří do soukromé zálohy, ne ven.
 - `dist/rodova-kronika.html` (nezaheslovaný) nesmí odejít ven.
 - `meta.feedback.email` bude v kronice viditelný – je to v pořádku?
 

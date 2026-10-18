@@ -1,0 +1,96 @@
+{
+  "meta": {
+    "title": "Katalog matrik ukázkového rodu",
+    "updatedAt": "2026-10-18",
+    "sample": true,
+    "note": "Vymyšlené údaje ukázkového rodu Kalinů; nahraď je vlastními nebo soubor smaž."
+  },
+  "registers": [
+    {
+      "id": "reg-lipova-lhota-n-1855",
+      "archive": "Ukázkový oblastní archiv (vymyšlený)",
+      "signature": "101",
+      "parish": "Lipová Lhota",
+      "placeIds": [
+        "lipova-lhota",
+        "kalinov"
+      ],
+      "kinds": [
+        "N"
+      ],
+      "from": 1855,
+      "to": 1880,
+      "index": false,
+      "url": "https://example.org/matriky/lipova-lhota/n-1855-1880"
+    },
+    {
+      "id": "reg-lipova-lhota-n-1880",
+      "archive": "Ukázkový oblastní archiv (vymyšlený)",
+      "signature": "102",
+      "parish": "Lipová Lhota",
+      "placeIds": [
+        "lipova-lhota",
+        "kalinov"
+      ],
+      "kinds": [
+        "N"
+      ],
+      "from": 1880,
+      "to": 1900,
+      "index": true,
+      "url": "https://example.org/matriky/lipova-lhota/n-1880-1900"
+    },
+    {
+      "id": "reg-lipova-lhota-o-1840",
+      "archive": "Ukázkový oblastní archiv (vymyšlený)",
+      "signature": "103",
+      "parish": "Lipová Lhota",
+      "placeIds": [
+        "lipova-lhota",
+        "kalinov"
+      ],
+      "kinds": [
+        "O"
+      ],
+      "from": 1840,
+      "to": 1900,
+      "index": false,
+      "url": "https://example.org/matriky/lipova-lhota/o-1840-1900",
+      "note": "Svazek obsahuje i sňatky z Kalinova."
+    },
+    {
+      "id": "reg-lipova-lhota-z-1920",
+      "archive": "Ukázkový oblastní archiv (vymyšlený)",
+      "signature": "104",
+      "parish": "Lipová Lhota",
+      "placeIds": [
+        "lipova-lhota",
+        "kalinov"
+      ],
+      "kinds": [
+        "Z"
+      ],
+      "from": 1920,
+      "to": 1940,
+      "index": true
+    },
+    {
+      "id": "reg-horni-habrova-nzo-1920",
+      "archive": "Ukázkový oblastní archiv (vymyšlený)",
+      "signature": "201",
+      "parish": "Horní Habrová",
+      "placeIds": [
+        "horni-habrova"
+      ],
+      "kinds": [
+        "N",
+        "O",
+        "Z"
+      ],
+      "from": 1920,
+      "to": 1949,
+      "index": true,
+      "url": "https://example.org/matriky/horni-habrova/1920-1949"
+    }
+  ]
+}

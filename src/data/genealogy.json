@@ -367,7 +367,7 @@
     },
     {
       "id": "src-foto-statek",
-      "title": "Statek v Lipové Lhotě č. 12 – ilustrační kresba vytvořená pro ukázku",
+      "title": "Svatba před statkem v Lipové Lhotě č. 12 – ilustrační kresba vytvořená pro ukázku",
       "type": "family-photo",
       "mediaId": "media-statek",
       "transcriptionLines": ["Na rubu (vymyšleno): „Svatba Pepy a Mařky, léto 1955“."],
@@ -385,7 +385,7 @@
     {
       "id": "media-statek",
       "kind": "family-photo",
-      "title": "Statek v Lipové Lhotě č. 12 (ilustrační kresba)",
+      "title": "Svatba Josefa a Marie před statkem č. 12 (ilustrační kresba)",
       "file": "statek-lipova-lhota-ilustrace.webp",
       "sourceId": "src-foto-statek",
       "personIds": ["kalina-josef-1931", "kalinova-marie-1934"]

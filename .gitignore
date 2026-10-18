@@ -15,3 +15,9 @@ dist/
 # Archiv originálních fotografií a plné nahrávky rozhovorů zálohuj mimo git.
 assets/original/
 assets/interviews/*/audio/
+
+# Archivní vydání (scripts/release.mjs) se ukládají mimo git.
+releases/
+
+# Zmenšené obrázky lehkého vydání (cache, vznikají při buildu).
+assets/light/

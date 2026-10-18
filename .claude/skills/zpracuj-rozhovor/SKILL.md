@@ -42,7 +42,9 @@ Pro 3–10 nejsilnějších míst přidej `media[]`:
   "interview": "<id>", "start": 17.2, "end": 115, "speaker": "Jméno (* rok)", "quote": "doslovný přepis" }
 ```
 
-Časy jsou v sekundách celého rozhovoru (`interviewStart` v `transcript.json`). Úryvek drž pod 2–3 minuty. Pak `node scripts/make-clips.mjs` (potřebuje ffmpeg), `node scripts/build.mjs` a `node --test`.
+Časy jsou v sekundách celého rozhovoru (`interviewStart` v `transcript.json`). Úryvek drž pod 2–3 minuty. Build k úryvku sám doplní slova s časy z `transcript.json`, takže přehrávač v kronice ukazuje přepis souběžně se zvukem; ručně nic nepiš.
+
+Více nových osob a tvrzení z jednoho rozhovoru zapiš jako dávku změn (`rk-changes/1`), ukaž ji uživateli přes `node scripts/apply-changes.mjs davka.json --dry-run` a zapiš po souhlasu. Pak `node scripts/make-clips.mjs` (potřebuje ffmpeg), `node scripts/build.mjs` a `node --test`.
 
 ## 5. Shrnutí
 

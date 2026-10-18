@@ -1,0 +1,122 @@
+{
+  "meta": {
+    "title": "Místopis ukázkového rodu",
+    "updatedAt": "2026-10-18",
+    "sample": true,
+    "note": "Vymyšlené údaje ukázkového rodu Kalinů; nahraď je vlastními nebo soubor smaž."
+  },
+  "places": {
+    "lipova-lhota": {
+      "historicalNames": [
+        {
+          "name": "Linden-Lhota",
+          "lang": "de",
+          "to": "1918"
+        },
+        {
+          "name": "Lhota Lipová",
+          "lang": "cs",
+          "to": "1880"
+        }
+      ],
+      "jurisdictions": [
+        {
+          "type": "parish",
+          "name": "farnost Lipová Lhota, kostel sv. Václava"
+        },
+        {
+          "type": "estate",
+          "name": "panství Kalinov",
+          "to": "1848"
+        },
+        {
+          "type": "political-district",
+          "name": "okres Tábor",
+          "from": "1850"
+        }
+      ],
+      "parish": {
+        "name": "Lipová Lhota",
+        "placeId": "lipova-lhota"
+      },
+      "links": [
+        {
+          "title": "Ukázkový lexikon obcí",
+          "url": "https://example.org/lexikon/lipova-lhota"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Ukázkový lexikon obcí (vymyšlený)",
+          "publisher": "Example",
+          "url": "https://example.org/lexikon/lipova-lhota"
+        }
+      ]
+    },
+    "kalinov": {
+      "historicalNames": [
+        {
+          "name": "Kalinow",
+          "lang": "de",
+          "to": "1918"
+        }
+      ],
+      "jurisdictions": [
+        {
+          "type": "parish",
+          "name": "farnost Lipová Lhota",
+          "note": "Kalinov neměl vlastní kostel; matriky vedla Lipová Lhota."
+        },
+        {
+          "type": "estate",
+          "name": "panství Kalinov",
+          "to": "1848"
+        }
+      ],
+      "parish": {
+        "name": "Lipová Lhota",
+        "placeId": "lipova-lhota"
+      },
+      "links": [],
+      "sources": [
+        {
+          "title": "Ukázkový lexikon obcí (vymyšlený)",
+          "publisher": "Example",
+          "url": "https://example.org/lexikon/kalinov"
+        }
+      ]
+    },
+    "horni-habrova": {
+      "historicalNames": [
+        {
+          "name": "Ober-Habrowa",
+          "lang": "de",
+          "to": "1918"
+        }
+      ],
+      "jurisdictions": [
+        {
+          "type": "parish",
+          "name": "farnost Horní Habrová"
+        },
+        {
+          "type": "political-district",
+          "name": "okres Tábor",
+          "from": "1850"
+        }
+      ],
+      "parish": {
+        "name": "Horní Habrová",
+        "placeId": "horni-habrova"
+      },
+      "links": [],
+      "sources": [
+        {
+          "title": "Ukázkový lexikon obcí (vymyšlený)",
+          "publisher": "Example",
+          "url": "https://example.org/lexikon/horni-habrova"
+        }
+      ]
+    }
+  }
+}

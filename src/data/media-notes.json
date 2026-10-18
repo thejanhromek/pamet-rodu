@@ -1,0 +1,54 @@
+{
+  "meta": {
+    "title": "Poznámky k médiím ukázkového rodu",
+    "updatedAt": "2026-10-18",
+    "sample": true,
+    "note": "Vymyšlené údaje ukázkového rodu Kalinů; nahraď je vlastními nebo soubor smaž."
+  },
+  "media": {
+    "media-statek": {
+      "date": "1955",
+      "dateText": "léto 1955",
+      "dateEvidence": "family-record",
+      "dateReasoning": "Na rubu je rok 1955 a Marie v rozhovoru vyprávěla o svatbě před statkem.",
+      "regions": [
+        {
+          "id": "r1",
+          "kind": "face",
+          "personId": "kalina-josef-1931",
+          "x": 0.582,
+          "y": 0.629,
+          "w": 0.071,
+          "h": 0.103
+        },
+        {
+          "id": "r2",
+          "kind": "face",
+          "personId": "kalinova-marie-1934",
+          "x": 0.673,
+          "y": 0.64,
+          "w": 0.067,
+          "h": 0.097
+        },
+        {
+          "id": "r3",
+          "kind": "face",
+          "label": "neznámé dítě",
+          "x": 0.848,
+          "y": 0.7,
+          "w": 0.049,
+          "h": 0.071
+        },
+        {
+          "id": "r4",
+          "kind": "text",
+          "label": "cedulka s číslem domu 12",
+          "x": 0.412,
+          "y": 0.414,
+          "w": 0.04,
+          "h": 0.04
+        }
+      ]
+    }
+  }
+}
