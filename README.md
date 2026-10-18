@@ -6,7 +6,7 @@ Nástroj pro vlastní genealogický průzkum a rodinnou kroniku. Výsledkem je *
 
 Šablona obsahuje **vymyšlený ukázkový rod Kalinů z Lipové Lhoty** – nic z něj není skutečné. Můžeš si na něm vše vyzkoušet a pak začít vlastní kroniku.
 
-![Ukázková ilustrace statku](assets/optimized/statek-lipova-lhota-ilustrace.webp)
+![Paměť rodu – rodokmen s mírou jistoty u každé vazby](docs/img/hero.png)
 
 ## Nejrychlejší start: pošli odkaz AI asistentovi
 

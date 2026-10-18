@@ -1,0 +1,116 @@
+<!doctype html>
+<!-- Úvodní grafika README. Vykreslení do PNG (1280×640, 2×):
+     msedge --headless=new --hide-scrollbars --window-size=1280,640 --force-device-scale-factor=2 --screenshot=docs/img/hero.png file:///…/docs/img/hero.html -->
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<title>Paměť rodu</title>
+<style>
+  :root {
+    --paper: #f4f0e7; --paper-deep: #e8e0d1; --paper-light: #fbf9f3;
+    --ink: #1d2722; --ink-soft: #566159; --line: #d4caba; --line-strong: #b9ad9b;
+    --wine: #7b3f4b; --wine-soft: #f0dfe2; --moss: #3f6350; --moss-soft: #dfe9e1;
+    --gold: #a97d3e; --gold-soft: #f3ead9;
+    --serif: Georgia, 'Times New Roman', serif;
+    --sans: 'Segoe UI', Inter, system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 1280px; height: 640px; overflow: hidden; }
+  body {
+    position: relative; font-family: var(--sans); color: var(--ink);
+    background:
+      radial-gradient(900px 520px at 88% 30%, rgba(255,255,255,.75), transparent 70%),
+      radial-gradient(700px 500px at 0% 100%, rgba(169,125,62,.10), transparent 70%),
+      var(--paper);
+  }
+  .contours { position: absolute; inset: 0; opacity: .5; }
+  .intro { position: absolute; left: 60px; top: 74px; width: 440px; }
+  .kicker { font-size: 13px; font-weight: 750; letter-spacing: .14em; text-transform: uppercase; color: var(--wine); }
+  h1 { font-family: var(--serif); font-weight: 600; font-size: 74px; line-height: 1; white-space: nowrap; letter-spacing: -.03em; margin-top: 18px; }
+  .lead { margin-top: 22px; font-size: 19.5px; line-height: 1.5; color: var(--ink-soft); }
+  .lead strong { color: var(--ink); font-weight: 600; }
+  .legend { margin-top: 30px; display: grid; grid-template-columns: auto auto; gap: 10px 26px; font-size: 14px; color: var(--ink-soft); width: max-content; }
+  .legend span { display: flex; align-items: center; gap: 10px; }
+  .legend svg { width: 40px; height: 6px; overflow: visible; }
+  .chips { position: absolute; left: 60px; bottom: 60px; display: flex; gap: 10px; }
+  .chip { font-size: 13px; font-weight: 650; padding: 7px 14px; border-radius: 999px; border: 1px solid var(--line-strong); background: rgba(251,249,243,.7); color: var(--ink); }
+  .chip b { color: var(--moss); margin-right: 6px; }
+
+  .tree { position: absolute; left: 0; top: 0; width: 1280px; height: 640px; }
+  .card {
+    position: absolute; width: 160px; height: 58px; padding: 9px 10px 0; white-space: nowrap; overflow: visible; border-radius: 12px;
+    background: var(--paper-light); border: 1px solid var(--line);
+    box-shadow: 0 1px 0 rgba(29,39,34,.04), 0 10px 24px -14px rgba(29,39,34,.35);
+    border-top: 4px solid var(--line-strong);
+  }
+  .card.pat { border-top-color: var(--moss); }
+  .card.mat { border-top-color: var(--wine); }
+  .card.self { background: var(--wine-soft); border-color: #dcbcc3; border-top-color: var(--wine); }
+  .card.small { width: 170px; height: 52px; padding-top: 7px; }
+  .card.unknown { background: transparent; border: 1.5px dashed var(--line-strong); box-shadow: none; }
+  .card .n { font-family: var(--sans); font-size: 11px; font-weight: 700; color: var(--ink-soft); margin-right: 6px; vertical-align: 1px; }
+  .card .name { display: block; font-family: var(--serif); font-weight: 600; font-size: 14.5px; line-height: 20px; }
+  .card.small .name { font-size: 13px; line-height: 18px; }
+  .card.unknown .name { font-style: italic; font-weight: 400; color: var(--ink-soft); }
+  .card .meta { margin-top: 4px; font-size: 11px; color: var(--ink-soft); display: flex; justify-content: space-between; letter-spacing: .02em; }
+  .card .meta em { font-style: normal; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+  .badge { position: absolute; right: -8px; top: -11px; font-size: 10.5px; font-weight: 750; letter-spacing: .03em; padding: 3px 8px; border-radius: 999px; background: var(--moss-soft); color: var(--moss); border: 1px solid #c3d6c9; }
+  .badge.hyp { background: var(--gold-soft); color: #7c5a27; border-color: #e3cfa9; }
+</style>
+</head>
+<body>
+  <svg class="contours" viewBox="0 0 1280 640" aria-hidden="true">
+    <g fill="none" stroke="#d9cfbd" stroke-width="1">
+      <path d="M-20 520 C 180 470, 300 590, 520 540 S 900 430, 1300 500"/>
+      <path d="M-20 560 C 200 515, 320 630, 540 585 S 920 480, 1300 545"/>
+      <path d="M-20 600 C 220 560, 340 670, 560 630 S 940 530, 1300 590"/>
+      <path d="M-20 70 C 160 30, 330 120, 520 80 S 820 0, 1300 40"/>
+      <path d="M-20 30 C 170 -10, 340 80, 530 40 S 830 -40, 1300 0"/>
+    </g>
+  </svg>
+
+  <section class="intro">
+    <div class="kicker">Rodová kronika · šablona</div>
+    <h1>Paměť rodu</h1>
+    <p class="lead">Rodokmen, příběhy, mapa a prameny <strong>v jednom HTML souboru</strong>. U každého údaje je vidět, z čeho pochází a jak je jistý.</p>
+    <div class="legend">
+      <span><svg><line x1="0" y1="3" x2="40" y2="3" stroke="#1d2722" stroke-width="2.4"/></svg>Ověřeno matrikou</span>
+      <span><svg><line x1="0" y1="3" x2="40" y2="3" stroke="#1d2722" stroke-width="2.2" stroke-dasharray="9 5"/></svg>Podpořeno prameny</span>
+      <span><svg><line x1="0" y1="3" x2="40" y2="3" stroke="#1d2722" stroke-width="2.2" stroke-dasharray="10 4 2 4"/></svg>Rodinné vyprávění</span>
+      <span><svg><line x1="0" y1="3" x2="40" y2="3" stroke="#1d2722" stroke-width="2.4" stroke-dasharray="1 5" stroke-linecap="round"/></svg>Hypotéza</span>
+    </div>
+  </section>
+  <div class="chips">
+    <span class="chip"><b>●</b>Funguje offline</span>
+    <span class="chip"><b>●</b>Bez serveru a účtu</span>
+    <span class="chip"><b>●</b>S průvodcem pro AI asistenta</span>
+  </div>
+
+  <svg class="tree" viewBox="0 0 1280 640" aria-hidden="true">
+    <g fill="none" stroke-linecap="round">
+      <path d="M676 320 C 690 320, 690 210, 704 210" stroke="#3f6350" stroke-dasharray="10 4 2 4" stroke-width="2.2"/>
+      <path d="M676 320 C 690 320, 690 430, 704 430" stroke="#7b3f4b" stroke-dasharray="10 4 2 4" stroke-width="2.2"/>
+      <path d="M864 210 C 878 210, 878 150, 892 150" stroke="#3f6350" stroke-dasharray="10 4 2 4" stroke-width="2.2"/>
+      <path d="M864 210 C 878 210, 878 270, 892 270" stroke="#3f6350" stroke-dasharray="10 4 2 4" stroke-width="2.2"/>
+      <path d="M864 430 C 878 430, 878 370, 892 370" stroke="#7b3f4b" stroke-dasharray="9 5" stroke-width="2.2"/>
+      <path d="M864 430 C 878 430, 878 490, 892 490" stroke="#7b3f4b" stroke-dasharray="9 5" stroke-width="2.2"/>
+      <path d="M1052 150 C 1066 150, 1066 88, 1080 88" stroke="#3f6350" stroke-width="2.4"/>
+      <path d="M1052 150 C 1066 150, 1066 150, 1080 150" stroke="#3f6350" stroke-width="2.4"/>
+      <path d="M1052 270 C 1066 270, 1066 232, 1080 232" stroke="#3f6350" stroke-dasharray="10 4 2 4" stroke-width="2.2"/>
+      <path d="M1052 270 C 1066 270, 1066 296, 1080 296" stroke="#a97d3e" stroke-dasharray="1 5" stroke-width="2.6"/>
+    </g>
+  </svg>
+
+  <div class="card self" style="left:516px; top:291px"><span class="name"><span class="n">1</span>Tereza Kalinová</span><div class="meta"><span>* 1992</span><em>vy</em></div></div>
+  <div class="card pat" style="left:704px; top:181px"><span class="name"><span class="n">2</span>Petr Kalina</span><div class="meta"><span>* 1961</span><em>otec</em></div></div>
+  <div class="card mat" style="left:704px; top:401px"><span class="name"><span class="n">3</span>Jana Mráčková</span><div class="meta"><span>* 1964</span><em>matka</em></div></div>
+  <div class="card pat" style="left:892px; top:121px"><span class="name"><span class="n">4</span>Josef Kalina</span><div class="meta"><span>1931–2004</span><em>děda</em></div></div>
+  <div class="card pat" style="left:892px; top:241px"><span class="name"><span class="n">5</span>Marie Brabcová</span><div class="meta"><span>1934–2019</span><em>babička</em></div></div>
+  <div class="card mat" style="left:892px; top:341px"><span class="name"><span class="n">6</span>Karel Mráček</span><div class="meta"><span>1935–1998</span><em>děda</em></div></div>
+  <div class="card mat" style="left:892px; top:461px"><span class="name"><span class="n">7</span>Anna Hrubá</span><div class="meta"><span>1938–2011</span><em>babička</em></div></div>
+  <div class="card pat small" style="left:1080px; top:62px"><span class="name"><span class="n">8</span>Václav Kalina</span><div class="meta"><span>1898–1967</span></div><span class="badge">Ověřeno</span></div>
+  <div class="card pat small" style="left:1080px; top:124px"><span class="name"><span class="n">9</span>Ludmila Dolejšová</span><div class="meta"><span>1902–1975</span></div></div>
+  <div class="card pat small" style="left:1080px; top:206px"><span class="name"><span class="n">10</span>František Brabec</span><div class="meta"><span>asi 1905–1961</span></div></div>
+  <div class="card small unknown" style="left:1080px; top:270px"><span class="name"><span class="n">11</span>Neznámá matka</span><div class="meta"><span>zatím nedohledáno</span></div><span class="badge hyp">Úkol</span></div>
+</body>
+</html>
