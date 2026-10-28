@@ -16,7 +16,7 @@
 
   const STRENGTH = { hypothesis: 1, 'family-record': 2, supported: 3, verified: 4 };
   const OWN_EVENT_TYPES = new Set(['employment', 'public-office', 'migration', 'census', 'property']);
-  const HISTORY_CATEGORIES = new Set(['war', 'politics', 'state', 'disaster', 'epidemic', 'society', 'economy']);
+  const HISTORY_CATEGORIES = new Set(['war', 'politics', 'state', 'disaster', 'epidemic', 'health', 'society', 'economy']);
 
   const sexWord = (person, male, female, neutral) => (person?.sex === 'male' ? male : person?.sex === 'female' ? female : neutral);
   const yearOf = (entry) => Number(String(entry?.date || entry?.dateText || '').match(/(?<!\d)(1\d{3}|20\d{2})(?!\d)/)?.[1]) || null;
@@ -41,7 +41,8 @@
   function parentSentence(data, person, parent, link, role) {
     const evidence = linkEvidence(data, link);
     const roleWord = role === 'father' ? 'otcem' : role === 'mother' ? 'matkou' : 'rodičem';
-    const pronoun = sexWord(person, 'Jeho', 'Jejím', 'Jeho či jejím');
+    // "Jejím otcem" but "Její matkou": the feminine pronoun follows the noun's gender.
+    const pronoun = role === 'mother' ? sexWord(person, 'Jeho', 'Její', 'Jeho či její') : sexWord(person, 'Jeho', 'Jejím', 'Jeho či jejím');
     const verb = parent.sex === 'female' ? 'byla' : 'byl';
     const extra = parent.occupations?.length ? `, ${parent.occupations[0]}` : '';
     if (evidence === 'hypothesis') return `${pronoun} ${roleWord} ${verb} možná ${parent.displayName}${extra} – zatím neověřeno.`;
@@ -126,11 +127,14 @@
     }
     if (familyText.length) paragraphs.push({ kind: 'family', text: familyText.join(' ') });
 
-    // 4. History lived through (at most two larger events).
+    // 4. History lived through (at most three larger events, preferring those
+    // lived as a grown-up over childhood ones).
     const events = options.history?.events || [];
     if (history && events.length) {
       const context = history.lifeContext(person, events, { data, currentYear: now.getFullYear() });
-      const chosen = (context.items || []).filter((item) => !item.possible && !item.bornDuring && HISTORY_CATEGORIES.has(item.event.category)).slice(0, 2);
+      const lived = (context.items || []).filter((item) => !item.possible && !item.bornDuring && HISTORY_CATEGORIES.has(item.event.category));
+      const grownUp = lived.filter((item) => item.age.years >= 15);
+      const chosen = (grownUp.length >= 2 ? grownUp : lived).slice(0, 3);
       if (chosen.length) {
         paragraphs.push({ kind: 'history', text: `${sexWord(person, 'Zažil', 'Zažila', 'Zažil(a)')} i velké dějiny: ${chosen.map((item) => `${history.formatEventDate(item.event)} – ${item.event.title} (${history.ageSentence(item, person.sex).replace(/\.$/, '').toLowerCase()})`).join('; ')}.` });
       }
@@ -138,7 +142,7 @@
 
     // 5. Memories and the person's own words.
     const memories = [];
-    if (person.familyNotes?.length) memories.push(`Z rodinných vzpomínek: ${clean(person.familyNotes[0])}`);
+    if (person.familyNotes?.length) memories.push(`Z kroniky: ${clean(person.familyNotes[0])}`);
     const clip = (data.media || []).find((media) => media.kind === 'audio-clip' && (media.personIds || []).includes(personId) && media.quote);
     if (clip) {
       const quote = clean(clip.quote);

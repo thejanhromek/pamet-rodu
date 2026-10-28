@@ -42,8 +42,35 @@ function normaliseOverrides(overrides = {}) {
 
 const replaceLiterals = (value, pairs) => pairs.reduce((text, [find, replace]) => text.replaceAll(find, replace), value);
 
+// Archive citations and research bookkeeping belong to the research edition;
+// the family reads the finding itself ("křest uvádí …"), not where it was read.
+const archiveRef = String.raw`(?:MZA|matrika)(?: sign\.)? \d+(?:,? detail \d+)?(?:,? (?:scan|soubor|scany) \d+(?:[/–-]\d+)?)?(?:,? ?(?:\/ )?(?:strana|str\.|folio|fol\.|PM str\.) \d+[a-z]?)*`;
+function plainArchiveWording(value) {
+  const text = String(value || '')
+    .replace(/\s*\(src-[^()]*\)/g, '')
+    .replace(/\bscan(?:u|y)? \d+\/\d+/g, 'snímek')
+    .replace(/\b[Dd]ávk[ay] \d+[:,]?\s*/g, '')
+    .replace(/\s*\(dávka \d+\)/g, '')
+    .replace(/\s*\((?=[^()]*(?:MZA|scan|soubor|sign\.|fol\.|index PM|PM str|výřez))[^()]*\)/g, '')
+    .replace(new RegExp(`${archiveRef}\\s*[–-]\\s*`, 'g'), '')
+    .replace(new RegExp(archiveRef, 'g'), 'matriční zápis')
+    .replace(/\bscan(?:y|u)? \d+(?:[–-]\d+)?/g, 'zápis')
+    .replace(/\s*\(zvýrazněn[ýé] výřez[y]?(?:, [^)]*)?\)/g, '')
+    .replace(/zvýrazněn(?:ý|é|ého) výřez(?:u|y|ů)?/g, 'zápis')
+    .replace(/\s*\((?:hypothesis|supported|verified)\)/g, '')
+    .replace(/\bverified\b/g, 'ověřeno')
+    .replace(/\bhypothesis\b/g, 'domněnka')
+    .replace(/\bscan\b/g, 'snímek')
+    .replace(/\bMZA(?: sign\.)?/g, 'matrika')
+    .replace(/samostatný kandidát/g, 'možná shoda')
+    .replace(/ {2,}/g, ' ')
+    .replace(/\s+([,.;])/g, '$1')
+    .trim();
+  return text.charAt(0).toLocaleUpperCase('cs') + text.slice(1);
+}
+
 function familyWording(value, options) {
-  return replaceLiterals(String(value || '').replace(/\bUNKNOWN\b/g, 'není znám'), options.wordingReplacements)
+  return replaceLiterals(plainArchiveWording(String(value || '').replace(/\bUNKNOWN\b/g, 'není znám')), options.wordingReplacements)
     .replace(/\bcluster\b/g, 'okruh záznamů')
     .replace(/\bsupported\b/g, 'podpořené prameny')
     .replace(/\bhypothesis upstream\b/g, 'neověřený předek')
@@ -97,9 +124,10 @@ export function createFamilyEdition(source, overrides = defaultOverrides) {
       return (!researchDetail.test(note) && familyStory.test(note)) || meaningfulUncertainty.test(note);
     }).map((note) => familyWording(replaceLiterals(note, options.noteReplacements), options)),
   }));
-  const excludedProcessClaims = /(?:předchozí (?:mapování|přiřazení)|ohraničen(?:á|é) (?:kontrol|vyhledáv)|vyřazen(?:á|ý|é) shod|přihlášené vyhledávání|je odmítnut|bylo staženo)/i;
+  const excludedProcessClaims = /(?:předchozí (?:mapování|přiřazení)|ohraničen(?:á|é) (?:kontrol|vyhledáv|orientační)|vyřazen(?:á|ý|é) shod|přihlášené vyhledávání|je odmítnut|bylo staženo|indexuje|silným kandidátem)/i;
+  const excludedProcessClaimIds = /bounded-negative|index-candidate/;
   data.claims = data.claims
-    .filter((claim) => !options.omitClaimIds.has(claim.id) && !excludedProcessClaims.test(claim.text))
+    .filter((claim) => !options.omitClaimIds.has(claim.id) && !excludedProcessClaims.test(claim.text) && !excludedProcessClaimIds.test(claim.id))
     .map(({ reasoning, ...claim }) => ({
       ...claim,
       text: options.claimOverrides[claim.id] || familyWording(claim.text
@@ -112,8 +140,13 @@ export function createFamilyEdition(source, overrides = defaultOverrides) {
         .replaceAll('supported', 'podpořeno')
         .replaceAll('hypothesis', 'možnost'), options),
     }));
-  data.events = data.events.map(({ notes, details, ...event }) => event);
-  const researchSourceIds = /negative|manual-check|primary-check|bounded-negative|baptism-candidate/;
+  // Dates and titles name the family tree, not the website it was read on.
+  const plainTreeWording = (text) => text && text.replace(/ podle MyHeritage.*$/, ' podle rodokmenu').replace(/MyHeritage/g, 'rodokmen');
+  data.events = data.events.map(({ notes, details, ...event }) => ({ ...event, title: plainTreeWording(event.title), ...(event.dateText ? { dateText: plainTreeWording(event.dateText) } : {}) }));
+  for (const person of data.people) {
+    for (const field of ['birth', 'death']) if (person[field]?.dateText) person[field] = { ...person[field], dateText: plainTreeWording(person[field].dateText) };
+  }
+  const researchSourceIds = /negative|manual-check|primary-check|bounded-negative|baptism-candidate|partial-check|identity-checks|rereads|-checks?$|-check-|-lead$|wrong-locality/;
   data.sources = data.sources
     .filter((entry) => entry.type !== 'research-methodology' && !researchSourceIds.test(entry.id)
       && !options.omitSourceIdPatterns.some((pattern) => pattern.test(entry.id)))

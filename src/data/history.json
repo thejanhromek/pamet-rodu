@@ -1,11 +1,126 @@
 {
   "meta": {
     "title": "Dějinný kontext pro rodovou kroniku",
-    "version": "1.0.0",
-    "updatedAt": "2026-10-18",
+    "version": "1.1.0",
+    "updatedAt": "2026-10-24",
     "note": "Obecné dějinné události s důrazem na Moravu, Slovácko a Zlínsko. Nejde o údaje o konkrétních osobách; každá položka odkazuje na encyklopedický zdroj."
   },
   "events": [
+    {
+      "id": "hist-1680-robotni-patent",
+      "date": "1680-03-28",
+      "title": "Selské povstání a robotní patent",
+      "summary": "Po selském povstání v Čechách vydal císař Leopold I. robotní patent: robota měla trvat nejvýš tři dny v týdnu a v neděli a o svátcích se robotovat nemělo.",
+      "scope": "stat",
+      "category": "society",
+      "sources": [{ "title": "Selské povstání (1680)", "publisher": "Wikipedie", "url": "https://cs.wikipedia.org/wiki/Selsk%C3%A9_povst%C3%A1n%C3%AD_(1680)" }]
+    },
+    {
+      "id": "hist-1683-viden",
+      "date": "1683-07-14",
+      "endDate": "1683-09-12",
+      "title": "Turci obléhají Vídeň",
+      "summary": "Osmanská vojska s krymskými Tatary oblehla Vídeň, nedaleko jižní Moravy. Spojená křesťanská vojska je v září porazila v bitvě u Vídně.",
+      "scope": "morava",
+      "category": "war",
+      "sources": [{ "title": "Druhé obléhání Vídně", "publisher": "Wikipedie", "url": "https://cs.wikipedia.org/wiki/Druh%C3%A9_obl%C3%A9h%C3%A1n%C3%AD_V%C3%ADdn%C4%9B" }, { "title": "Bitva u Vídně", "publisher": "Wikipedie", "url": "https://cs.wikipedia.org/wiki/Bitva_u_V%C3%ADdn%C4%9B" }]
+    },
+    {
+      "id": "hist-1713-mor",
+      "date": "1713",
+      "endDate": "1715",
+      "title": "Poslední velká morová epidemie",
+      "summary": "Českými zeměmi a Moravou prošla naposledy velká epidemie moru. Na její památku dodnes stojí v mnoha obcích morové sloupy.",
+      "scope": "stat",
+      "category": "health",
+      "sources": [{ "title": "Mor", "publisher": "Wikipedie", "url": "https://cs.wikipedia.org/wiki/Mor" }]
+    },
+    {
+      "id": "hist-1742-prusove",
+      "date": "1740",
+      "endDate": "1748",
+      "title": "Války o rakouské dědictví",
+      "summary": "Pruský král napadl zemi Marie Terezie a jeho vojska vpadla na Moravu a obsadila Olomouc. Rakousko o většinu Slezska přišlo.",
+      "scope": "morava",
+      "category": "war",
+      "sources": [{ "title": "Války o rakouské dědictví", "publisher": "Wikipedie", "url": "https://cs.wikipedia.org/wiki/V%C3%A1lky_o_rakousk%C3%A9_d%C4%9Bdictv%C3%AD" }]
+    },
+    {
+      "id": "hist-1756-sedmileta",
+      "date": "1756",
+      "endDate": "1763",
+      "title": "Sedmiletá válka",
+      "summary": "Rakousko se znovu přelo s Pruskem o Slezsko. Válka vyčerpala zemi i venkov, který živil a zásoboval vojska.",
+      "scope": "stat",
+      "category": "war",
+      "sources": [{ "title": "Sedmiletá válka", "publisher": "Wikipedie", "url": "https://cs.wikipedia.org/wiki/Sedmilet%C3%A1_v%C3%A1lka" }]
+    },
+    {
+      "id": "hist-1770-hladomor",
+      "date": "1770",
+      "endDate": "1772",
+      "title": "Velký hladomor",
+      "summary": "Po letech neúrody zemřelo v Čechách a na Moravě hladem a nemocemi asi 10–15 % obyvatel, nejvíc na venkově.",
+      "scope": "stat",
+      "category": "disaster",
+      "sources": [{ "title": "Hladomor v českých zemích (1770–1772)", "publisher": "Wikipedie", "url": "https://cs.wikipedia.org/wiki/Hladomor_v_%C4%8Desk%C3%BDch_zem%C3%ADch_(1770%E2%80%931772)" }]
+    },
+    {
+      "id": "hist-1774-skolni-rad",
+      "date": "1774",
+      "title": "Školní řád Marie Terezie",
+      "summary": "Všeobecný školní řád zavedl povinnou školní docházku a vesnické školy pod dozorem faráře.",
+      "scope": "stat",
+      "category": "society",
+      "sources": [{ "title": "Tereziánské reformy", "publisher": "Wikipedie", "url": "https://cs.wikipedia.org/wiki/Terezi%C3%A1nsk%C3%A9_reformy" }]
+    },
+    {
+      "id": "hist-1781-nevolnictvi",
+      "date": "1781-11-01",
+      "title": "Zrušení nevolnictví",
+      "summary": "Patent Josefa II. zrušil nevolnictví: poddaní se mohli bez svolení vrchnosti ženit, stěhovat a učit řemeslu. Robota zůstala.",
+      "scope": "stat",
+      "category": "society",
+      "sources": [{ "title": "Patent o zrušení nevolnictví", "publisher": "Wikipedie", "url": "https://cs.wikipedia.org/wiki/Patent_o_zru%C5%A1en%C3%AD_nevolnictv%C3%AD" }]
+    },
+    {
+      "id": "hist-1809-znojmo",
+      "date": "1809-07-10",
+      "endDate": "1809-07-11",
+      "title": "Napoleon znovu na Moravě – bitva u Znojma",
+      "summary": "Francouzská vojska táhla za ustupující rakouskou armádou na jižní Moravu. Po bitvě u Znojma bylo uzavřeno příměří.",
+      "scope": "morava",
+      "category": "war",
+      "sources": [{ "title": "Bitva u Znojma", "publisher": "Wikipedie", "url": "https://cs.wikipedia.org/wiki/Bitva_u_Znojma" }]
+    },
+    {
+      "id": "hist-1811-bankrot",
+      "date": "1811",
+      "title": "Státní bankrot",
+      "summary": "Po napoleonských válkách rakouský stát zbankrotoval a papírové peníze ztratily většinu své hodnoty.",
+      "scope": "stat",
+      "category": "economy",
+      "sources": [{ "title": "Státní bankrot", "publisher": "Wikipedie", "url": "https://cs.wikipedia.org/wiki/St%C3%A1tn%C3%AD_bankrot" }]
+    },
+    {
+      "id": "hist-1816-rok-bez-leta",
+      "date": "1816",
+      "title": "Rok bez léta",
+      "summary": "Po výbuchu sopky Tambora bylo léto v Evropě mimořádně studené. Přišla neúroda a drahota potravin.",
+      "scope": "svet",
+      "category": "disaster",
+      "sources": [{ "title": "Rok bez léta", "publisher": "Wikipedie", "url": "https://cs.wikipedia.org/wiki/Rok_bez_l%C3%A9ta" }]
+    },
+    {
+      "id": "hist-1831-cholera",
+      "date": "1831",
+      "endDate": "1832",
+      "title": "Cholera",
+      "summary": "Rakouskými zeměmi prošla epidemie cholery. V Čechách a na Moravě si vyžádala téměř 60 000 obětí.",
+      "scope": "stat",
+      "category": "health",
+      "sources": [{ "title": "Cholera", "publisher": "Wikipedie", "url": "https://cs.wikipedia.org/wiki/Cholera" }]
+    },
     {
       "id": "hist-1805-slavkov",
       "date": "1805-12-02",

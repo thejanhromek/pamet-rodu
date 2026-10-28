@@ -25,6 +25,8 @@ Matriky Moravského zemského archivu se v [ActaPublica](https://www.mza.cz/acta
    - `mzaHide()` – překryv odstraní.
 5. Osvědčený postup: nejdřív celá dvoustrana `mzaShow(mzaScan(n), 0, 0, 1, 1, 1600)` pro orientaci, potom výřez jednoho zápisu s `maxWidth` 2600–3400. Screenshot výřezu ulož k pramenům s názvem podle knihy, snímku a hledané osoby.
 6. Nástroj nic neretušuje, nestahuje celé knihy a neobchází přístupová omezení; čte tytéž dlaždice jako viewer, jen cíleně. Hodí se hlavně tam, kde viewer v malém nebo skrytém okně dlaždice nenačítá.
+7. Nástroj je šetrný k serveru: požadavky jdou přes omezovač (2 souběžně, nejméně 300 ms mezi nimi), dlaždice se drží v paměti, výřez má nejvýš 60 dlaždic a sezení 1500 požadavků. Odpověď 403/429/503 nebo síťová chyba nástroj zastaví – archiv tím může signalizovat blokaci, kterou nelze obcházet; počkej a pokračuj až po pauze (`mzaConfig({ resume: true })`). Stav ukáže `mzaStats()`.
+8. Vybledlý inkoust: po `mzaShow` zavolej `await mzaEnhance({ scale: 2 })`. Funkce vezme tmavší barevný kanál, odečte lokální pozadí (skvrny, nerovnoměrné osvětlení), roztáhne kontrast a výřez zvětší; nic dalšího nestahuje. Zvýrazněný výřez se ukládá vedle původního a čtení z něj se v prameni označuje („čteno ze zvýrazněného výřezu“).
 
 Pravidla čtení:
 
