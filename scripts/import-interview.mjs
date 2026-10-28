@@ -4,7 +4,7 @@
 //   node scripts/import-interview.mjs 2026-11-02-jmeno-pametnika video1.MP4 video2.MP4 ...
 //
 // Next steps: python scripts/transcribe.py assets/interviews/<id>
-// (see README, section "Rozhovory s pamětníky").
+// (see docs/navod.md, section "Rozhovory s pamětníky").
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { execFile } from 'node:child_process';

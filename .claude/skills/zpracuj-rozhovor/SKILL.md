@@ -10,7 +10,7 @@ description: Zpracuje nahraný rozhovor s pamětníkem – import zvuku, lokáln
 - Originální nahrávky nech beze změny; připomeň zálohu mimo git.
 - Zvuk: `node scripts/import-interview.mjs RRRR-MM-DD-jmeno video1 video2 …` → `assets/interviews/<id>/audio/cast-N.m4a`.
 - Do `assets/interviews/<id>/prompt.txt` napiš jména osob, příjmení v pádech, obce a typická slova z rozhovoru (z dat kroniky a od uživatele). Zlepší přepis.
-- Přepis (lokálně, nic se neodesílá): `python scripts/transcribe.py assets/interviews/<id>` ve virtuálním prostředí s faster-whisper (viz README). Vznikne `transcript.txt`, `.srt` a `.json` s časy.
+- Přepis (lokálně, nic se neodesílá): `python scripts/transcribe.py assets/interviews/<id>` ve virtuálním prostředí s faster-whisper (viz docs/navod.md). Vznikne `transcript.txt`, `.srt` a `.json` s časy.
 - Ověř, že existuje souhlas vypravěče (`docs/souhlas-s-nahravanim.md`) a co povoluje.
 
 ## 2. Pramen rozhovoru
